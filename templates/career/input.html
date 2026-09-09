@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Career Roadmap - Placement Copilot{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-signpost-split"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">Generate Personalized 3-Month AI Roadmap</h3>
+                            <p class="text-secondary small mb-0">Construct a 12-week step-by-step learning plan tailored to your target role</p>
+                        </div>
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label small fw-medium text-secondary">Roadmap Title *</label>
+                            {{ form.title }}
+                            {% for error in form.title.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.target_role.id_for_label }}" class="form-label small fw-medium text-secondary">Target Engineering Role *</label>
+                            {{ form.target_role }}
+                            {% for error in form.target_role.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.resume.id_for_label }}" class="form-label small fw-medium text-secondary">Select Resume for Auto-Skill Extraction (Optional)</label>
+                            {{ form.resume }}
+                            <div class="form-text small text-muted">{{ form.resume.help_text }}</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.manual_missing_skills.id_for_label }}" class="form-label small fw-medium text-secondary">Target Skills to Master / Bridge (Optional)</label>
+                            {{ form.manual_missing_skills }}
+                            <div class="form-text small text-muted">{{ form.manual_missing_skills.help_text }}</div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary-custom flex-grow-1 py-2">
+                                Generate 3-Month Roadmap <i class="bi bi-stars ms-1"></i>
+                            </button>
+                            <a href="{% url 'career_index' %}" class="btn btn-outline-secondary py-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

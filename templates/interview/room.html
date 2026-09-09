@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+
+{% block title %}Mock Interview Room - {{ session.target_role }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 520px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        background: #0f172a;
+        border-radius: 1rem;
+    }
+    .msg-interviewer {
+        background: #1e293b;
+        color: #f8fafc;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0.75rem;
+    }
+    .msg-candidate {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff;
+        border-radius: 0.75rem;
+    }
+    .phase-badge-pill {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50rem;
+    }
+    .phase-step {
+        opacity: 0.4;
+        transition: all 0.3s ease;
+    }
+    .phase-step.active {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    .typing-dots span {
+        width: 8px;
+        height: 8px;
+        margin: 0 2px;
+        background-color: #94a3b8;
+        border-radius: 50%;
+        display: inline-block;
+        animation: typing 1.4s infinite ease-in-out both;
+    }
+    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1.0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Top Interview Bar -->
+    <div class="card border-0 bg-dark text-white rounded-4 p-3 mb-3 shadow-sm">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary text-white p-2 rounded-3 fs-4">
+                    <i class="bi bi-headset"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0 text-white">{{ session.target_role }}</h5>
+                    <small class="text-white-50">Senior Technical Interviewer Engine (8+ yrs exp)</small>
+                </div>
+            </div>
+
+            <!-- Phase Step Indicators -->
+            <div class="d-none d-lg-flex align-items-center gap-2">
+                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'HR Screening' %}active bg-primary{% endif %}">1. HR</span>
+                <i class="bi bi-chevron-right text-muted fs-7"></i>
+                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'Core CS' %}active bg-primary{% endif %}">2. CS</span>
+                <i class="bi bi-chevron-right text-muted fs-7"></i>
+                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'AI/ML + GenAI' %}active bg-primary{% endif %}">3. AI/GenAI</span>
+                <i class="bi bi-chevron-right text-muted fs-7"></i>
+                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'Project Deep Dive' %}active bg-primary{% endif %}">4. Projects</span>
+                <i class="bi bi-chevron-right text-muted fs-7"></i>
+                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'System Design' %}active bg-primary{% endif %}">5. System Design</span>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-dark bg-opacity-50 border border-secondary text-info px-3 py-2" id="sessionTimer" title="Session Elapsed Time">
+                    <i class="bi bi-clock-history me-1"></i>00:00
+                </span>
+                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2" id="currentPhaseBadge">
+                    <i class="bi bi-disc me-1"></i>{{ session.current_phase }}
+                </span>
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#endInterviewModal">
+                    <i class="bi bi-flag-fill me-1"></i>End & Evaluate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Window Container -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-3">
+        <div class="chat-container p-4" id="chatStream">
+            {% for msg in chat_messages %}
+                {% if msg.sender == 'interviewer' %}
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="bg-primary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-robot fs-5"></i>
+                        </div>
+                        <div class="msg-interviewer p-3 shadow-sm flex-grow-1" style="max-width: 85%;">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-secondary border-opacity-25">
+                                <span class="fw-bold text-info small">Senior AI Interviewer</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary bg-opacity-50 text-light small">{{ msg.round_name }}</span>
+                                    <button class="btn btn-link btn-sm p-0 text-info tts-btn" onclick="speakText(this)" data-text="{{ msg.message }}">
+                                        <i class="bi bi-volume-up"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="msg-content text-slate-100" style="white-space: pre-wrap; line-height: 1.6;">{{ msg.message }}</div>
+                            <div class="text-end mt-1"><small class="text-muted" style="font-size: 0.7rem;">{{ msg.created_at|date:"H:i" }}</small></div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="d-flex align-items-start justify-content-end gap-3 mb-4">
+                        <div class="msg-candidate p-3 shadow-sm" style="max-width: 80%;">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-white border-opacity-25">
+                                <span class="fw-bold small text-white">You (Candidate)</span>
+                                <small class="text-white-50" style="font-size: 0.7rem;">{{ msg.created_at|date:"H:i" }}</small>
+                            </div>
+                            <div class="msg-content" style="white-space: pre-wrap; line-height: 1.6;">{{ msg.message }}</div>
+                        </div>
+                        <div class="bg-secondary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-person-fill fs-5"></i>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Typing indicator element (hidden by default) -->
+            <div id="typingIndicator" class="d-none mb-4">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="bg-primary text-white p-2 rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-robot fs-5"></i>
+                    </div>
+                    <div class="msg-interviewer p-3 shadow-sm">
+                        <small class="text-info me-2 fw-semibold">Interviewer is evaluating response...</small>
+                        <span class="typing-dots"><span></span><span></span><span></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Control Footer -->
+        <div class="card-footer bg-white border-0 p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <small class="text-muted" style="font-size: 0.75rem;">
+                    <i class="bi bi-mic me-1 text-primary"></i>Live Speech Dictation & Response Meter
+                </small>
+                <span id="wordCounter" class="badge bg-light text-dark border" style="font-size: 0.7rem;">0 Words</span>
+            </div>
+            <form id="chatForm" class="d-flex gap-2 align-items-center">
+                {% csrf_token %}
+                <textarea id="userInput" class="form-control rounded-3 border-secondary border-opacity-25" rows="2" placeholder="Type your answer or click mic to dictate... (Press Enter to send)" required></textarea>
+                
+                <!-- Voice Dictation Button -->
+                <button type="button" id="sttBtn" class="btn btn-outline-primary rounded-3 px-3 shadow-sm align-self-stretch d-flex align-items-center justify-content-center" title="Dictate Answer via Voice Microphone">
+                    <i class="bi bi-mic-fill fs-5"></i>
+                </button>
+                
+                <button type="submit" id="sendBtn" class="btn btn-primary btn-lg rounded-3 px-4 shadow-sm align-self-stretch d-flex align-items-center justify-content-center">
+                    <i class="bi bi-send-fill fs-5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- End Interview Confirmation Modal -->
+<div class="modal fade" id="endInterviewModal" tabindex="-1" aria-labelledby="endInterviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <form method="POST" action="{% url 'end_interview' session.pk %}">
+                {% csrf_token %}
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="endInterviewModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Complete Interview Session?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="text-secondary mb-0">
+                        Ending the session will submit your transcript to the AI Evaluation Engine to generate your structured scorecard, rating, and actionable feedback.
+                    </p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Continue Interview</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Generate Scorecard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatStream = document.getElementById('chatStream');
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const currentPhaseBadge = document.getElementById('currentPhaseBadge');
+
+    function scrollToBottom() {
+        chatStream.scrollTop = chatStream.scrollHeight;
+    }
+    scrollToBottom();
+
+    // Text-to-speech helper
+    function speakText(btn) {
+        const text = btn.getAttribute('data-text');
+        if ('speechSynthesis' in window && text) {
+            window.speechSynthesis.cancel(); // Stop active speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Submit on Enter key (without Shift)
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        // Disable controls
+        userInput.value = '';
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+
+        // Append candidate message immediately
+        const candHtml = `
+            <div class="d-flex align-items-start justify-content-end gap-3 mb-4">
+                <div class="msg-candidate p-3 shadow-sm" style="max-width: 80%;">
+                    <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-white border-opacity-25">
+                        <span class="fw-bold small text-white">You (Candidate)</span>
+                        <small class="text-white-50" style="font-size: 0.7rem;">Now</small>
+                    </div>
+                    <div class="msg-content" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(text)}</div>
+                </div>
+                <div class="bg-secondary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+        `;
+        typingIndicator.insertAdjacentHTML('beforebegin', candHtml);
+        scrollToBottom();
+
+        // Show typing indicator
+        typingIndicator.classList.remove('d-none');
+        scrollToBottom();
+
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const response = await fetch("{% url 'send_message' session.pk %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({ 'message': text })
+            });
+
+            const data = await response.json();
+
+            // Hide typing indicator
+            typingIndicator.classList.add('d-none');
+
+            if (data.success) {
+                const interviewerMsg = data.interviewer_message;
+                const intHtml = `
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="bg-primary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-robot fs-5"></i>
+                        </div>
+                        <div class="msg-interviewer p-3 shadow-sm flex-grow-1" style="max-width: 85%;">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-secondary border-opacity-25">
+                                <span class="fw-bold text-info small">Senior AI Interviewer</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary bg-opacity-50 text-light small">${escapeHtml(interviewerMsg.phase)}</span>
+                                    <button class="btn btn-link btn-sm p-0 text-info tts-btn" onclick="speakText(this)" data-text="${escapeHtml(interviewerMsg.text)}">
+                                        <i class="bi bi-volume-up"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="msg-content text-slate-100" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(interviewerMsg.text)}</div>
+                            <div class="text-end mt-1"><small class="text-muted" style="font-size: 0.7rem;">${interviewerMsg.time}</small></div>
+                        </div>
+                    </div>
+                `;
+                typingIndicator.insertAdjacentHTML('beforebegin', intHtml);
+                currentPhaseBadge.innerHTML = `<i class="bi bi-disc me-1"></i>${escapeHtml(data.current_phase)}`;
+                scrollToBottom();
+            } else {
+                alert('Error sending response: ' + (data.error || 'Unknown error'));
+            }
+        } finally {
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+    });
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Real-Time Session Timer
+
+    let secondsElapsed = 0;
+    const sessionTimerEl = document.getElementById('sessionTimer');
+    setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        if (sessionTimerEl) {
+            sessionTimerEl.innerHTML = `<i class="bi bi-clock-history me-1"></i>${mins}:${secs}`;
+        }
+    }, 1000);
+
+    // Live Word Counter
+    const wordCounter = document.getElementById('wordCounter');
+    userInput.addEventListener('input', () => {
+        const words = userInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+        if (wordCounter) {
+            wordCounter.textContent = `${words} Words`;
+            if (words < 15) {
+                wordCounter.className = 'badge bg-light text-muted border';
+            } else if (words < 50) {
+                wordCounter.className = 'badge bg-info-subtle text-info border border-info';
+            } else {
+                wordCounter.className = 'badge bg-success-subtle text-success border border-success';
+            }
+        }
+    });
+
+    // Web Speech API Voice Dictation (STT)
+    const sttBtn = document.getElementById('sttBtn');
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        let isListening = false;
+
+        sttBtn.addEventListener('click', () => {
+            if (!isListening) {
+                recognition.start();
+            } else {
+                recognition.stop();
+            }
+        });
+
+        recognition.onstart = () => {
+            isListening = true;
+            sttBtn.classList.remove('btn-outline-primary');
+            sttBtn.classList.add('btn-danger');
+            sttBtn.innerHTML = '<span class="spinner-grow spinner-grow-sm me-1"></span>Listening...';
+        };
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            userInput.value = transcript;
+            userInput.dispatchEvent(new Event('input'));
+        };
+
+        recognition.onerror = () => {
+            resetSttBtn();
+        };
+
+        recognition.onend = () => {
+            resetSttBtn();
+        };
+
+        function resetSttBtn() {
+            isListening = false;
+            sttBtn.classList.remove('btn-danger');
+            sttBtn.classList.add('btn-outline-primary');
+            sttBtn.innerHTML = '<i class="bi bi-mic-fill fs-5"></i>';
+        }
+    } else {
+        if (sttBtn) sttBtn.style.display = 'none';
+    }
+</script>
+{% endblock %}
+

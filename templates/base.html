@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Placement Intelligence & Career Copilot for Engineering Students">
+    <title>{% block title %}Placement Copilot{% endblock %} | Engineering Career Intelligence</title>
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS Design System -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-2 navbar-glass">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'landing' %}">
+                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cpu-fill fs-4 text-primary"></i>
+                </div>
+                <span class="brand-gradient fs-4">PlacementCopilot</span>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill ms-2 px-2 py-1 small d-none d-md-inline-flex align-items-center gap-1">
+                    <span class="live-pulse-dot me-1"></span>Real-Time Engine
+                </span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-1">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'dashboard_home' %}">
+                                <i class="bi bi-speedometer2 me-1 text-primary"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'resume_index' %}">
+                                <i class="bi bi-file-earmark-text me-1 text-danger"></i>Resumes
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill dropdown-toggle" href="#" id="jobsDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-briefcase me-1 text-warning"></i>Jobs & Analytics
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                <li>
+                                    <a class="dropdown-item small" href="{% url 'job_auto_apply' %}">
+                                        <i class="bi bi-stars me-2 text-primary"></i>AI Auto-Apply Assistant
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item small" href="{% url 'skill_gap_analytics' %}">
+                                        <i class="bi bi-graph-up me-2 text-success"></i>Skill Gap Analytics
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item small" href="{% url 'job_index' %}">
+                                        <i class="bi bi-list-check me-2 text-secondary"></i>Evaluated Matches History
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'dashboard_roadmap' %}">
+                                <i class="bi bi-signpost-split me-1 text-info"></i>Roadmap
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'interview_index' %}">
+                                <i class="bi bi-mic me-1 text-purple" style="color: #8b5cf6;"></i>Interview
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a href="{% url 'profile' %}" class="badge bg-light text-dark text-decoration-none border py-2 px-3 d-inline-flex align-items-center gap-2 shadow-sm rounded-pill" title="View Candidate Profile">
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle object-fit-cover" width="24" height="24" alt="Avatar">
+                                {% else %}
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                                        {{ user.username|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                                <span class="fw-semibold">{{ user.username }}</span>
+                            </a>
+                        </li>
+
+                    {% else %}
+                        {% if not hide_auth_nav_links %}
+                            <li class="nav-item">
+                                <a class="nav-link fw-medium" href="{% url 'login' %}">Log In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary-custom" href="{% url 'register' %}">Get Started</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Django Messages Container -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0 shadow-sm rounded-4" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4 mt-auto">
+        <div class="container text-center text-md-between d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <div>
+                <span class="fw-bold brand-gradient">PlacementCopilot</span> &copy; 2026. Enterprise AI Career Intelligence System.
+            </div>
+            <div class="d-flex align-items-center gap-3 fs-5">
+                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-github"></i></a>
+                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-globe"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Toast Notification Container for Real-Time Engine -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Bootstrap 5 Bundle JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

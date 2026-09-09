@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Roadmap - {{ roadmap.target_role }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'career_index' %}">Career Roadmaps</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ roadmap.target_role }}</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">{{ roadmap.title }}</h2>
+            <span class="text-secondary small">
+                Target Role: <strong class="text-primary">{{ roadmap.target_role }}</strong> • Created on {{ roadmap.created_at|date:"F d, Y" }}
+            </span>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{% url 'career_create' %}" class="btn btn-primary-custom">
+                <i class="bi bi-plus-circle me-1"></i>New Roadmap
+            </a>
+        </div>
+    </div>
+
+    <!-- AI Summary Banner -->
+    {% if roadmap_data.summary %}
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-dark text-white p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary p-3 rounded-3 fs-3 text-white">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-warning mb-1">90-Day Placement Acceleration Strategy</h5>
+                    <p class="mb-0 text-white-50 lead fs-6">{{ roadmap_data.summary }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Monthly Navigation Tabs -->
+    <ul class="nav nav-pills nav-fill mb-4 p-2 bg-white rounded-3 shadow-sm" id="roadmapTab" role="tablist">
+        {% for month in months %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold py-3 {% if forloop.first %}active{% endif %}" 
+                        id="month{{ month.month_number }}-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#month{{ month.month_number }}" 
+                        type="button" 
+                        role="tab">
+                    <i class="bi bi-calendar-event me-2"></i>{{ month.title|default:"Month "|add:month.month_number }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Monthly Content Panels -->
+    <div class="tab-content" id="roadmapTabContent">
+        {% for month in months %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="month{{ month.month_number }}" role="tabpanel">
+                <div class="row g-4">
+                    {% for week in month.weeks %}
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold mb-0 text-dark">
+                                        <i class="bi bi-flag-fill text-primary me-2"></i>{{ week.title|default:"Week Details" }}
+                                    </h6>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                                        {{ week.focus_skill|default:"Core Focus" }}
+                                    </span>
+                                </div>
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <!-- Tasks Checklist -->
+                                    <h6 class="fw-bold text-secondary small text-uppercase tracking-wider mb-2">Learning Milestones & Tasks</h6>
+                                    <ul class="list-unstyled mb-4 flex-grow-1">
+                                        {% for task in week.tasks %}
+                                            <li class="d-flex align-items-start gap-2 mb-2 small text-dark">
+                                                <i class="bi bi-check-square-fill text-success mt-1"></i>
+                                                <span>{{ task }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                    <!-- Project Milestone -->
+                                    {% if week.project_milestone %}
+                                        <div class="p-3 bg-light rounded-3 border-start border-warning border-4 mb-3">
+                                            <div class="small fw-bold text-dark mb-1">
+                                                <i class="bi bi-folder-symlink text-warning me-1"></i>Hands-on Project Milestone:
+                                            </div>
+                                            <div class="small text-secondary">{{ week.project_milestone }}</div>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Recommended Resources -->
+                                    {% if week.recommended_resources %}
+                                        <div>
+                                            <div class="small fw-bold text-secondary mb-1">Recommended Resources:</div>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                {% for res in week.recommended_resources %}
+                                                    <span class="badge bg-secondary-subtle text-dark border small">{{ res }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

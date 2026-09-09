@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Job Auto-Apply Assistant - Placement Copilot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .top-recommendation-card {
+        border: 2px solid #10b981 !important;
+        background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+    }
+    .top-badge-shimmer {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Hero Banner -->
+    <div class="card border-0 bg-gradient text-white p-4 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-1 rounded-pill">
+                        <i class="bi bi-robot me-1"></i>Phase 10 Active
+                    </span>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-1 rounded-pill">
+                        <i class="bi bi-shield-check me-1"></i>Live Skill Matching
+                    </span>
+                </div>
+                <h2 class="fw-bold text-white mb-2">AI Job Auto-Apply Assistant</h2>
+                <p class="text-white-50 mb-0">
+                    Discover live product engineering roles ranked by candidate skill alignment. Click <strong>Apply Assist</strong> to generate a customized ATS cover letter and tailored resume improvement tips.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'skill_gap_analytics' %}" class="btn btn-outline-light rounded-pill px-4">
+                    <i class="bi bi-graph-up me-1"></i>View Skill Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4 card-modern">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search text-primary"></i></span>
+                    <input type="text" id="jobSearchInput" class="form-control bg-light border-0" placeholder="Real-time filter by job title, company, location, or skills...">
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill" id="matchCounterBadge">
+                    Showing {{ job_matches|length }} Jobs
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Cards Grid -->
+    <div class="row g-4 mb-4" id="jobCardsContainer">
+        {% for m in job_matches %}
+            <div class="col-md-6 col-lg-4 job-card-item" data-search="{{ m.job.title }} {{ m.job.company }} {{ m.job.location }} {{ m.matched_skills|join:' ' }} {{ m.missing_skills|join:' ' }}">
+
+                <div class="card h-100 border-0 shadow-sm rounded-4 position-relative {% if m.job.id == top_recommendation_id %}top-recommendation-card{% else %}bg-white{% endif %}">
+                    {% if m.job.id == top_recommendation_id %}
+                        <div class="position-absolute top-0 start-50 translate-middle-x">
+                            <span class="badge top-badge-shimmer shadow-sm px-3 py-1 rounded-pill" style="font-size: 0.75rem;">
+                                <i class="bi bi-star-fill me-1"></i>Top Recommendation
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body p-4 d-flex flex-column pt-4">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border small mb-1">{{ m.job.company }}</span>
+                                <h5 class="fw-bold text-dark mb-1 text-truncate" style="max-width: 220px;">{{ m.job.title }}</h5>
+                                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ m.job.location }}</small>
+                            </div>
+                            <span class="badge {% if m.match_score >= 70 %}bg-success{% elif m.match_score >= 50 %}bg-warning text-dark{% else %}bg-secondary{% endif %} fs-6 rounded-pill px-3">
+                                {{ m.match_score|floatformat:0 }}% Match
+                            </span>
+                        </div>
+
+                        <!-- Match Meter -->
+                        <div class="progress rounded-pill my-2" style="height: 6px;">
+                            <div class="progress-bar {% if m.match_score >= 70 %}bg-success{% elif m.match_score >= 50 %}bg-warning{% else %}bg-secondary{% endif %}" role="progressbar" style="width: {{ m.match_score }}%;"></div>
+                        </div>
+
+                        <!-- Job Description Snippet -->
+                        <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.5;">
+                            {{ m.job.description|truncatewords:20 }}
+                        </p>
+
+                        <!-- Required Skills Breakdown -->
+                        <div class="mb-3">
+                            <small class="text-muted d-block fw-semibold text-uppercase mb-1" style="font-size: 0.7rem;">Key Skill Alignment</small>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for sk in m.matched_skills %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success" style="font-size: 0.7rem;">
+                                        <i class="bi bi-check-lg me-1"></i>{{ sk }}
+                                    </span>
+                                {% endfor %}
+                                {% for ms in m.missing_skills %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning" style="font-size: 0.7rem;">
+                                        <i class="bi bi-dash me-1"></i>{{ ms }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 pt-2 border-top mt-auto">
+                            <button type="button" class="btn btn-primary w-100 rounded-pill btn-sm" onclick="openApplyAssistModal({{ m.job.id }}, '{{ m.job.title|escapejs }}', '{{ m.job.company|escapejs }}')">
+                                <i class="bi bi-stars me-1"></i>Apply Assist
+                            </button>
+                            <a href="{{ m.job.apply_link }}" target="_blank" class="btn btn-outline-secondary rounded-pill btn-sm flex-shrink-0" title="Apply on Portal">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5 bg-white rounded-4 border">
+                <i class="bi bi-briefcase text-muted display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark">No Job Listings Available</h5>
+                <p class="text-muted small mb-0">Check back soon for updated product engineering openings.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Apply Assist Modal -->
+<div class="modal fade" id="applyAssistModal" tabindex="-1" aria-labelledby="applyAssistModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary text-white p-2 rounded-3 fs-5">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold" id="modalJobTitle">AI Apply Assistant</h5>
+                        <small class="text-muted" id="modalCompany">Generating custom application materials...</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body py-4">
+                <!-- Loading State -->
+                <div id="assistLoadingState" class="text-center py-5">
+                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                    <h6 class="fw-bold text-dark">Generating Tailored Cover Letter & Resume Tips...</h6>
+                    <small class="text-muted">Analyzing candidate skills and job requirements using Gemini AI</small>
+                </div>
+
+                <!-- Content State -->
+                <div id="assistContentState" class="d-none">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-pills mb-3" id="assistTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill px-4" id="coverLetterTab" data-bs-toggle="pill" data-bs-target="#coverLetterPane" type="button" role="tab">
+                                <i class="bi bi-file-earmark-text me-1"></i>ATS Cover Letter
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill px-4" id="resumeTipsTab" data-bs-toggle="pill" data-bs-target="#resumeTipsPane" type="button" role="tab">
+                                <i class="bi bi-lightbulb me-1"></i>Resume Tips
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="assistTabsContent">
+                        <!-- Cover Letter Pane -->
+                        <div class="tab-pane fade show active" id="coverLetterPane" role="tabpanel">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <small class="text-muted fw-semibold">Tailored ATS-Optimized Cover Letter</small>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" onclick="copyCoverLetter()">
+                                    <i class="bi bi-clipboard me-1"></i>Copy Text
+                                </button>
+                            </div>
+                            <div class="p-3 bg-light rounded-3 border">
+                                <pre id="coverLetterText" class="mb-0 text-dark" style="font-family: inherit; white-space: pre-wrap; line-height: 1.6; font-size: 0.9rem;"></pre>
+                            </div>
+                        </div>
+
+                        <!-- Resume Tips Pane -->
+                        <div class="tab-pane fade" id="resumeTipsPane" role="tabpanel">
+                            <small class="text-muted fw-semibold d-block mb-2">Job-Specific Resume Improvement Suggestions</small>
+                            <ul class="list-group list-group-flush border-0" id="resumeTipsList">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="modalApplyLink" target="_blank" class="btn btn-success rounded-pill px-4">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Proceed to Application Portal
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const modalEl = new bootstrap.Modal(document.getElementById('applyAssistModal'));
+    const loadingState = document.getElementById('assistLoadingState');
+    const contentState = document.getElementById('assistContentState');
+    const modalJobTitle = document.getElementById('modalJobTitle');
+    const modalCompany = document.getElementById('modalCompany');
+    const coverLetterText = document.getElementById('coverLetterText');
+    const resumeTipsList = document.getElementById('resumeTipsList');
+    const modalApplyLink = document.getElementById('modalApplyLink');
+
+    async function openApplyAssistModal(jobId, jobTitle, company) {
+        modalJobTitle.textContent = jobTitle;
+        modalCompany.textContent = company;
+        
+        loadingState.classList.remove('d-none');
+        contentState.classList.add('d-none');
+        modalEl.show();
+
+        try {
+            const response = await fetch(`/jobs/apply/${jobId}/`);
+            const data = await response.json();
+
+            if (data.success) {
+                coverLetterText.textContent = data.cover_letter;
+                modalApplyLink.href = data.apply_link;
+
+                // Render tips
+                resumeTipsList.innerHTML = '';
+                (data.suggestions || []).forEach(tip => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item border-0 px-0 d-flex align-items-start gap-2';
+                    li.innerHTML = `<i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span class="text-dark small">${escapeHtml(tip)}</span>`;
+                    resumeTipsList.appendChild(li);
+                });
+
+                loadingState.classList.add('d-none');
+                contentState.classList.remove('d-none');
+            } else {
+                alert('Error generating application materials.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to connect to AI server. Please try again.');
+        }
+    }
+
+    function copyCoverLetter() {
+        const text = coverLetterText.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Cover letter copied to clipboard!');
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Real-Time Zero Latency Job Search Filtering
+    const jobSearchInput = document.getElementById('jobSearchInput');
+    const jobCardItems = document.querySelectorAll('.job-card-item');
+    const matchCounterBadge = document.getElementById('matchCounterBadge');
+
+    if (jobSearchInput) {
+        jobSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            jobCardItems.forEach(item => {
+                const searchData = (item.getAttribute('data-search') || '').toLowerCase();
+                if (searchData.includes(query)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (matchCounterBadge) {
+                matchCounterBadge.textContent = `Showing ${visibleCount} Jobs`;
+            }
+        });
+    }
+</script>
+{% endblock %}
+

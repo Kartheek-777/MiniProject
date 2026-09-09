@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Analysis - {{ resume.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb & Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'resume_index' %}">Resumes</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ resume.title }}</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">{{ resume.title }}</h2>
+            <span class="text-secondary small">Uploaded on {{ resume.uploaded_at|date:"F d, Y at H:i" }} • {{ resume.filename }}</span>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            {% if resume.file %}
+                <a href="{{ resume.file.url }}" target="_blank" class="btn btn-outline-secondary">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>View PDF
+                </a>
+            {% endif %}
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteResumeDetailModal">
+                <i class="bi bi-trash me-1"></i>Delete
+            </button>
+            <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom">
+                <i class="bi bi-cloud-arrow-up me-1"></i>Upload Another
+            </a>
+        </div>
+    </div>
+
+    <!-- AI RESUME INSIGHTS SECTION (GEMINI POWERED) -->
+    <div class="card border-0 shadow rounded-4 mb-5 overflow-hidden border-start border-primary border-4">
+        <div class="card-header bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-stars fs-4 text-warning"></i>
+                <h4 class="fw-bold mb-0">AI Resume Insights</h4>
+                <span class="badge bg-primary-subtle text-primary ms-2 fs-6">Gemini Copilot Engine</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                {% if ai_analysis.experience_level %}
+                    <div>
+                        <span class="text-white-50 small me-2">Evaluated Level:</span>
+                        <span class="badge bg-gradient bg-primary fs-6 px-3 py-2 rounded-pill shadow-sm">
+                            <i class="bi bi-award me-1"></i>{{ ai_analysis.experience_level }}
+                        </span>
+                    </div>
+                {% endif %}
+                <a href="{% url 'resume_reanalyze' pk=resume.pk %}" class="btn btn-warning btn-sm fw-semibold">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Re-Analyze with AI
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-4 bg-light-subtle">
+            <div class="row g-4">
+                <!-- AI Strengths Card -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                        <div class="card-header bg-success-subtle text-success border-0 py-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="bi bi-check-circle-fill me-2"></i>Key Technical Strengths
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            {% if ai_analysis.strengths %}
+                                <ul class="list-group list-group-flush small">
+                                    {% for strength in ai_analysis.strengths %}
+                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
+                                            <i class="bi bi-check2 text-success me-2 fw-bold"></i>{{ strength }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-secondary small mb-0">No specific strengths generated.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Weaknesses / Gaps Card -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                        <div class="card-header bg-danger-subtle text-danger border-0 py-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Areas Lacking Depth or Clarity
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            {% if ai_analysis.weaknesses %}
+                                <ul class="list-group list-group-flush small">
+                                    {% for weakness in ai_analysis.weaknesses %}
+                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
+                                            <i class="bi bi-x-circle text-danger me-2"></i>{{ weakness }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-secondary small mb-0">No specific weaknesses identified.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Target Industry Skills Card -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                        <div class="card-header bg-warning-subtle text-dark border-0 py-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="bi bi-shield-slash-fill text-warning me-2"></i>Recommended Missing Target Skills
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            {% if ai_analysis.missing_skills %}
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in ai_analysis.missing_skills %}
+                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-3 py-2 rounded-pill small">
+                                            <i class="bi bi-plus-circle me-1"></i>{{ skill }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-secondary small mb-0">No missing skills flagged.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actionable Suggestions Card -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+                        <div class="card-header bg-info-subtle text-info-emphasis border-0 py-3">
+                            <h6 class="fw-bold mb-0">
+                                <i class="bi bi-lightbulb-fill text-info me-2"></i>Actionable Career Recommendations
+                            </h6>
+                        </div>
+                        <div class="card-body p-3">
+                            {% if ai_analysis.suggestions %}
+                                <ul class="list-group list-group-flush small">
+                                    {% for suggestion in ai_analysis.suggestions %}
+                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
+                                            <i class="bi bi-arrow-right-circle text-info me-2"></i>{{ suggestion }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-secondary small mb-0">No suggestions available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Normalized AI Skills List -->
+                {% if ai_analysis.skills %}
+                    <div class="col-12">
+                        <div class="p-3 bg-white border rounded-3">
+                            <h6 class="fw-bold text-secondary mb-2 small"><i class="bi bi-tags me-1"></i>Normalized AI Extracted Skills Vocabulary:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in ai_analysis.skills %}
+                                    <span class="badge bg-secondary-subtle text-dark border px-2 py-1 small rounded-1">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 3 BASIC PARSER RESULTS SECTION (HYBRID LAYER) -->
+    <h4 class="fw-bold text-dark mb-3"><i class="bi bi-layers me-2 text-secondary"></i>Basic Parser Extraction (Phase 3 Foundation)</h4>
+    <div class="row g-4">
+        <!-- Technical Skills Section -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-code-slash text-primary me-2"></i>Rule-Based Extracted Skills ({{ basic_skills_count }})
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if resume.extracted_skills %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in resume.extracted_skills %}
+                                <span class="badge bg-indigo-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6 fw-medium">
+                                    <i class="bi bi-check-circle-fill me-1 small"></i>{{ skill }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-secondary mb-0">No technical skills detected by rule parser.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-mortarboard text-success me-2"></i>Detected Education Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if resume.extracted_education %}
+                        <ul class="list-group list-group-flush">
+                            {% for item in resume.extracted_education %}
+                                <li class="list-group-item bg-transparent px-0 border-bottom-0 text-secondary">
+                                    <i class="bi bi-dot fs-4 text-success me-1"></i>{{ item }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-secondary mb-0">No explicit education keywords detected.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 bg-white">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-folder-check text-warning me-2"></i>Detected Projects & Experience
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if resume.extracted_projects %}
+                        <ul class="list-group list-group-flush">
+                            {% for proj in resume.extracted_projects %}
+                                <li class="list-group-item bg-transparent px-0 text-secondary">
+                                    <i class="bi bi-arrow-right-short text-warning fs-5 me-1"></i>{{ proj }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-secondary mb-0">No explicit project headers detected.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Raw Text Preview Accordion -->
+        <div class="col-12">
+            <div class="accordion" id="rawTextAccordion">
+                <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header" id="headingRawText">
+                        <button class="accordion-button collapsed fw-bold bg-white text-dark py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRawText" aria-expanded="false" aria-controls="collapseRawText">
+                            <i class="bi bi-file-text me-2"></i>View Extracted Plain Text Preview
+                        </button>
+                    </h2>
+                    <div id="collapseRawText" class="accordion-collapse collapse" aria-labelledby="headingRawText" data-bs-parent="#rawTextAccordion">
+                        <div class="accordion-body bg-light p-4">
+                            <pre class="bg-white p-3 border rounded text-dark font-monospace small" style="white-space: pre-wrap; max-height: 400px; overflow-y: auto;">{{ resume.extracted_text|default:"No text available." }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteResumeDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <form method="POST" action="{% url 'resume_delete' pk=resume.pk %}">
+                {% csrf_token %}
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-danger">
+                        <i class="bi bi-trash me-2"></i>Delete Resume?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-2">
+                    <p class="text-secondary mb-0">
+                        Are you sure you want to delete <strong>{{ resume.title }}</strong>? This action cannot be undone.
+                    </p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">Delete Resume</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

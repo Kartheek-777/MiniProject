@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+
+{% block title %}Weekly Course Roadmap Generator | PlacementCopilot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline-container {
+        position: relative;
+        padding-left: 2.5rem;
+    }
+    .timeline-container::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 1.5rem;
+        bottom: 1.5rem;
+        width: 4px;
+        background: linear-gradient(180deg, #0d6efd 0%, #8b5cf6 50%, #10b981 100%);
+        border-radius: 4px;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -2.5rem;
+        top: 1rem;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+    }
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.08) !important;
+    }
+    .course-pill {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .course-pill:hover {
+        background-color: #0d6efd !important;
+        color: #ffffff !important;
+        border-color: #0d6efd !important;
+        transform: translateY(-1px);
+    }
+    .hero-course-card {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        border: 1px solid rgba(139, 92, 246, 0.35);
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.25);
+    }
+    .active-course-box {
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- TOP HERO SECTION: COURSE GENERATOR & ACTIVE COURSE CARD -->
+    <div class="card border-0 hero-course-card text-white p-4 p-md-5 mb-4 rounded-4">
+        <div class="row align-items-center g-4">
+            <!-- Left Side: Search & Topic Selection -->
+            <div class="col-lg-7">
+                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-1 rounded-pill mb-2 fw-semibold">
+                    <i class="bi bi-cpu me-1"></i>AI Course Architect Engine
+                </span>
+                <h2 class="fw-extrabold text-white mb-2 display-6">What do you want to learn?</h2>
+                <p class="text-white-50 mb-4 fs-6">
+                    Enter any technology, course, or target role. Gemini AI will build a structured <strong>6-Week Learning Roadmap</strong> complete with weekly modules, resources, and hands-on milestones.
+                </p>
+
+                <!-- Course Input Form -->
+                <form method="POST" action="{% url 'dashboard_roadmap' %}" id="courseSearchForm" class="mb-3">
+                    {% csrf_token %}
+                    <div class="input-group input-group-lg bg-white rounded-pill p-1 shadow-lg">
+                        <span class="input-group-text bg-transparent border-0 text-muted ps-3">
+                            <i class="bi bi-search fs-5 text-primary"></i>
+                        </span>
+                        <input type="text" 
+                               name="target_role" 
+                               id="courseTopicInput"
+                               class="form-control border-0 shadow-none fs-6 text-dark py-2" 
+                               placeholder="e.g. Full Stack Python & Django, Docker & DevOps, AI & Machine Learning..." 
+                               value="{{ target_role }}"
+                               required>
+                        <button type="submit" id="btnSubmitCourse" class="btn btn-primary rounded-pill px-4 fw-bold">
+                            <i class="bi bi-rocket-takeoff-fill me-1"></i>Generate Course Roadmap
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Popular Quick-Select Course Pills -->
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="text-white-50 small fw-medium me-1">Popular Topics:</span>
+                    <span class="badge bg-white bg-opacity-10 text-light border border-white border-opacity-20 rounded-pill px-3 py-1.5 small course-pill" data-topic="Full Stack Python & Django">
+                        🐍 Python & Django
+                    </span>
+                    <span class="badge bg-white bg-opacity-10 text-light border border-white border-opacity-20 rounded-pill px-3 py-1.5 small course-pill" data-topic="Docker, Kubernetes & DevOps">
+                        🐋 Docker & DevOps
+                    </span>
+                    <span class="badge bg-white bg-opacity-10 text-light border border-white border-opacity-20 rounded-pill px-3 py-1.5 small course-pill" data-topic="Full-Stack React & Node.js">
+                        ⚛️ React & Node.js
+                    </span>
+                    <span class="badge bg-white bg-opacity-10 text-light border border-white border-opacity-20 rounded-pill px-3 py-1.5 small course-pill" data-topic="AI & Machine Learning Engineering">
+                        🤖 AI & Machine Learning
+                    </span>
+                    <span class="badge bg-white bg-opacity-10 text-light border border-white border-opacity-20 rounded-pill px-3 py-1.5 small course-pill" data-topic="System Design & Cloud Architecture">
+                        🌐 System Design
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right Side: Active Course Info Box -->
+            <div class="col-lg-5">
+                {% if roadmap %}
+                    <div class="p-4 rounded-4 active-course-box">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-uppercase fw-bold text-info tracking-wider">
+                                <i class="bi bi-bookmark-check me-1"></i>Active Course Roadmap
+                            </span>
+                            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-40 px-2.5 py-1 rounded-pill small fw-semibold">
+                                {{ roadmap.difficulty_level|default:"Intermediate" }} Level
+                            </span>
+                        </div>
+
+                        <h4 class="fw-bold text-white mb-2">{{ roadmap.target_role }}</h4>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                            <span class="badge bg-primary bg-opacity-20 text-light border border-primary border-opacity-40 px-2.5 py-1">
+                                <i class="bi bi-calendar3-week me-1"></i>6 Weekly Modules
+                            </span>
+                            <span class="badge bg-light text-dark px-2.5 py-1">
+                                <i class="bi bi-percent me-1"></i>{{ match_score }}% Skill Match
+                            </span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 pt-2 border-top border-white border-opacity-10">
+                            <form method="POST" action="{% url 'dashboard_roadmap' %}" class="w-100 me-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="target_role" value="{{ roadmap.target_role }}">
+                                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill w-100 fw-semibold">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Regenerate Roadmap
+                                </button>
+                            </form>
+
+                            {% if all_roadmaps|length > 1 %}
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-info btn-sm rounded-pill dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown">
+                                        History ({{ all_roadmaps|length }})
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                        {% for r in all_roadmaps %}
+                                            <li>
+                                                <a class="dropdown-item small {% if r.pk == roadmap.pk %}fw-bold text-primary{% endif %}" href="{% url 'career_detail' r.pk %}">
+                                                    {{ r.target_role }} ({{ r.created_at|date:"M d, H:i" }})
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if roadmap %}
+
+        <!-- SKILLS OVERVIEW BAR -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.75rem;">Current Skills Possessed</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for s in roadmap.current_skills %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success">{{ s }}</span>
+                        {% empty %}
+                            <span class="text-muted small">None detected in resume</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.75rem;">Target Course Skill Gaps</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for ms in roadmap.missing_skills %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">{{ ms }}</span>
+                        {% empty %}
+                            <span class="text-muted small">No critical missing skills</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEKLY TIMELINE DISPLAY -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 card-modern">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 border-bottom pb-3">
+                <div>
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-diagram-3 text-primary me-2"></i>Weekly Course Curriculum: {{ roadmap.target_role }}
+                    </h4>
+                    <span class="text-muted small">Structured 6-Week Step-by-Step Learning Progression</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2" style="min-width: 220px;">
+                    <small class="text-muted fw-semibold" style="font-size: 0.75rem;">Completed:</small>
+                    <div class="progress flex-grow-1 rounded-pill" style="height: 10px;">
+                        <div id="roadmapProgressBar" class="progress-bar bg-success rounded-pill" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <span id="roadmapProgressText" class="badge bg-success bg-opacity-10 text-success border border-success">0%</span>
+                </div>
+            </div>
+
+            <div class="timeline-container">
+                {% for phase in roadmap_phases %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot">W{{ forloop.counter }}</div>
+                        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light hover-lift">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                <h5 class="fw-bold text-primary mb-0">{{ phase.phase }}</h5>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-1 rounded-pill">
+                                    <i class="bi bi-clock me-1"></i>Duration: {{ phase.duration }}
+                                </span>
+                            </div>
+
+                            <!-- Skills Grid -->
+                            <div class="mb-3">
+                                <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem;">Weekly Core Modules & Focus Skills</small>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for sk in phase.skills %}
+                                        <div class="form-check form-check-inline bg-white border rounded-pill px-3 py-1 m-0 shadow-sm user-select-none hover-lift">
+                                            <input class="form-check-input skill-checkbox" type="checkbox" id="sk-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" value="{{ sk }}">
+                                            <label class="form-check-label small fw-semibold cursor-pointer text-dark" for="sk-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
+                                                {{ sk }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Resources & Milestone -->
+                            <div class="row g-3 pt-2 border-top">
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block fw-semibold text-uppercase mb-1" style="font-size: 0.7rem;">Recommended Resources</small>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for res in phase.resources %}
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2.5 py-1" style="font-size: 0.75rem;">
+                                                <i class="bi bi-bookmark-star me-1 text-primary"></i>{{ res }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block fw-semibold text-uppercase mb-1" style="font-size: 0.7rem;">Weekly Milestone Project</small>
+                                    <div class="p-2.5 bg-white rounded-3 border border-info border-opacity-40 small text-dark">
+                                        <i class="bi bi-flag-fill text-info me-1.5"></i>{{ phase.milestone }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-warning border-0">
+                        Roadmap data is being synthesized by Gemini AI... Click "Generate Course Roadmap" to refresh.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Empty State Card (No Roadmap Yet) -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center">
+            <div class="bg-primary bg-opacity-10 text-primary p-4 rounded-circle mx-auto mb-3" style="width: 90px; height: 90px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-mortarboard-fill display-4"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">No Course Roadmap Generated Yet</h3>
+            <p class="text-secondary mx-auto mb-4" style="max-width: 550px;">
+                Enter any course topic above (e.g. <em>Full Stack Django</em>, <em>Docker & Kubernetes</em>, <em>Machine Learning</em>) to generate a personalized weekly course curriculum!
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const courseForm = document.getElementById('courseSearchForm');
+    const courseInput = document.getElementById('courseTopicInput');
+    const submitBtn = document.getElementById('btnSubmitCourse');
+
+    if (courseForm) {
+        courseForm.addEventListener('submit', function() {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Generating Course Roadmap...';
+            }
+        });
+    }
+
+    // Quick Select Course Pills
+    document.querySelectorAll('.course-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            const topic = this.getAttribute('data-topic');
+            if (courseInput) {
+                courseInput.value = topic;
+                if (courseForm) {
+                    courseForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                    courseForm.submit();
+                }
+            }
+        });
+    });
+
+    // Real-Time Skill Progress Calculator
+    const checkboxes = document.querySelectorAll('.skill-checkbox');
+    const progressBar = document.getElementById('roadmapProgressBar');
+    const progressText = document.getElementById('roadmapProgressText');
+
+    function updateProgress() {
+        if (!checkboxes || checkboxes.length === 0) return;
+        const total = checkboxes.length;
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const percentage = Math.round((checkedCount / total) * 100);
+
+        if (progressBar) {
+            progressBar.style.width = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+        }
+        if (progressText) {
+            progressText.textContent = percentage + '% Completed';
+        }
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            updateProgress();
+        });
+    });
+});
+</script>
+{% endblock %}

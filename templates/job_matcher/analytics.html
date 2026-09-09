@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+
+{% block title %}Skill Gap Analytics - Placement Copilot{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Banner -->
+    <div class="card border-0 bg-gradient text-white p-4 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-1 rounded-pill">
+                        <i class="bi bi-graph-up me-1"></i>Phase 9 Active
+                    </span>
+                    <span class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-1 rounded-pill">
+                        <i class="bi bi-clock-history me-1"></i>Real-Time DB Signals
+                    </span>
+                </div>
+                <h2 class="fw-bold text-white mb-2">Skill Gap Tracker & Progress Analytics</h2>
+                <p class="text-white-50 mb-0">
+                    Monitor your match score trajectory over time, track acquired skills removed from gap lists, and view Gemini AI progress insights.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <button type="button" id="refreshBtn" class="btn btn-primary rounded-pill px-4 shadow">
+                    <i class="bi bi-arrow-repeat me-1"></i>Refresh Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if not analytics.has_enough_data %}
+        <!-- Not Enough Data Alert Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center mb-4">
+            <div class="bg-warning bg-opacity-10 text-warning p-4 rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-exclamation-triangle-fill display-5"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">Not Enough Tracking Data Yet</h4>
+            <p class="text-secondary mx-auto mb-4" style="max-width: 520px;">
+                You need at least <strong>2 Job Matches</strong> to unlock real-time match score trend line charts and AI progress analysis. Run another job match to start tracking your trajectory!
+            </p>
+            <div>
+                <a href="{% url 'job_match_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm me-2">
+                    <i class="bi bi-plus-circle me-1"></i>Run Job Match
+                </a>
+                <a href="{% url 'job_index' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                    View Matches
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Top KPI Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Improvement Status -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 fs-3">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Progress Status</small>
+                        <h4 class="fw-bold text-dark mb-0" id="kpiStatus">
+                            {{ analytics.ai_insights.improvement|default:"Stable" }}
+                        </h4>
+                        <small class="fw-bold text-success" id="kpiImprovementPct">{{ analytics.improvement_percentage }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Acquired / Removed from Gaps -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 fs-3">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Acquired Skills</small>
+                        <h4 class="fw-bold text-success mb-0" id="kpiAcquiredCount">
+                            {{ analytics.acquired_skills|length }}
+                        </h4>
+                        <small class="text-muted">Removed from gap list</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Weak Skills -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 fs-3">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Missing Skill Gaps</small>
+                        <h4 class="fw-bold text-warning mb-0" id="kpiMissingCount">
+                            {{ analytics.top_missing_skills|length }}
+                        </h4>
+                        <small class="text-muted">Tracked across matches</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strong Skills Count -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-info bg-opacity-10 text-info p-3 rounded-4 fs-3">
+                        <i class="bi bi-patch-check-fill"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Verified Strengths</small>
+                        <h4 class="fw-bold text-info mb-0" id="kpiStrongCount">
+                            {{ analytics.ai_insights.strong_skills|length }}
+                        </h4>
+                        <small class="text-muted">Verified candidate skills</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Line Chart: Match Score Over Time -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="bi bi-activity text-primary me-2"></i>Match Score Trajectory (Time-Series)
+                </h6>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="scoreLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bar Chart: Most Missing Skill Frequency -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="bi bi-bar-chart-line text-warning me-2"></i>Most Frequent Skill Gaps
+                </h6>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="skillsBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights & Recommendations Grid -->
+    <div class="row g-4">
+        <!-- Acquired & Strong Skills Card -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h6 class="fw-bold text-success mb-3">
+                    <i class="bi bi-award-fill me-2"></i>Verified Strengths & Acquired Capabilities
+                </h6>
+                <div class="mb-3">
+                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem;">Skills Removed From Gap List (Acquired)</small>
+                    <div class="d-flex flex-wrap gap-1" id="acquiredSkillsContainer">
+                        {% for s in analytics.acquired_skills %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                <i class="bi bi-check2-all me-1"></i>{{ s }}
+                            </span>
+                        {% empty %}
+                            <span class="text-muted small">No gap skills converted yet.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div>
+                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem;">Core Technical Strengths</small>
+                    <div class="d-flex flex-wrap gap-1" id="strongSkillsContainer">
+                        {% for sk in analytics.ai_insights.strong_skills %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info">{{ sk }}</span>
+                        {% empty %}
+                            <span class="text-muted small">None listed</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Actionable Recommendations -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-robot me-2"></i>Gemini AI Skill Recommendations
+                </h6>
+                <ul class="list-group list-group-flush border-0" id="recommendationsList">
+                    {% for rec in analytics.ai_insights.recommendations %}
+                        <li class="list-group-item border-0 px-0 d-flex align-items-start gap-2">
+                            <i class="bi bi-lightning-charge-fill text-warning flex-shrink-0 mt-1"></i>
+                            <span class="small text-dark fw-medium">{{ rec }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item border-0 px-0 text-muted small">Run more matches for personalized AI recommendations.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let lineChartInstance = null;
+    let barChartInstance = null;
+
+    async function loadSkillAnalytics() {
+        const refreshBtn = document.getElementById('refreshBtn');
+        const origBtnText = refreshBtn.innerHTML;
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Loading...';
+
+        try {
+            const response = await fetch("{% url 'skill_gap_analytics_api' %}");
+            const data = await response.json();
+
+            // Update Line Chart
+            const ctxLine = document.getElementById('scoreLineChart').getContext('2d');
+            if (lineChartInstance) lineChartInstance.destroy();
+
+            lineChartInstance = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: data.dates || [],
+                    datasets: [{
+                        label: 'Match Score (%)',
+                        data: data.scores || [],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#2563eb',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: value => value + '%' }
+                        }
+                    }
+                }
+            });
+
+            // Update Bar Chart
+            const ctxBar = document.getElementById('skillsBarChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            const topSkills = data.top_missing_skills || [];
+            const barLabels = topSkills.map(item => item.skill);
+            const barCounts = topSkills.map(item => item.count);
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: barLabels,
+                    datasets: [{
+                        label: 'Frequency Missing',
+                        data: barCounts,
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+        } catch (err) {
+            console.error('Analytics API Error:', err);
+        } finally {
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = origBtnText;
+        }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadSkillAnalytics);
+
+    // Initial load on page ready
+    document.addEventListener('DOMContentLoaded', loadSkillAnalytics);
+</script>
+{% endblock %}

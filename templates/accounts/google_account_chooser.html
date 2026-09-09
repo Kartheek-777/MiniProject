@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign in with Google - Placement Copilot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .google-chooser-card {
+        max-width: 450px;
+        margin: 2rem auto;
+        border-radius: 1.75rem;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        overflow: hidden;
+    }
+    .google-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #ffffff;
+    }
+    .account-item {
+        transition: background-color 0.15s ease;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f5f9;
+        text-decoration: none !important;
+    }
+    .account-item:last-child {
+        border-bottom: none;
+    }
+    .account-item:hover {
+        background-color: #f8fafc;
+    }
+    .google-logo-header {
+        font-size: 0.95rem;
+        color: #3c4043;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="card google-chooser-card p-4 p-sm-5">
+                <!-- Header with Google G Logo -->
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <svg width="22" height="22" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span class="google-logo-header">Sign in with Google</span>
+                </div>
+
+                <h3 class="fw-bold text-dark mb-1 fs-2">Choose an account</h3>
+                <p class="text-secondary small mb-4">to continue to <strong class="text-primary">PlacementCopilot</strong></p>
+
+                <!-- Accounts List -->
+                <div class="list-group list-group-flush mb-4 rounded-3 border-top">
+                    <!-- Account 1 -->
+                    <form method="post" action="{% url 'google_select_account' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="kartheek777lagisetti@gmail.com">
+                        <input type="hidden" name="full_name" value="Kartheek Lagisetti">
+                        <button type="submit" class="list-group-item list-group-item-action account-item py-3 px-2 d-flex align-items-center gap-3 border-0">
+                            <div class="google-avatar bg-primary">K</div>
+                            <div class="text-start">
+                                <div class="fw-semibold text-dark fs-6 mb-0">Kartheek Lagisetti</div>
+                                <div class="text-muted small">kartheek777lagisetti@gmail.com</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Account 2 -->
+                    <form method="post" action="{% url 'google_select_account' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="kartheeklagisetti174@gmail.com">
+                        <input type="hidden" name="full_name" value="Kartheek">
+                        <button type="submit" class="list-group-item list-group-item-action account-item py-3 px-2 d-flex align-items-center gap-3 border-0">
+                            <div class="google-avatar bg-danger">K</div>
+                            <div class="text-start">
+                                <div class="fw-semibold text-dark fs-6 mb-0">Kartheek</div>
+                                <div class="text-muted small">kartheeklagisetti174@gmail.com</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Account 3 -->
+                    <form method="post" action="{% url 'google_select_account' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="24c45a6604@gmail.com">
+                        <input type="hidden" name="full_name" value="Kartheek Lagisetti">
+                        <button type="submit" class="list-group-item list-group-item-action account-item py-3 px-2 d-flex align-items-center gap-3 border-0">
+                            <div class="google-avatar bg-success">K</div>
+                            <div class="text-start">
+                                <div class="fw-semibold text-dark fs-6 mb-0">Kartheek Lagisetti</div>
+                                <div class="text-muted small">24c45a6604@gmail.com</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Account 4 -->
+                    <form method="post" action="{% url 'google_select_account' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="kartheeklagisetti07@gmail.com">
+                        <input type="hidden" name="full_name" value="Kartheek Lagisetti">
+                        <button type="submit" class="list-group-item list-group-item-action account-item py-3 px-2 d-flex align-items-center gap-3 border-0">
+                            <div class="google-avatar bg-warning text-dark">K</div>
+                            <div class="text-start">
+                                <div class="fw-semibold text-dark fs-6 mb-0">Kartheek Lagisetti</div>
+                                <div class="text-muted small">kartheeklagisetti07@gmail.com</div>
+                            </div>
+                        </button>
+                    </form>
+
+                    <!-- Account 5 -->
+                    <form method="post" action="{% url 'google_select_account' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="inturitharuni1@gmail.com">
+                        <input type="hidden" name="full_name" value="Tharuni Inturi">
+                        <button type="submit" class="list-group-item list-group-item-action account-item py-3 px-2 d-flex align-items-center gap-3 border-0">
+                            <div class="google-avatar bg-info">T</div>
+                            <div class="text-start">
+                                <div class="fw-semibold text-dark fs-6 mb-0">Tharuni Inturi</div>
+                                <div class="text-muted small">inturitharuni1@gmail.com</div>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Custom Email Entry Toggle -->
+                <div class="border-top pt-3">
+                    <button class="btn btn-link text-decoration-none text-secondary p-0 d-flex align-items-center gap-2 small fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#customEmailCollapse">
+                        <i class="bi bi-person-plus-fill fs-6 text-primary"></i>
+                        <span>Use another account</span>
+                    </button>
+
+                    <div class="collapse mt-3" id="customEmailCollapse">
+                        <form method="post" action="{% url 'google_select_account' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-dark">Enter your Google Email</label>
+                                <input type="email" name="email" class="form-control rounded-3" placeholder="user@gmail.com" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                                Continue with Google Email <i class="bi bi-arrow-right-short fs-5"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <a href="{% url 'login' %}" class="text-secondary small text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel and return to login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

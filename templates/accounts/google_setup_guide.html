@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Google OAuth Setup Guide - Placement Copilot{% endblock %}
+
+{% block extra_css %}
+<style>
+    .setup-card {
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+        background: #ffffff;
+    }
+    .setup-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #4338ca 100%);
+    }
+    .code-box {
+        background-color: #1e293b;
+        color: #38bdf8;
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.75rem;
+        font-family: 'Fira Code', 'Courier New', Courier, monospace;
+        font-size: 0.875rem;
+        word-break: break-all;
+    }
+    .step-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #4f46e5;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card setup-card">
+                <!-- Header Banner -->
+                <div class="setup-banner p-4 p-md-5 text-white position-relative">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <svg width="32" height="32" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <h3 class="fw-bold text-white mb-0">Google OAuth Authentication Ready</h3>
+                    </div>
+                    <p class="text-white-50 lead mb-0 fs-6">The Google OAuth 2.0 backend logic & views are fully implemented. To connect with live Google APIs, add your Client Credentials to <code>.env</code>.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    {% if debug_mode %}
+                    <!-- Demo Mode Sandbox Callout -->
+                    <div class="alert alert-primary bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-4 p-4 mb-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="text-primary fs-3"><i class="bi bi-rocket-takeoff-fill"></i></div>
+                            <div>
+                                <h5 class="fw-bold text-primary mb-1">Instant Demo Sign-In Available (Debug Mode)</h5>
+                                <p class="text-dark small mb-3">You can test the complete Google authentication flow right now with a single click in local development mode.</p>
+                                <a href="{% url 'google_demo' %}" class="btn btn-primary shadow-sm rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+                                    <i class="bi bi-box-arrow-in-right fs-5"></i>
+                                    <span>Test Instant Google Sign-In Demo</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-gear-fill text-primary me-2"></i>How to Configure Google Cloud Credentials</h5>
+
+                    <div class="d-flex flex-column gap-4">
+                        <!-- Step 1 -->
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="step-badge flex-shrink-0">1</div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Open Google Cloud Console</h6>
+                                <p class="text-secondary small mb-2">Go to the Credentials page in Google Cloud Console:</p>
+                                <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    Open Google Cloud Console <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="step-badge flex-shrink-0">2</div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Create OAuth 2.0 Client ID</h6>
+                                <p class="text-secondary small mb-2">Click <strong>Create Credentials</strong> &rarr; <strong>OAuth client ID</strong>. Set application type to <strong>Web application</strong>.</p>
+                                <p class="text-secondary small mb-1">Set Authorized Redirect URI to:</p>
+                                <div class="code-box mb-2">{{ redirect_uri }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="step-badge flex-shrink-0">3</div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Update your <code>.env</code> file</h6>
+                                <p class="text-secondary small mb-2">Copy your generated Client ID and Client Secret into the project's <code>.env</code> file:</p>
+                                <div class="code-box mb-2">
+                                    GOOGLE_CLIENT_ID=your_client_id_from_google.apps.googleusercontent.com<br>
+                                    GOOGLE_CLIENT_SECRET=your_client_secret_from_google
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <a href="{% url 'register' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Registration
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary rounded-pill px-4">
+                            Go to Login <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

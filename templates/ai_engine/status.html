@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Engine Status - Placement Copilot{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="icon-wrapper">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">{{ module_name }}</h3>
+                <span class="badge bg-success">Isolated Abstraction Layer Active</span>
+            </div>
+        </div>
+        <p class="text-secondary">{{ status }}</p>
+        <a href="{% url 'dashboard_home' %}" class="btn btn-outline-secondary btn-sm align-self-start">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

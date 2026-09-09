@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Analyzer - Placement Copilot{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border-0 shadow-sm p-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="icon-wrapper">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">Resume Analyzer Module</h3>
+                <span class="badge bg-secondary">Phase 1 Architecture Placeholder</span>
+            </div>
+        </div>
+        <p class="text-secondary">This module handles PDF/DOCX resume file uploads, section parsing, ATS keyword benchmarking, and skill extraction.</p>
+        <div class="alert alert-info border-0 shadow-sm">
+            <i class="bi bi-info-circle me-2"></i>Parsing logic and ATS scoring pipeline will be implemented in subsequent project phases.
+        </div>
+        <a href="{% url 'dashboard_home' %}" class="btn btn-outline-secondary btn-sm align-self-start">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
