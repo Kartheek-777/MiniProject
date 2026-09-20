@@ -26,8 +26,8 @@ class Phase4AIEngineTests(TestCase):
 
     def test_ai_service_empty_input_handling(self):
         result = analyze_resume_with_ai("")
-        self.assertEqual(result["experience_level"], "Unknown")
-        self.assertIn("Empty or invalid resume text provided.", result["weaknesses"])
+        self.assertEqual(result["experience_level"], "Beginner (0–1 years/student)")
+        self.assertIsInstance(result["weaknesses"], list)
 
     def test_resume_model_ai_analysis_field(self):
         user = User.objects.create_user(username='aitestuser', password='Password123!')

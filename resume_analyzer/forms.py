@@ -7,12 +7,6 @@ MAX_FILE_SIZE_MB = 5
 ALLOWED_EXTENSIONS = ['.pdf']
 
 class ResumeUploadForm(forms.ModelForm):
-    title = forms.CharField(
-        max_length=255, 
-        required=False, 
-        initial='Software Engineering Resume',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. SDE Resume 2026'})
-    )
     file = forms.FileField(
         required=True,
         widget=forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf'})
@@ -20,7 +14,7 @@ class ResumeUploadForm(forms.ModelForm):
 
     class Meta:
         model = Resume
-        fields = ['title', 'file']
+        fields = ['file']
 
     def clean_file(self):
         file = self.cleaned_data.get('file')

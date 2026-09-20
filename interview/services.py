@@ -3,30 +3,56 @@ import json
 import re
 from dotenv import load_dotenv
 
-SYSTEM_INTERVIEWER_PROMPT = """
+def get_candidate_resume_context(user) -> str:
+    """
+    Fetches actual uploaded resume for user from resume_analyzer model if available.
+    """
+    try:
+        from resume_analyzer.models import Resume
+        resume = Resume.objects.filter(user=user).order_by('-uploaded_at').first()
+        if resume:
+            skills = ", ".join(resume.extracted_skills) if isinstance(resume.extracted_skills, list) and resume.extracted_skills else "Not explicitly parsed"
+            education = json.dumps(resume.extracted_education) if resume.extracted_education else "Not parsed"
+            projects = json.dumps(resume.extracted_projects) if resume.extracted_projects else "None extracted"
+            text_snippet = (resume.extracted_text[:800] + "...") if resume.extracted_text else ""
+            
+            return f"""
+👤 CANDIDATE RESUME CONTEXT (ATTACHED):
+- Resume Title: {resume.title}
+- Extracted Skills: {skills}
+- Extracted Projects: {projects}
+- Education: {education}
+- Resume Text Excerpt: {text_snippet}
+- NOTE FOR INTERVIEWER: Base project deep-dives & technical questions on these REAL projects/skills from the candidate's uploaded resume!
+"""
+    except Exception:
+        pass
+
+    return """
+👤 CANDIDATE RESUME CONTEXT: NO RESUME UPLOADED
+- NOTE FOR INTERVIEWER: The candidate has NOT uploaded a resume. Ask questions strictly based on general core engineering requirements for the target role. DO NOT invent or reference fake candidate projects (such as 'Resume Analyzer' or 'Job Matcher') unless the candidate explicitly mentions them in their answers.
+"""
+
+
+def build_system_interviewer_prompt(session) -> str:
+    resume_context = get_candidate_resume_context(session.user)
+    return f"""
 You are an elite AI Technical Interview Engine for top-tier product engineering companies.
 
 🎯 ROLE & PERSONA:
-Act as a Senior Software Engineer + AI/ML Interviewer with 8+ years of industry experience.
+Act as a Senior Software Engineer + Technical Interviewer with 8+ years of industry experience.
 Your job is NOT to be overly friendly or give away answers. Your job is to rigorously evaluate, challenge, probe, and test the candidate under professional pressure.
 
-👤 CANDIDATE CONTEXT:
-- Target Role: AI/ML Trainee | Generative AI Fresher
-- Academic Background: B.Tech CSE (AI/ML)
-- Core Skills: Python, SQL, FastAPI, Django, React.js, ML basics
-- Key Projects:
-  1. Resume Analyzer (PDF parsing, skill extraction, ATS compliance)
-  2. Job Matcher (Skill overlap scoring, missing skill breakdown)
-  3. Career Roadmap Copilot (Personalized 3-month AI learning paths)
-- Known Weak Areas: Generative AI (RAG, Fine-tuning, Vector DBs), AWS/Cloud Deployment, NLP, Scalable System Design
-- Experience Level: 0–1 years (Beginner/Fresher)
+🎯 TARGET ROLE: {session.target_role}
+
+{resume_context}
 
 🧠 INTERVIEW PHASES (STRICT PROGRESSION):
 1. HR Screening (Communication, background, intent, "Tell me about yourself")
-2. Core CS Round (DSA, OOP, DBMS, OS fundamentals)
-3. AI/ML + Generative AI Round (Prompt engineering, Zero-shot vs Few-shot, RAG, Embeddings, Tokenization, API vs Fine-tuning)
-4. Project Deep Dive (Resume Analyzer parsing & AI upgrade, Job Matcher semantic matching vs keywords, Career Roadmap personalization)
-5. System Design (Beginner Level: Resume Analyzer system architecture, storage, 10,000 concurrent user scaling)
+2. Core CS Round (DSA, OOP, DBMS, OS fundamentals for {session.target_role})
+3. Technical & Domain Round (Core concepts related to {session.target_role})
+4. Project Deep Dive (Explore candidate's real resume projects or ask about past work experiences if no resume)
+5. System Design (Beginner/Intermediate architecture scaling for {session.target_role})
 6. Final Evaluation Ready
 
 ⚠️ INTERVIEW EXECUTION RULES:
@@ -35,7 +61,7 @@ Your job is NOT to be overly friendly or give away answers. Your job is to rigor
 - If candidate's answer is weak, incomplete, or vague: ask a probing follow-up or ask "WHY?".
 - If candidate's answer is strong: increase difficulty or challenge their technical assumptions.
 - Maintain a professional, sharp, and pressuring interviewer tone.
-- When transitioning to a new phase, explicitly name the round (e.g. "[Phase 3: AI/ML + GenAI]").
+- When transitioning to a new phase, explicitly name the round (e.g. "[Phase 3: Core Technical]").
 """
 
 EVALUATION_SYSTEM_PROMPT = """
@@ -73,6 +99,8 @@ def generate_interviewer_response(session, history_messages, latest_user_input: 
     load_dotenv(override=True)
     api_key = os.getenv('GEMINI_API_KEY', '').strip()
 
+    system_prompt = build_system_interviewer_prompt(session)
+
     # Build conversation context for Gemini
     formatted_history = []
     for msg in history_messages:
@@ -103,43 +131,47 @@ Based on the candidate's latest response and the current interview phase ({sessi
 Return JSON in this format:
 {{
   "response_text": "Your question or probing statement here",
-  "phase": "HR Screening OR Core CS OR AI/ML + GenAI OR Project Deep Dive OR System Design OR Final Evaluation",
+  "phase": "HR Screening OR Core CS OR Technical Round OR Project Deep Dive OR System Design OR Final Evaluation",
   "is_interview_finished": false
 }}
 """
 
+    fallback_res = {
+        "message": f"Thank you for your response. Let's move deeper into your technical background. Could you elaborate on key projects you have built or relevant core skills for {session.target_role}?",
+        "detected_phase": session.current_phase,
+        "is_complete": False
+    }
+
     if not api_key:
         return {
-            "message": "Let's begin with the HR Screening. Tell me about yourself, your background, and why you are targeting an AI/ML Trainee role?",
+            "message": f"Welcome to your AI Technical Mock Interview for the '{session.target_role}' position. Let's begin with Phase 1: HR Screening. Tell me about yourself, your background, and why you are targeting this role?",
             "detected_phase": "HR Screening",
             "is_complete": False
         }
 
     response_text = ""
+    models_to_try = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest']
 
     try:
         from google import genai
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=f"{SYSTEM_INTERVIEWER_PROMPT}\n\n{user_prompt}",
-        )
-        response_text = response.text
+
+        for model_name in models_to_try:
+            try:
+                res = client.models.generate_content(
+                    model=model_name,
+                    contents=f"{system_prompt}\n\n{user_prompt}",
+                )
+                if res and res.text and res.text.strip():
+                    response_text = res.text.strip()
+                    break
+            except Exception:
+                continue
     except Exception:
-        try:
-            from google import genai
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=f"{SYSTEM_INTERVIEWER_PROMPT}\n\n{user_prompt}",
-            )
-            response_text = response.text
-        except Exception as e:
-            return {
-                "message": f"Thank you for your response. Let's move deeper into your technical background. Can you walk me through your Resume Analyzer project and explain how text extraction works internally?",
-                "detected_phase": session.current_phase,
-                "is_complete": False
-            }
+        return fallback_res
+
+    if not response_text:
+        return fallback_res
 
     cleaned = response_text.strip()
     if cleaned.startswith("```"):
@@ -169,6 +201,52 @@ def evaluate_interview_session(session, history_messages) -> dict:
     load_dotenv(override=True)
     api_key = os.getenv('GEMINI_API_KEY', '').strip()
 
+    candidate_msgs = [m for m in history_messages if m.sender == 'candidate' and m.message.strip()]
+
+    # 1. Zero Candidate Responses
+    if not candidate_msgs:
+        return {
+            "rating": "0.0/10",
+            "communication": "Weak",
+            "technical_skill": "Weak",
+            "project_understanding": "Weak",
+            "strengths": [
+                "No candidate responses were recorded during the interview session."
+            ],
+            "weaknesses": [
+                "Candidate ended the interview session without answering any questions.",
+                "Technical competency could not be evaluated due to missing responses."
+            ],
+            "hire_decision": "No Hire",
+            "improvements": [
+                "Actively respond to interview questions using voice dictation or text input.",
+                "Complete the core technical rounds before generating an evaluation scorecard."
+            ]
+        }
+
+    total_candidate_words = sum(len(m.message.strip().split()) for m in candidate_msgs)
+
+    # 2. Insufficient Answers (< 25 words total across candidate messages)
+    if total_candidate_words < 25:
+        return {
+            "rating": "1.5/10",
+            "communication": "Weak",
+            "technical_skill": "Weak",
+            "project_understanding": "Weak",
+            "strengths": [
+                "Candidate initiated the interview session."
+            ],
+            "weaknesses": [
+                "Provided extremely brief responses with insufficient technical depth.",
+                "Did not elaborate on technical concepts or project experience."
+            ],
+            "hire_decision": "No Hire",
+            "improvements": [
+                "Provide detailed, structured technical explanations to interview questions.",
+                "Explain implementation trade-offs, architecture choices, and problem-solving steps."
+            ]
+        }
+
     formatted_history = []
     for msg in history_messages:
         role_label = "Interviewer" if msg.sender == 'interviewer' else "Candidate"
@@ -176,24 +254,26 @@ def evaluate_interview_session(session, history_messages) -> dict:
 
     transcript = "\n".join(formatted_history)
 
+    resume_context = get_candidate_resume_context(session.user)
+
     fallback_eval = {
-        "rating": "6.5/10",
+        "rating": "5.0/10",
         "communication": "Average",
         "technical_skill": "Average",
-        "project_understanding": "Strong",
+        "project_understanding": "Average",
         "strengths": [
-            "Good understanding of Resume Analyzer architecture and Django web flows.",
-            "Clear communication and enthusiasm for AI/ML roles."
+            "Attempted technical questions during the session.",
+            "Demonstrated basic intent to pursue the role."
         ],
         "weaknesses": [
-            "Needs deeper grasp of RAG architecture, vector embeddings, and LLM fine-tuning.",
-            "System design concepts for high-concurrency scaling need improvement."
+            "Needs deeper explanation of technical concepts and system design trade-offs.",
+            "Answers lacked comprehensive detail and architectural structure."
         ],
-        "hire_decision": "Hire",
+        "hire_decision": "No Hire",
         "improvements": [
-            "Master vector databases (FAISS, Pinecone) and embedding similarity metrics (cosine vs dot product).",
-            "Study scalable system design: load balancing, caching (Redis), and async queues (Celery).",
-            "Practice explaining rule-based vs AI parser trade-offs with concrete metrics."
+            "Study core engineering fundamentals and system design patterns.",
+            "Practice articulating technical solutions clearly using structured frameworks.",
+            "Build hands-on projects relevant to the target role."
         ]
     }
 
@@ -203,34 +283,40 @@ def evaluate_interview_session(session, history_messages) -> dict:
     prompt = f"""
 Candidate Target Role: {session.target_role}
 Session Mode: {session.interview_mode}
+{resume_context}
 
 FULL INTERVIEW TRANSCRIPT:
 ---
 {transcript}
 ---
 
-Evaluate the candidate rigorously and return the JSON payload conforming to the exact schema.
+Evaluate the candidate rigorously based ONLY on their actual transcript responses and resume background above. Do NOT invent fake projects.
+Return the JSON payload conforming to the exact schema.
 """
+
+    resp_text = ""
+    models_to_try = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest']
 
     try:
         from google import genai
         client = genai.Client(api_key=api_key)
-        res = client.models.generate_content(
-            model='gemini-3.6-flash',
-            contents=f"{EVALUATION_SYSTEM_PROMPT}\n\n{prompt}"
-        )
-        resp_text = res.text
+
+        for model_name in models_to_try:
+            try:
+                res = client.models.generate_content(
+                    model=model_name,
+                    contents=f"{EVALUATION_SYSTEM_PROMPT}\n\n{prompt}"
+                )
+                if res and res.text and res.text.strip():
+                    resp_text = res.text.strip()
+                    break
+            except Exception:
+                continue
     except Exception:
-        try:
-            from google import genai
-            client = genai.Client(api_key=api_key)
-            res = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=f"{EVALUATION_SYSTEM_PROMPT}\n\n{prompt}"
-            )
-            resp_text = res.text
-        except Exception:
-            return fallback_eval
+        return fallback_eval
+
+    if not resp_text:
+        return fallback_eval
 
     cleaned = resp_text.strip()
     if cleaned.startswith("```"):
@@ -241,13 +327,13 @@ Evaluate the candidate rigorously and return the JSON payload conforming to the 
     try:
         eval_json = json.loads(cleaned)
         return {
-            "rating": eval_json.get("rating", "7/10"),
+            "rating": eval_json.get("rating", "5/10"),
             "communication": eval_json.get("communication", "Average"),
             "technical_skill": eval_json.get("technical_skill", "Average"),
             "project_understanding": eval_json.get("project_understanding", "Average"),
             "strengths": eval_json.get("strengths", ["Demonstrates core technical capabilities."]),
             "weaknesses": eval_json.get("weaknesses", ["Requires further preparation on advanced topics."]),
-            "hire_decision": eval_json.get("hire_decision", "Hire"),
+            "hire_decision": eval_json.get("hire_decision", "No Hire"),
             "improvements": eval_json.get("improvements", ["Continue technical practice and system design study."])
         }
     except Exception:

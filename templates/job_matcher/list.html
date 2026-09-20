@@ -4,16 +4,16 @@
 
 {% block content %}
 <div class="container py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
         <div>
-            <h2 class="fw-bold text-dark mb-1">Job Match History</h2>
+            <h2 class="fw-bold text-white mb-1" style="letter-spacing: -0.02em;">Job Match History</h2>
             <p class="text-secondary mb-0">Track evaluated Job Descriptions, skill match percentages, and fit evaluations</p>
         </div>
         <div class="mt-3 mt-md-0 d-flex gap-2">
-            <a href="{% url 'skill_gap_analytics' %}" class="btn btn-outline-primary rounded-pill">
-                <i class="bi bi-graph-up me-1"></i>Skill Gap Analytics
+            <a href="{% url 'skill_gap_analytics' %}" class="btn btn-outline-emerald rounded-pill px-4">
+                <i class="bi bi-graph-up me-1"></i>Skill Analytics
             </a>
-            <a href="{% url 'job_match_create' %}" class="btn btn-primary-custom">
+            <a href="{% url 'job_match_create' %}" class="btn btn-emerald px-4">
                 <i class="bi bi-plus-circle me-2"></i>Evaluate New Job Match
             </a>
         </div>
@@ -23,34 +23,34 @@
         <div class="row g-4">
             {% for match in matches %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm rounded-3">
+                    <div class="card h-100 border-0 rounded-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
                         <div class="card-body p-4 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <h5 class="fw-bold mb-1 text-dark">{{ match.job_title }}</h5>
+                                    <h5 class="fw-bold mb-1 text-white">{{ match.job_title }}</h5>
                                     <span class="text-secondary small"><i class="bi bi-building me-1"></i>{{ match.company_name|default:"Target Company" }}</span>
                                 </div>
-                                <span class="badge {% if match.match_score >= 70 %}bg-success{% elif match.match_score >= 40 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-2 rounded-pill">
+                                <span class="badge fs-6 px-3 py-1.5 rounded-pill" style="{% if match.match_score >= 70 %}background: rgba(0, 194, 136, 0.2); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);{% elif match.match_score >= 40 %}background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);{% else %}background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);{% endif %}">
                                     {{ match.match_score }}% Match
                                 </span>
                             </div>
 
-                            <div class="bg-light p-3 rounded-2 mb-3 small flex-grow-1">
+                            <div class="p-3 rounded-3 mb-3 small flex-grow-1" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.06);">
                                 <div class="mb-2 d-flex justify-content-between">
                                     <span class="text-secondary">Evaluated Fit:</span>
-                                    <strong class="text-primary">{{ match.fit_level }}</strong>
+                                    <strong style="color: #00c288;">{{ match.fit_level }}</strong>
                                 </div>
                                 <div class="mb-1">
                                     <span class="text-secondary">Matched Skills:</span> 
-                                    <span class="badge bg-success-subtle text-success ms-1">{{ match.matched_skills|length }}</span>
+                                    <span class="badge ms-1" style="background: rgba(0, 194, 136, 0.15); color: #00c288;">{{ match.matched_skills|length }}</span>
                                 </div>
                                 <div>
                                     <span class="text-secondary">Missing Skills:</span> 
-                                    <span class="badge bg-warning-subtle text-dark ms-1">{{ match.missing_skills|length }}</span>
+                                    <span class="badge ms-1" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">{{ match.missing_skills|length }}</span>
                                 </div>
                             </div>
 
-                            <a href="{% url 'job_match_detail' pk=match.pk %}" class="btn btn-outline-primary w-100 rounded-2">
+                            <a href="{% url 'job_match_detail' pk=match.pk %}" class="btn btn-outline-emerald w-100 rounded-3">
                                 View Full Analysis <i class="bi bi-arrow-right ms-1"></i>
                             </a>
                         </div>
@@ -59,13 +59,13 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center py-5 bg-white rounded-4 border">
-            <div class="icon-wrapper mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem;">
+        <div class="text-center py-5 rounded-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+            <div class="mx-auto mb-3" style="width: 64px; height: 64px; background: rgba(0, 194, 136, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00c288; font-size: 1.75rem;">
                 <i class="bi bi-briefcase"></i>
             </div>
-            <h4 class="fw-bold mb-2">No Job Matches Evaluated Yet</h4>
+            <h4 class="fw-bold text-white mb-2">No Job Matches Evaluated Yet</h4>
             <p class="text-secondary mb-4">Paste a target Job Description to compare against your uploaded resume skills.</p>
-            <a href="{% url 'job_match_create' %}" class="btn btn-primary-custom">
+            <a href="{% url 'job_match_create' %}" class="btn btn-emerald px-4">
                 <i class="bi bi-plus-circle me-2"></i>Evaluate Your First Job Match
             </a>
         </div>

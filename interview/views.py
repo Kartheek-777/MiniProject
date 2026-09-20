@@ -13,9 +13,18 @@ from .services import generate_interviewer_response, evaluate_interview_session
 def index(request):
     sessions = MockInterviewSession.objects.filter(user=request.user).order_by('-started_at')
     form = StartInterviewForm()
+    
+    active_resume = None
+    try:
+        from resume_analyzer.models import Resume
+        active_resume = Resume.objects.filter(user=request.user).order_by('-uploaded_at').first()
+    except Exception:
+        pass
+
     return render(request, 'interview/index.html', {
         'sessions': sessions,
-        'form': form
+        'form': form,
+        'active_resume': active_resume
     })
 
 @login_required
@@ -49,10 +58,18 @@ def interview_room(request, pk):
     if session.status == 'completed':
         return redirect('interview_scorecard', pk=session.pk)
 
+    active_resume = None
+    try:
+        from resume_analyzer.models import Resume
+        active_resume = Resume.objects.filter(user=request.user).order_by('-uploaded_at').first()
+    except Exception:
+        pass
+
     chat_messages = session.messages.all()
     return render(request, 'interview/room.html', {
         'session': session,
-        'chat_messages': chat_messages
+        'chat_messages': chat_messages,
+        'active_resume': active_resume
     })
 
 @login_required

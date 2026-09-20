@@ -1,82 +1,805 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - AI Placement Copilot{% endblock %}
+{% block title %}PlacementCopilot - Enterprise AI Career Intelligence System{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container text-center py-5">
-        <span class="badge bg-indigo-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium mb-3">
-            <i class="bi bi-stars me-1"></i> Placement Intelligence Platform
+<!-- Hero Section (Obsidian Emerald Theme) -->
+<section class="py-5 overflow-hidden" style="background: radial-gradient(circle at 80% 20%, rgba(0, 194, 136, 0.08) 0%, transparent 60%);">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-5">
+            <!-- Hero Left Text Column -->
+            <div class="col-lg-6">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-dark border border-secondary border-opacity-25 mb-4 shadow-sm">
+                    <span class="live-pulse-dot"></span>
+                    <span class="text-slate-300 small fw-semibold">Real-Time AI Placement Intelligence Engine</span>
+                </div>
+
+                <h1 class="display-3 fw-extrabold text-white mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+                    Crack Interviews.<br>
+                    Build Skills.<br>
+                    <span class="text-emerald">Get Placed.</span>
+                </h1>
+
+                <p class="lead text-slate-400 mb-4" style="font-size: 1.1rem; line-height: 1.6;">
+                    PlacementCopilot unifies PDF Resume Parsing, ATS Keyword Job Matching, Personalized Learning Roadmaps, and Google Meet AI Video Mock Interviews into one seamless platform for engineering students.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'interview_index' %}" class="btn btn-primary-custom btn-lg fs-6 px-4">
+                            Start Free AI Interview <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a href="{% url 'dashboard_home' %}" class="btn btn-outline-emerald btn-lg fs-6 px-4">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg fs-6 px-4">
+                            Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-emerald btn-lg fs-6 px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex align-items-center gap-4 text-slate-400 small pt-2">
+                    <span><i class="bi bi-check-circle-fill text-emerald me-1.5"></i>Free for Engineering Students</span>
+                    <span><i class="bi bi-check-circle-fill text-emerald me-1.5"></i>Powered by Gemini AI</span>
+                </div>
+            </div>
+
+            <!-- Hero Right Live Engine Preview Card -->
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <!-- Floating Badge Tag -->
+                    <div class="position-absolute top-0 start-0 translate-middle-y bg-dark border border-secondary border-opacity-25 rounded-pill px-3 py-2 text-emerald shadow-lg z-3 d-flex align-items-center gap-2" style="margin-left: 20px;">
+                        <span class="spinner-grow spinner-grow-sm text-emerald"></span>
+                        <span class="small fw-bold">Gemini 3.6 Engine Active</span>
+                    </div>
+
+                    <!-- Main App Window Frame -->
+                    <div class="card bg-slate-900 border-secondary border-opacity-25 rounded-4 shadow-2xl p-4 overflow-hidden" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <!-- Window Header -->
+                        <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="rounded-circle bg-danger d-inline-block" style="width: 10px; height: 10px;"></span>
+                                <span class="rounded-circle bg-warning d-inline-block" style="width: 10px; height: 10px;"></span>
+                                <span class="rounded-circle bg-success d-inline-block" style="width: 10px; height: 10px;"></span>
+                            </div>
+                            <div class="bg-dark px-3 py-1 rounded-pill text-slate-400 font-monospace small border border-secondary border-opacity-25" style="font-size: 0.75rem;">
+                                app.placementcopilot.ai/dashboard
+                            </div>
+                            <span class="badge bg-emerald text-dark fw-bold px-2.5 py-1">Active</span>
+                        </div>
+
+                        <!-- Card Body Grid -->
+                        <div class="row align-items-center g-4">
+                            <!-- Left: Score Ring -->
+                            <div class="col-sm-5 text-center">
+                                <div class="position-relative d-inline-flex align-items-center justify-content-center p-3 rounded-circle" style="background: rgba(0, 194, 136, 0.08); width: 140px; height: 140px; border: 3px solid #00c288;">
+                                    <div>
+                                        <div class="display-5 fw-extrabold text-white mb-0">85%</div>
+                                        <small class="text-emerald fw-bold">MATCH SCORE</small>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-slate-300 fw-semibold small">PLACEMENT READINESS</div>
+                            </div>
+
+                            <!-- Right: Modules Overview -->
+                            <div class="col-sm-7">
+                                <h6 class="text-slate-400 text-uppercase fw-bold letter-spacing small mb-3">Core Platform Modules</h6>
+                                <div class="d-flex flex-column gap-2.5" style="font-size: 0.85rem;">
+                                    <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50">
+                                        <span class="text-slate-300"><i class="bi bi-file-earmark-text text-emerald me-2"></i>Resume Parsing</span>
+                                        <span class="badge bg-success bg-opacity-25 text-emerald">ATS Ready</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50">
+                                        <span class="text-slate-300"><i class="bi bi-briefcase text-emerald me-2"></i>Job Description Matcher</span>
+                                        <span class="badge bg-success bg-opacity-25 text-emerald">Active</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50">
+                                        <span class="text-slate-300"><i class="bi bi-camera-video text-emerald me-2"></i>Meet AI Mock Interview</span>
+                                        <span class="badge bg-success bg-opacity-25 text-emerald">Live Call</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PlacementCopilot 5-Step Process Timeline -->
+<section id="pipeline" class="py-5" style="background: #080c14;">
+    <div class="container py-4 text-center">
+        <span class="badge bg-dark border border-emerald text-emerald rounded-pill px-3 py-2 mb-3 small fw-semibold">
+            ✨ PLACEMENT PIPELINE
         </span>
-        <h1 class="display-4 fw-bold text-dark mb-3">
-            Accelerate Your Engineering Career with <span class="brand-gradient">PlacementCopilot</span>
-        </h1>
-        <p class="lead text-secondary mx-auto mb-4" style="max-width: 720px;">
-            Analyze your resume against top tech job descriptions, pinpoint critical skill gaps, construct targeted learning roadmaps, and excel in technical & HR interviews.
+        <h2 class="display-5 fw-bold text-white mb-2">
+            Your Path to <span class="text-emerald">Campus & Off-Campus Success</span>
+        </h2>
+        <p class="text-slate-400 mx-auto mb-5" style="max-width: 600px;">
+            A structured 5-step intelligence workflow built specifically for engineering candidates.
         </p>
-        <div class="d-flex justify-content-center gap-3">
+
+        <!-- Interactive Vertical Timeline -->
+        <div class="prepfree-timeline-wrapper">
+            <div class="prepfree-timeline-line"></div>
+
+            <!-- Step 01 -->
+            <div class="prepfree-step-row left">
+                <div class="prepfree-step-card text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-emerald font-monospace fw-bold small">STEP 01 • Candidate Credentials</span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Profile & Academic Setup</h4>
+                    <p class="text-slate-400 small mb-3">Set up your candidate account with your college, degree, engineering branch (CSE, ECE, EEE, IT), CGPA, and target role.</p>
+                    <a href="{% url 'profile' %}" class="badge bg-dark text-emerald border border-emerald border-opacity-50 rounded-pill px-2.5 py-1 small text-decoration-none">
+                        <i class="bi bi-person-badge me-1"></i>Configure Profile
+                    </a>
+                </div>
+                <div class="prepfree-node active">
+                    <i class="bi bi-person-fill fs-5"></i>
+                </div>
+            </div>
+
+            <!-- Step 02 -->
+            <div class="prepfree-step-row right">
+                <div class="prepfree-node">
+                    <i class="bi bi-file-earmark-arrow-up-fill fs-5"></i>
+                </div>
+                <div class="prepfree-step-card text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-emerald font-monospace fw-bold small">STEP 02 • PyMuPDF & Gemini Analysis</span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Resume Upload & ATS Parsing</h4>
+                    <p class="text-slate-400 small mb-3">Upload your PDF resume to automatically extract technical skills, contact info, education entries, and project experience.</p>
+                    <a href="{% url 'resume_index' %}" class="badge bg-dark text-emerald border border-emerald border-opacity-50 rounded-pill px-2.5 py-1 small text-decoration-none">
+                        <i class="bi bi-cloud-arrow-up me-1"></i>Upload PDF Resume
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 03 -->
+            <div class="prepfree-step-row left">
+                <div class="prepfree-step-card text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-emerald font-monospace fw-bold small">STEP 03 • Keyword & Skill Overlap</span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Job Description Matching</h4>
+                    <p class="text-slate-400 small mb-3">Paste target job descriptions to compute skill overlap percentage and generate customized AI cover letters and auto-apply responses.</p>
+                    <a href="{% url 'job_index' %}" class="badge bg-dark text-emerald border border-emerald border-opacity-50 rounded-pill px-2.5 py-1 small text-decoration-none">
+                        <i class="bi bi-briefcase me-1"></i>Match Job Description
+                    </a>
+                </div>
+                <div class="prepfree-node active">
+                    <i class="bi bi-bullseye fs-5"></i>
+                </div>
+            </div>
+
+            <!-- Step 04 -->
+            <div class="prepfree-step-row right">
+                <div class="prepfree-node">
+                    <i class="bi bi-camera-video-fill fs-5"></i>
+                </div>
+                <div class="prepfree-step-card text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-emerald font-monospace fw-bold small">STEP 04 • Web Speech & Voice AI</span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Google Meet AI Video Mock Interview</h4>
+                    <p class="text-slate-400 small mb-3">Practice live video & audio interviews with webcam preview, AI voice speaking, speech dictation, and structured scorecard evaluation.</p>
+                    <a href="{% url 'interview_index' %}" class="badge bg-dark text-emerald border border-emerald border-opacity-50 rounded-pill px-2.5 py-1 small text-decoration-none">
+                        <i class="bi bi-mic me-1"></i>Launch Mock Interview
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 05 -->
+            <div class="prepfree-step-row left">
+                <div class="prepfree-step-card text-start">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-emerald font-monospace fw-bold small">STEP 05 • 3-Month Actionable Plan</span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Skill Gap Analytics & Roadmap</h4>
+                    <p class="text-slate-400 small mb-3">Review identified technical skill gaps and generate a 3-month week-by-week learning roadmap customized to your target engineering role.</p>
+                    <a href="{% url 'dashboard_roadmap' %}" class="badge bg-dark text-emerald border border-emerald border-opacity-50 rounded-pill px-2.5 py-1 small text-decoration-none">
+                        <i class="bi bi-signpost-split me-1"></i>View Learning Roadmap
+                    </a>
+                </div>
+                <div class="prepfree-node active">
+                    <i class="bi bi-trophy-fill fs-5"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-4">
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard_home' %}" class="btn btn-primary-custom btn-lg shadow-sm">
-                    <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                <a href="{% url 'dashboard_home' %}" class="btn btn-primary-custom btn-lg px-5">
+                    Go to Candidate Dashboard <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             {% else %}
-                <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg shadow-sm">
-                    Get Started Free <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-                <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">
-                    Log In
+                <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg px-5">
+                    Start Your Placement Journey <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             {% endif %}
         </div>
     </div>
 </section>
 
-<!-- Core Features Section -->
-<section class="py-5 bg-white">
-    <div class="container">
+<!-- PlacementCopilot Core Features Grid -->
+<section class="py-5" style="background: #0b1017; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+    <div class="container py-4">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Designed for Engineering Students</h2>
-            <p class="text-secondary">Modular, end-to-end placement intelligence pipeline</p>
+            <span class="badge bg-dark border border-emerald text-emerald rounded-pill px-3 py-2 mb-3 small fw-semibold">
+                ✨ PLATFORM MODULES
+            </span>
+            <h2 class="display-5 fw-bold text-white mb-2">
+                Everything You Need for <span class="text-emerald">Tech Placements</span>
+            </h2>
+            <p class="text-slate-400 mx-auto" style="max-width: 600px;">
+                Integrated AI tools built to take you from resume upload to interview scorecard.
+            </p>
         </div>
+
         <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 bg-white">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-file-earmark-text"></i>
+            <!-- Module 1: Resume Analyzer -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'resume_index' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Resume Analyzer</h5>
+                        <p class="text-slate-400 small mb-0">PDF text extraction, ATS skill matching, and AI feedback parsing.</p>
                     </div>
-                    <h5 class="fw-bold">Resume Analyzer</h5>
-                    <p class="text-secondary small">Evaluate ATS compliance, extract key skills, and benchmark against top engineering roles.</p>
+                </a>
+            </div>
+
+            <!-- Module 2: Job Matcher -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'job_index' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-briefcase-fill"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Job Description Matcher</h5>
+                        <p class="text-slate-400 small mb-0">Benchmark your skills against job postings and identify missing technical keywords.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Module 3: AI Auto-Apply Assistant -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'job_auto_apply' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-stars"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">AI Auto-Apply Assistant</h5>
+                        <p class="text-slate-400 small mb-0">Generate custom cover letters and answers tailored to specific job applications.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Module 4: Google Meet AI Interview -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'interview_index' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-camera-video-fill"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Google Meet AI Interview Room</h5>
+                        <p class="text-slate-400 small mb-0">Interactive video & audio mock interviews with live webcam preview and TTS/STT.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Module 5: Skill Gap Analytics -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'skill_gap_analytics' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Skill Gap Analytics</h5>
+                        <p class="text-slate-400 small mb-0">Comprehensive radar breakdown of core technical skills and areas needing improvement.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Module 6: Personalized Roadmaps -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'dashboard_roadmap' %}" class="text-decoration-none">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25 hover-lift" style="background: #0f1724;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="icon-wrapper">
+                                <i class="bi bi-signpost-split-fill"></i>
+                            </div>
+                            <i class="bi bi-arrow-up-right text-slate-400 fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Career Roadmaps</h5>
+                        <p class="text-slate-400 small mb-0">Personalized 3-month week-by-week learning paths customized to your target role.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PlacementCopilot for Universities Section (Obsidian Emerald Design matching Pic 2) -->
+<section id="universities" class="py-5 overflow-hidden position-relative" style="background: #080c14; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+    <!-- Soft Ambient Radial Glow behind the right card -->
+    <div class="position-absolute top-50 end-0 translate-middle-y rounded-circle pointer-events-none" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 194, 136, 0.12) 0%, rgba(0, 194, 136, 0.02) 50%, transparent 70%); filter: blur(60px); z-index: 1;"></div>
+
+    <div class="container py-lg-4 position-relative z-2">
+        <div class="row align-items-center g-5">
+            <!-- Left Text Column -->
+            <div class="col-lg-6">
+                <!-- Pill Badge -->
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-4 shadow-sm" style="background: rgba(0, 194, 136, 0.08); border: 1px solid rgba(0, 194, 136, 0.25);">
+                    <i class="bi bi-stars text-emerald" style="font-size: 0.85rem;"></i>
+                    <span class="text-emerald small fw-semibold" style="font-size: 0.82rem;">PlacementCopilot for Universities</span>
+                </div>
+
+                <!-- Main Display Headline -->
+                <h2 class="display-4 fw-extrabold text-white mb-3" style="letter-spacing: -1.2px; line-height: 1.15; font-size: 3.2rem;">
+                    The AI Placement<br>
+                    <span style="background: linear-gradient(135deg, #00c288 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Operating System</span><br>
+                    for universities.
+                </h2>
+
+                <!-- Subtitle Paragraph -->
+                <p class="lead text-slate-400 mb-4" style="font-size: 1.05rem; line-height: 1.65; max-width: 520px; color: #94a3b8 !important;">
+                    Assess students, track readiness, optimize resumes, run AI mock interviews, connect employers, and lift placement outcomes — all in one cell-grade platform.
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap align-items-center gap-3 pt-1">
+                    <a href="#enquiryForm" class="btn btn-primary-custom px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2" style="border-radius: 10px; font-size: 0.95rem;">
+                        Book University Demo <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a href="#enquiryForm" class="btn btn-outline-light px-4 py-2.5 fw-semibold text-white border-secondary border-opacity-40 hover-bg-dark" style="border-radius: 10px; font-size: 0.95rem; background: rgba(255, 255, 255, 0.03);">
+                        Explore Partnership
+                    </a>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 bg-white">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-briefcase"></i>
+
+            <!-- Right Live Cohort Dashboard Window Card -->
+            <div class="col-lg-6">
+                <div class="card p-4 rounded-4 shadow-2xl border-secondary border-opacity-25" style="background: #0d1422; border: 1px solid rgba(255, 255, 255, 0.09) !important; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 194, 136, 0.08) !important;">
+                    <!-- Window Header -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-20">
+                        <div>
+                            <span class="text-slate-400 small fw-medium font-monospace" style="color: #94a3b8; font-size: 0.85rem;">Placement Cell • 2026 Cohort</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill" style="background: rgba(0, 194, 136, 0.1); border: 1px solid rgba(0, 194, 136, 0.3);">
+                            <span class="live-pulse-dot" style="width: 7px; height: 7px;"></span>
+                            <span class="text-emerald fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">LIVE</span>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">Job Matcher</h5>
-                    <p class="text-secondary small">Compare your skills directly with active Job Descriptions to discover missing technical keywords.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 bg-white">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-signpost-split"></i>
+
+                    <!-- 3 Inset Stat Boxes Grid -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-4 text-center">
+                            <div class="p-3 rounded-3" style="background: #111827; border: 1px solid rgba(255, 255, 255, 0.05);">
+                                <div class="fs-4 fw-extrabold text-emerald mb-0" style="color: #00c288 !important; font-size: 1.45rem;">2,418</div>
+                                <div class="text-slate-400 fw-bold letter-spacing mt-1" style="font-size: 0.62rem; color: #94a3b8; letter-spacing: 0.8px;">STUDENTS</div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="p-3 rounded-3" style="background: #111827; border: 1px solid rgba(255, 255, 255, 0.05);">
+                                <div class="fs-4 fw-extrabold text-emerald mb-0" style="color: #00c288 !important; font-size: 1.45rem;">67%</div>
+                                <div class="text-slate-400 fw-bold letter-spacing mt-1" style="font-size: 0.62rem; color: #94a3b8; letter-spacing: 0.8px;">HIRE-READY</div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div class="p-3 rounded-3" style="background: #111827; border: 1px solid rgba(255, 255, 255, 0.05);">
+                                <div class="fs-4 fw-extrabold text-emerald mb-0" style="color: #00c288 !important; font-size: 1.45rem;">78</div>
+                                <div class="text-slate-400 fw-bold letter-spacing mt-1" style="font-size: 0.62rem; color: #94a3b8; letter-spacing: 0.8px;">AVG SCORE</div>
+                            </div>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">Career Roadmaps</h5>
-                    <p class="text-secondary small">Structured learning paths tailored to engineering domain specializations (CSE, ECE, EEE, IT).</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 bg-white">
-                    <div class="icon-wrapper mb-3">
-                        <i class="bi bi-mic"></i>
+
+                    <!-- Readiness Curve Section with Mini Vertical Bar Graph (Pic 2 exact match) -->
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between small mb-2" style="color: #94a3b8;">
+                            <span class="fw-medium font-monospace" style="font-size: 0.82rem;">Readiness curve</span>
+                            <i class="bi bi-bar-chart-line text-emerald fs-6"></i>
+                        </div>
+
+                        <!-- Mini 3D Vertical Bar Chart Graphic -->
+                        <div class="d-flex align-items-end justify-content-between gap-1 mb-4 p-2 rounded-3" style="height: 48px; background: rgba(0, 0, 0, 0.25);">
+                            <div class="rounded-top" style="width: 7%; height: 25%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 35%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 45%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 50%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 65%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 60%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 75%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 82%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 88%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 94%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                            <div class="rounded-top" style="width: 7%; height: 100%; background: linear-gradient(180deg, #00c288 0%, rgba(0, 194, 136, 0.2) 100%);"></div>
+                        </div>
+
+                        <!-- Cohort Progress Bar Rows -->
+                        <div class="d-flex flex-column gap-3">
+                            <!-- CSE 2026 -->
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center small mb-1.5">
+                                    <span>
+                                        <strong class="text-white fw-bold font-monospace" style="font-size: 0.85rem;">CSE 2026</strong>
+                                        <span class="font-monospace ms-3" style="color: #64748b; font-size: 0.78rem;">412</span>
+                                    </span>
+                                    <span class="fw-bold" style="color: #00c288; font-size: 0.85rem;">84%</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: #111827; border-radius: 4px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 84%; background: linear-gradient(90deg, #00c288 0%, #059669 100%); border-radius: 4px;" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+
+                            <!-- ECE 2026 -->
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center small mb-1.5">
+                                    <span>
+                                        <strong class="text-white fw-bold font-monospace" style="font-size: 0.85rem;">ECE 2026</strong>
+                                        <span class="font-monospace ms-3" style="color: #64748b; font-size: 0.78rem;">318</span>
+                                    </span>
+                                    <span class="fw-bold" style="color: #00c288; font-size: 0.85rem;">71%</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: #111827; border-radius: 4px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 71%; background: linear-gradient(90deg, #00c288 0%, #059669 100%); border-radius: 4px;" aria-valuenow="71" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+
+                            <!-- MBA 2026 -->
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center small mb-1.5">
+                                    <span>
+                                        <strong class="text-white fw-bold font-monospace" style="font-size: 0.85rem;">MBA 2026</strong>
+                                        <span class="font-monospace ms-3" style="color: #64748b; font-size: 0.78rem;">196</span>
+                                    </span>
+                                    <span class="fw-bold" style="color: #00c288; font-size: 0.85rem;">62%</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: #111827; border-radius: 4px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 62%; background: linear-gradient(90deg, #00c288 0%, #059669 100%); border-radius: 4px;" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">Mock Interviews</h5>
-                    <p class="text-secondary small">Simulate technical data structures, core subjects, and behavioral HR interview rounds.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
+
+<!-- About PlacementCopilot Section -->
+<section id="about-us" class="py-5 text-center" style="background: #080c14; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+    <div class="container py-lg-4">
+        <!-- Section Header -->
+        <span class="badge bg-dark border border-emerald text-emerald rounded-pill px-3 py-2 mb-3 small fw-semibold">
+            ✨ ABOUT PLACEMENTCOPILOT
+        </span>
+        <h2 class="display-4 fw-extrabold text-white mb-3" style="letter-spacing: -1px;">
+            Building India's <span class="text-emerald">AI-Powered Career Readiness Network</span>
+        </h2>
+        <p class="lead text-slate-400 mx-auto mb-5" style="max-width: 720px; font-size: 1.1rem; line-height: 1.6;">
+            PlacementCopilot is an AI-powered employability platform — helping students, universities, and employers connect through verified career readiness data.
+        </p>
+
+        <!-- Mission & Problem Cards -->
+        <div class="row g-4 mb-5 text-start">
+            <!-- Our Mission Card -->
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border-secondary border-opacity-25" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+                    <h3 class="fw-bold text-white mb-3">Our mission</h3>
+                    <p class="text-slate-400 lead fs-6 mb-0" style="line-height: 1.65;">
+                        Make career readiness measurable, verifiable, and accessible to every Indian student — regardless of college tier, location, or background. One score. One platform. Real outcomes.
+                    </p>
+                </div>
+            </div>
+
+            <!-- The Problem We Solve Card -->
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border-secondary border-opacity-25" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <h3 class="fw-bold text-white mb-3">The problem we solve</h3>
+                    <p class="text-slate-400 lead fs-6 mb-0" style="line-height: 1.65;">
+                        Students don't know if they're ready. Placement cells run on spreadsheets. Recruiters can't trust resumes. PlacementCopilot fixes this with one verified readiness signal everyone can act on.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Ecosystem Section -->
+        <div class="py-4">
+            <h3 class="display-6 fw-bold text-white mb-2">The PlacementCopilot ecosystem</h3>
+            <p class="text-slate-400 mb-5">Three sides of the same network. One source of truth.</p>
+
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25" style="background: #0f1724;">
+                        <div class="icon-wrapper mb-3" style="width: 42px; height: 42px;">
+                            <i class="bi bi-mortarboard-fill fs-5"></i>
+                        </div>
+                        <h4 class="fw-bold text-white mb-2">Students</h4>
+                        <p class="text-slate-400 small mb-0" style="line-height: 1.6;">
+                            Free AI mock interviews, ATS resume scoring, role-fit assessments and a verifiable PlacementCopilot Score.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25" style="background: #0f1724;">
+                        <div class="icon-wrapper mb-3" style="width: 42px; height: 42px;">
+                            <i class="bi bi-building-fill fs-5"></i>
+                        </div>
+                        <h4 class="fw-bold text-white mb-2">Universities</h4>
+                        <p class="text-slate-400 small mb-0" style="line-height: 1.6;">
+                            Placement-cell OS with cohort dashboards, readiness analytics and recruiter pipelines.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 p-4 border-secondary border-opacity-25" style="background: #0f1724;">
+                        <div class="icon-wrapper mb-3" style="width: 42px; height: 42px;">
+                            <i class="bi bi-people-fill fs-5"></i>
+                        </div>
+                        <h4 class="fw-bold text-white mb-2">Employers</h4>
+                        <p class="text-slate-400 small mb-0" style="line-height: 1.6;">
+                            Verified candidate pool with AI Interview transcripts and 1-click ATS export.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact in Numbers Row -->
+        <div class="pt-5">
+            <h3 class="display-6 fw-bold text-white mb-2">Our impact, in numbers</h3>
+            <p class="text-slate-400 mb-5">Built quietly. Trusted broadly.</p>
+
+            <div class="row row-cols-2 row-cols-md-5 g-3">
+                <div class="col">
+                    <div class="card p-3.5 border-secondary border-opacity-25 text-center" style="background: #0f1724;">
+                        <div class="fs-3 fw-extrabold text-emerald mb-1">100K+</div>
+                        <small class="text-slate-400 fw-bold letter-spacing" style="font-size: 0.65rem;">STUDENTS TRAINED</small>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card p-3.5 border-secondary border-opacity-25 text-center" style="background: #0f1724;">
+                        <div class="fs-3 fw-extrabold text-emerald mb-1">130+</div>
+                        <small class="text-slate-400 fw-bold letter-spacing" style="font-size: 0.65rem;">UNIVERSITIES</small>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card p-3.5 border-secondary border-opacity-25 text-center" style="background: #0f1724;">
+                        <div class="fs-3 fw-extrabold text-emerald mb-1">180+</div>
+                        <small class="text-slate-400 fw-bold letter-spacing" style="font-size: 0.65rem;">HIRING PARTNERS</small>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card p-3.5 border-secondary border-opacity-25 text-center" style="background: #0f1724;">
+                        <div class="fs-3 fw-extrabold text-emerald mb-1">1.5M+</div>
+                        <small class="text-slate-400 fw-bold letter-spacing" style="font-size: 0.65rem;">AI INTERVIEWS</small>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card p-3.5 border-secondary border-opacity-25 text-center" style="background: #0f1724;">
+                        <div class="fs-3 fw-extrabold text-emerald mb-1">↑ 42%</div>
+                        <small class="text-slate-400 fw-bold letter-spacing" style="font-size: 0.65rem;">READINESS LIFT</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bottom CTA Banner -->
+<section class="py-5 text-center" style="background: radial-gradient(circle at center, rgba(0, 194, 136, 0.12) 0%, #080c14 70%); border-top: 1px solid rgba(255, 255, 255, 0.08);">
+    <div class="container py-lg-4">
+        <span class="badge bg-dark border border-emerald text-emerald rounded-pill px-3 py-2 mb-3 small fw-semibold">
+            ✨ READY FOR PLACEMENT SEASON?
+        </span>
+        <h2 class="display-4 fw-extrabold text-white mb-3" style="max-width: 800px; margin: 0 auto; line-height: 1.2;">
+            Your Next Interview Shouldn't Be <span class="text-emerald">Your First Practice.</span>
+        </h2>
+        <p class="lead text-slate-400 mb-4 mx-auto" style="max-width: 650px;">
+            Join engineering students using PlacementCopilot to evaluate resumes, practice mock interviews, and build target role roadmaps.
+        </p>
+
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+            {% if user.is_authenticated %}
+                <a href="{% url 'interview_index' %}" class="btn btn-primary-custom btn-lg px-4">
+                    <i class="bi bi-mic me-2"></i>Start Free AI Interview <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+                <a href="{% url 'dashboard_home' %}" class="btn btn-outline-emerald btn-lg px-4">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg px-4">
+                    Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-emerald btn-lg px-4">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Talk to PlacementCopilot & Support Section -->
+<section class="py-5" style="background: #080c14; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-dark border border-emerald text-emerald rounded-pill px-3 py-2 mb-3 small fw-semibold">
+                ✨ GET IN TOUCH
+            </span>
+            <h2 class="display-5 fw-bold text-white mb-2">
+                Talk to <span class="text-emerald">PlacementCopilot</span>
+            </h2>
+            <p class="text-slate-400 mx-auto" style="max-width: 600px;">
+                Whether you're a student, university, employer, or partner — our team is here to help.
+            </p>
+        </div>
+
+        <!-- 4 Support Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 border-secondary border-opacity-25 text-start" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">Student Support</h5>
+                    <p class="text-slate-400 small mb-3">Help with AI interviews, resume scores, or your account.</p>
+                    <a href="mailto:support@placementcopilot.ai" class="text-emerald text-decoration-none fw-semibold small">
+                        support@placementcopilot.ai
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 border-secondary border-opacity-25 text-start" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3">
+                        <i class="bi bi-building-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">University Partnerships</h5>
+                    <p class="text-slate-400 small mb-3">Bring PlacementCopilot to your placement cell.</p>
+                    <a href="mailto:placements@placementcopilot.ai" class="text-emerald text-decoration-none fw-semibold small">
+                        placements@placementcopilot.ai
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 border-secondary border-opacity-25 text-start" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">Employer Hiring</h5>
+                    <p class="text-slate-400 small mb-3">Access verified student talent and recruiter console.</p>
+                    <a href="mailto:recruiting@placementcopilot.ai" class="text-emerald text-decoration-none fw-semibold small">
+                        recruiting@placementcopilot.ai
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 p-4 border-secondary border-opacity-25 text-start" style="background: #0f1724;">
+                    <div class="icon-wrapper mb-3">
+                        <i class="bi bi-chat-dots-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">General Enquiries</h5>
+                    <p class="text-slate-400 small mb-3">Press, partnerships, or anything else.</p>
+                    <a href="mailto:info@placementcopilot.ai" class="text-emerald text-decoration-none fw-semibold small">
+                        info@placementcopilot.ai
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enquiry Form Row -->
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5 text-start">
+                <h3 class="display-6 fw-bold text-white mb-3">We're here to help.</h3>
+                <p class="text-slate-400 mb-4">Tell us what you need. We reply within 24 hours on business days.</p>
+                
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-wrapper" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <div>
+                        <strong class="d-block text-white small">Email</strong>
+                        <span class="text-slate-400 small">support@placementcopilot.ai</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="icon-wrapper" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <strong class="d-block text-white small">Location</strong>
+                        <span class="text-slate-400 small">India</span>
+                    </div>
+                </div>
+
+                <div class="card p-3 border-secondary border-opacity-25 bg-dark" style="background: #0d131d !important;">
+                    <small class="text-slate-400 text-uppercase fw-bold letter-spacing" style="font-size: 0.7rem;">Operated By</small>
+                    <h6 class="fw-bold text-white mb-1">PlacementCopilot Engineering Intelligence</h6>
+                    <small class="text-slate-400">Engineering placement intelligence & career readiness.</small>
+                </div>
+            </div>
+
+            <!-- Send an Enquiry Form Card -->
+            <div class="col-lg-7">
+                <div class="card p-4 p-md-5 border-secondary border-opacity-25 text-start" style="background: #0f1724;">
+                    <h4 class="fw-bold text-white mb-4">Send an enquiry</h4>
+                    <form id="enquiryForm" onsubmit="event.preventDefault(); alert('Thank you! Your enquiry has been received. Our team will respond within 24 hours.'); this.reset();">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-slate-300 small">Name *</label>
+                                <input type="text" class="form-control" placeholder="Your name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-slate-300 small">Email *</label>
+                                <input type="email" class="form-control" placeholder="you@email.com" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-slate-300 small">Phone</label>
+                                <input type="tel" class="form-control" placeholder="+91 ...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-slate-300 small">I am a *</label>
+                                <select class="form-select" required>
+                                    <option value="" selected disabled>Select ...</option>
+                                    <option value="student">Student / Candidate</option>
+                                    <option value="placement_cell">Placement Officer / University</option>
+                                    <option value="recruiter">Recruiter / Employer</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-slate-300 small">Message *</label>
+                            <textarea class="form-control" rows="4" placeholder="Tell us how we can help..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3">
+                            <i class="bi bi-send-fill me-2"></i>Submit Enquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>{% endblock %}

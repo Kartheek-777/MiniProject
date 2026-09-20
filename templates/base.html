@@ -18,95 +18,80 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-2 navbar-glass">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'landing' %}">
-                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 d-flex align-items-center justify-content-center">
-                    <i class="bi bi-cpu-fill fs-4 text-primary"></i>
-                </div>
-                <span class="brand-gradient fs-4">PlacementCopilot</span>
-                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill ms-2 px-2 py-1 small d-none d-md-inline-flex align-items-center gap-1">
-                    <span class="live-pulse-dot me-1"></span>Real-Time Engine
-                </span>
+    <!-- Navbar (PrepFree Dark Glass Topbar) -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-2.5 navbar-glass">
+        <div class="container-fluid px-lg-5">
+            <!-- Left: Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2 me-lg-4" href="{% url 'landing' %}">
+                <span class="brand-logo-text">PlacementCopilot<span class="brand-logo-dot">.</span></span>
             </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0 text-white shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            <!-- Center: Project Feature Nav Links & Right Actions -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center gap-1">
+                <ul class="navbar-nav mx-auto align-items-center gap-lg-3 my-2 my-lg-0">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'dashboard_home' %}">
-                                <i class="bi bi-speedometer2 me-1 text-primary"></i>Dashboard
-                            </a>
+                            <a class="nav-link nav-prepfree-link {% if 'resume' in request.path %}active{% endif %}" href="{% url 'resume_index' %}">Resumes</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'resume_index' %}">
-                                <i class="bi bi-file-earmark-text me-1 text-danger"></i>Resumes
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill dropdown-toggle" href="#" id="jobsDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-briefcase me-1 text-warning"></i>Jobs & Analytics
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                                <li>
-                                    <a class="dropdown-item small" href="{% url 'job_auto_apply' %}">
-                                        <i class="bi bi-stars me-2 text-primary"></i>AI Auto-Apply Assistant
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item small" href="{% url 'skill_gap_analytics' %}">
-                                        <i class="bi bi-graph-up me-2 text-success"></i>Skill Gap Analytics
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item small" href="{% url 'job_index' %}">
-                                        <i class="bi bi-list-check me-2 text-secondary"></i>Evaluated Matches History
-                                    </a>
-                                </li>
-                            </ul>
+                            <a class="nav-link nav-prepfree-link {% if 'jobs' in request.path and 'auto-apply' not in request.path and 'analytics' not in request.path %}active{% endif %}" href="{% url 'job_index' %}">Job Matcher</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'dashboard_roadmap' %}">
-                                <i class="bi bi-signpost-split me-1 text-info"></i>Roadmap
-                            </a>
+                            <a class="nav-link nav-prepfree-link {% if 'auto-apply' in request.path %}active{% endif %}" href="{% url 'job_auto_apply' %}">AI Auto-Apply</a>
                         </li>
-
-
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold text-dark px-3 rounded-pill" href="{% url 'interview_index' %}">
-                                <i class="bi bi-mic me-1 text-purple" style="color: #8b5cf6;"></i>Interview
-                            </a>
+                            <a class="nav-link nav-prepfree-link {% if 'roadmap' in request.path %}active{% endif %}" href="{% url 'dashboard_roadmap' %}">Roadmaps</a>
                         </li>
-                        <li class="nav-item ms-lg-2">
-                            <a href="{% url 'profile' %}" class="badge bg-light text-dark text-decoration-none border py-2 px-3 d-inline-flex align-items-center gap-2 shadow-sm rounded-pill" title="View Candidate Profile">
-                                {% if user.profile.profile_picture %}
-                                    <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle object-fit-cover" width="24" height="24" alt="Avatar">
-                                {% else %}
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 24px; height: 24px; font-size: 0.75rem;">
-                                        {{ user.username|slice:":1"|upper }}
-                                    </div>
-                                {% endif %}
-                                <span class="fw-semibold">{{ user.username }}</span>
-                            </a>
+                        <li class="nav-item">
+                            <a class="nav-link nav-prepfree-link {% if 'interview' in request.path %}active{% endif %}" href="{% url 'interview_index' %}">AI Interview</a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link nav-prepfree-link {% if 'analytics' in request.path %}active{% endif %}" href="{% url 'skill_gap_analytics' %}">Analytics</a>
+                        </li>
                     {% else %}
-                        {% if not hide_auth_nav_links %}
-                            <li class="nav-item">
-                                <a class="nav-link fw-medium" href="{% url 'login' %}">Log In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary-custom" href="{% url 'register' %}">Get Started</a>
-                            </li>
-                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link nav-prepfree-link" href="{% url 'landing' %}#universities">Universities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-prepfree-link" href="{% url 'landing' %}#about-us">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-prepfree-link" href="{% url 'landing' %}#enquiryForm">Contact Us</a>
+                        </li>
                     {% endif %}
                 </ul>
+
+                <!-- Right Actions: Sign In & Get Started / Dashboard -->
+                <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                    {% if user.is_authenticated %}
+                        <a class="btn btn-outline-emerald btn-sm px-3 py-1.5 fw-semibold" href="{% url 'dashboard_home' %}">
+                            <i class="bi bi-speedometer2 me-1.5"></i>Dashboard
+                        </a>
+                        <a href="{% url 'profile' %}" class="badge bg-dark text-white text-decoration-none border border-secondary border-opacity-25 py-2 px-3 d-inline-flex align-items-center gap-2 rounded-pill shadow-sm" title="Candidate Profile">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle object-fit-cover" width="22" height="22" alt="Avatar">
+                            {% else %}
+                                <div class="bg-emerald text-dark rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 22px; height: 22px; font-size: 0.7rem; background-color: #00c288;">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="fw-semibold text-white small">{{ user.username }}</span>
+                        </a>
+                    {% else %}
+                        {% if not hide_auth_nav_links %}
+                            <a class="btn btn-nav-signin" href="{% url 'login' %}">
+                                Sign In
+                            </a>
+                            <a class="btn btn-nav-getstarted" href="{% url 'register' %}">
+                                Get Started
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
@@ -129,15 +114,91 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer py-4 mt-auto">
-        <div class="container text-center text-md-between d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-            <div>
-                <span class="fw-bold brand-gradient">PlacementCopilot</span> &copy; 2026. Enterprise AI Career Intelligence System.
+    <footer class="footer pt-5 pb-4 mt-auto">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <!-- Column 1: Brand & Social -->
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="p-2 rounded-3 d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.15);">
+                            <i class="bi bi-cpu-fill fs-4 text-emerald"></i>
+                        </div>
+                        <span class="fs-4 fw-bold text-white">PlacementCopilot</span>
+                    </div>
+                    <p class="text-slate-400 small mb-4" style="max-width: 320px; line-height: 1.6;">
+                        India's AI-powered career readiness and employability platform — connecting students, universities, and employers through one verified PlacementCopilot Score.
+                    </p>
+                    <div class="d-flex align-items-center gap-2 fs-5">
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center text-slate-300" style="width: 36px; height: 36px;"><i class="bi bi-github"></i></a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center text-slate-300" style="width: 36px; height: 36px;"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center text-slate-300" style="width: 36px; height: 36px;"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center text-slate-300" style="width: 36px; height: 36px;"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center text-slate-300" style="width: 36px; height: 36px;"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Column 2: PRODUCTS -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold text-uppercase letter-spacing small mb-3">Products</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small text-slate-400 mb-0">
+                        <li><a href="{% url 'interview_index' %}" class="text-slate-400 text-decoration-none hover-text-white">AI Mock Interviews</a></li>
+                        <li><a href="{% url 'resume_index' %}" class="text-slate-400 text-decoration-none hover-text-white">Resume Intelligence</a></li>
+                        <li><a href="{% url 'dashboard_roadmap' %}" class="text-slate-400 text-decoration-none hover-text-white">Career Readiness Score</a></li>
+                        <li><a href="{% url 'job_index' %}" class="text-slate-400 text-decoration-none hover-text-white">Job Matching</a></li>
+                        <li><a href="{% url 'job_auto_apply' %}" class="text-slate-400 text-decoration-none hover-text-white">Auto-Apply Assistant</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: FOR CANDIDATES -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold text-uppercase letter-spacing small mb-3">For Candidates</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small text-slate-400 mb-0">
+                        <li><a href="{% url 'dashboard_home' %}" class="text-slate-400 text-decoration-none hover-text-white">Student Dashboard</a></li>
+                        <li><a href="{% url 'skill_gap_analytics' %}" class="text-slate-400 text-decoration-none hover-text-white">Skill Gap Analytics</a></li>
+                        <li><a href="{% url 'profile' %}" class="text-slate-400 text-decoration-none hover-text-white">Candidate Profile</a></li>
+                        <li><a href="{% url 'resume_upload' %}" class="text-slate-400 text-decoration-none hover-text-white">Upload PDF Resume</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: RESOURCES -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold text-uppercase letter-spacing small mb-3">Resources</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small text-slate-400 mb-0">
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Career Blog</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Interview Guides</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Resume Tips</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">FAQs & Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 5: COMPANY -->
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold text-uppercase letter-spacing small mb-3">Company</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 small text-slate-400 mb-0">
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">About Us</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Contact</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-slate-400 text-decoration-none hover-text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="d-flex align-items-center gap-3 fs-5">
-                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-github"></i></a>
-                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-linkedin"></i></a>
-                <a href="#" class="text-secondary hover-text-white"><i class="bi bi-globe"></i></a>
+
+            <!-- Bottom Sub-Footer & Trust Badges -->
+            <div class="pt-4 border-top border-secondary border-opacity-25 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-slate-400 small">
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <span><i class="bi bi-shield-check text-emerald me-1"></i>SOC 2 controls</span>
+                    <span>•</span>
+                    <span>AES-256 encryption</span>
+                    <span>•</span>
+                    <span>GDPR ready</span>
+                    <span>•</span>
+                    <span>130+ universities</span>
+                    <span>•</span>
+                    <span>180+ hiring partners</span>
+                </div>
+                <div>
+                    &copy; 2026 PlacementCopilot. All rights reserved.
+                </div>
             </div>
         </div>
     </footer>

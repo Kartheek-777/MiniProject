@@ -106,39 +106,31 @@ OUTPUT FORMAT (STRICT JSON ONLY, no markdown explanations outside JSON):
 }}
 """
 
+        models_to_try = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest']
         try:
             from google import genai
             client = genai.Client(api_key=api_key)
-            res = client.models.generate_content(
-                model='gemini-3.6-flash',
-                contents=f"{system_prompt}\n\n{user_prompt}"
-            )
-            raw = res.text.strip()
-            if raw.startswith("```"):
-                raw = re.sub(r"^```(?:json)?\n?", "", raw)
-                raw = re.sub(r"\n?```$", "", raw)
-            raw = raw.strip()
-            parsed = json.loads(raw)
-            if isinstance(parsed, dict) and "improvement" in parsed:
-                ai_insights = parsed
+
+            for model_name in models_to_try:
+                try:
+                    res = client.models.generate_content(
+                        model=model_name,
+                        contents=f"{system_prompt}\n\n{user_prompt}"
+                    )
+                    if res and res.text and res.text.strip():
+                        raw = res.text.strip()
+                        if raw.startswith("```"):
+                            raw = re.sub(r"^```(?:json)?\n?", "", raw)
+                            raw = re.sub(r"\n?```$", "", raw)
+                        raw = raw.strip()
+                        parsed = json.loads(raw)
+                        if isinstance(parsed, dict) and "improvement" in parsed:
+                            ai_insights = parsed
+                            break
+                except Exception:
+                    continue
         except Exception:
-            try:
-                from google import genai
-                client = genai.Client(api_key=api_key)
-                res = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=f"{system_prompt}\n\n{user_prompt}"
-                )
-                raw = res.text.strip()
-                if raw.startswith("```"):
-                    raw = re.sub(r"^```(?:json)?\n?", "", raw)
-                    raw = re.sub(r"\n?```$", "", raw)
-                raw = raw.strip()
-                parsed = json.loads(raw)
-                if isinstance(parsed, dict) and "improvement" in parsed:
-                    ai_insights = parsed
-            except Exception:
-                ai_insights = fallback_insights
+            ai_insights = fallback_insights
 
     return {
         "has_enough_data": True,

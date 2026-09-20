@@ -15,24 +15,30 @@ def roadmap_view(request, pk=None):
     """
     Core Roadmap View handling:
     GET -> Renders current or latest CareerRoadmap for user.
-    POST -> Generates a brand new AI Career Roadmap dynamically.
+    POST -> Generates a brand new AI Career Roadmap dynamically and redirects directly to its detail view.
     """
     user = request.user
     profile, _ = StudentProfile.objects.get_or_create(user=user)
 
     if request.method == 'POST':
-        custom_role = request.POST.get('target_role', '').strip() or profile.target_role
-        roadmap = generate_career_roadmap(user, custom_target_role=custom_role)
-        messages.success(request, f"Personalized AI Roadmap for '{roadmap.target_role}' generated successfully!")
-        return redirect('dashboard_roadmap')
+        custom_role = request.POST.get('target_role', '').strip() or profile.target_role or 'Software Engineer'
+        try:
+            duration_weeks = int(request.POST.get('duration_weeks', 6))
+        except (ValueError, TypeError):
+            duration_weeks = 6
+        duration_weeks = max(2, min(24, duration_weeks))
 
-    # Fetch requested or latest roadmap
+        roadmap = generate_career_roadmap(user, custom_target_role=custom_role, duration_weeks=duration_weeks)
+        messages.success(request, f"New AI Roadmap for '{roadmap.target_role}' ({duration_weeks} Weeks) generated successfully!")
+        return redirect('career_detail', pk=roadmap.pk)
+
+    # Fetch requested or latest roadmap (strictly ordered by highest ID / latest created)
     if pk:
         roadmap = get_object_or_404(CareerRoadmap, pk=pk, user=user)
     else:
-        roadmap = CareerRoadmap.objects.filter(user=user).first()
+        roadmap = CareerRoadmap.objects.filter(user=user).order_by('-id').first()
 
-    all_roadmaps = CareerRoadmap.objects.filter(user=user)
+    all_roadmaps = CareerRoadmap.objects.filter(user=user).order_by('-id')
 
     # Gather Context Metrics
     latest_match = JobMatch.objects.filter(user=user).first()

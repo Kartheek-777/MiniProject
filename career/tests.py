@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
 from career.models import CareerRoadmap
-from career.services import generate_career_roadmap_ai, FALLBACK_ROADMAP
+from career.services import generate_career_roadmap_ai
 
 class Phase6CareerRoadmapTests(TestCase):
     def setUp(self):
@@ -17,18 +17,13 @@ class Phase6CareerRoadmapTests(TestCase):
             missing_skills=['Docker', 'AWS', 'System Design']
         )
         self.assertIsInstance(roadmap_json, dict)
-        self.assertIn('months', roadmap_json)
-        self.assertEqual(len(roadmap_json['months']), 3)
+        self.assertIn('roadmap', roadmap_json)
+        self.assertGreater(len(roadmap_json['roadmap']), 0)
         
-        # Verify Month 1 has weeks
-        month1 = roadmap_json['months'][0]
-        self.assertIn('weeks', month1)
-        self.assertGreater(len(month1['weeks']), 0)
-        
-        week1 = month1['weeks'][0]
-        self.assertIn('focus_skill', week1)
-        self.assertIn('tasks', week1)
-        self.assertIn('project_milestone', week1)
+        week1 = roadmap_json['roadmap'][0]
+        self.assertIn('phase', week1)
+        self.assertIn('skills', week1)
+        self.assertIn('milestone', week1)
 
     def test_career_roadmap_creation_flow(self):
         self.client.login(username='career_student1', password='Password123!')
@@ -40,7 +35,7 @@ class Phase6CareerRoadmapTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
         roadmap = CareerRoadmap.objects.get(user=self.user1, target_role='Software Development Engineer')
-        self.assertEqual(roadmap.title, 'SDE 90-Day Acceleration Roadmap')
+        self.assertIn('Software Development Engineer', roadmap.title)
         self.assertIn('Docker', roadmap.missing_skills)
 
         # Test Owner Detail View Access

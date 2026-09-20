@@ -19,8 +19,8 @@ def resume_upload(request):
         if form.is_valid():
             resume = form.save(commit=False)
             resume.user = request.user
-            if not resume.title:
-                resume.title = form.cleaned_data['file'].name
+            uploaded_file_name = form.cleaned_data['file'].name
+            resume.title = os.path.splitext(uploaded_file_name)[0]
             resume.save()
 
             # Execute Phase 3 PDF Text Extraction & Rule-based Parsing

@@ -9,25 +9,25 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Header Banner -->
-    <div class="card border-0 bg-gradient text-white p-4 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-        <div class="row align-items-center">
+    <!-- Header Hero Banner -->
+    <div class="card border-0 p-4 mb-4 rounded-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f1724 0%, #080c14 100%); border: 1px solid rgba(0, 194, 136, 0.3) !important; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 194, 136, 0.12) !important;">
+        <div class="row align-items-center position-relative z-1">
             <div class="col-md-8">
                 <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-1 rounded-pill">
+                    <span class="badge px-3 py-1 rounded-pill" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
                         <i class="bi bi-graph-up me-1"></i>Phase 9 Active
                     </span>
-                    <span class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-1 rounded-pill">
-                        <i class="bi bi-clock-history me-1"></i>Real-Time DB Signals
+                    <span class="badge px-3 py-1 rounded-pill" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
+                        <i class="bi bi-clock-history me-1"></i>Real-Time Analytics
                     </span>
                 </div>
-                <h2 class="fw-bold text-white mb-2">Skill Gap Tracker & Progress Analytics</h2>
-                <p class="text-white-50 mb-0">
+                <h2 class="fw-bold text-white mb-2" style="letter-spacing: -0.02em;">Skill Gap Tracker & Progress Analytics</h2>
+                <p class="text-secondary mb-0 style-body" style="font-size: 0.95rem; line-height: 1.6;">
                     Monitor your match score trajectory over time, track acquired skills removed from gap lists, and view Gemini AI progress insights.
                 </p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <button type="button" id="refreshBtn" class="btn btn-primary rounded-pill px-4 shadow">
+                <button type="button" id="refreshBtn" class="btn btn-emerald px-4">
                     <i class="bi bi-arrow-repeat me-1"></i>Refresh Analytics
                 </button>
             </div>
@@ -36,16 +36,16 @@
 
     {% if not analytics.has_enough_data %}
         <!-- Not Enough Data Alert Card -->
-        <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center mb-4">
-            <div class="bg-warning bg-opacity-10 text-warning p-4 rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+        <div class="card border-0 rounded-4 p-5 text-center mb-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+            <div class="p-4 rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
                 <i class="bi bi-exclamation-triangle-fill display-5"></i>
             </div>
-            <h4 class="fw-bold text-dark mb-2">Not Enough Tracking Data Yet</h4>
+            <h4 class="fw-bold text-white mb-2">Not Enough Tracking Data Yet</h4>
             <p class="text-secondary mx-auto mb-4" style="max-width: 520px;">
                 You need at least <strong>2 Job Matches</strong> to unlock real-time match score trend line charts and AI progress analysis. Run another job match to start tracking your trajectory!
             </p>
             <div>
-                <a href="{% url 'job_match_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm me-2">
+                <a href="{% url 'job_match_create' %}" class="btn btn-emerald px-4 me-2">
                     <i class="bi bi-plus-circle me-1"></i>Run Job Match
                 </a>
                 <a href="{% url 'job_index' %}" class="btn btn-outline-secondary rounded-pill px-4">
@@ -59,17 +59,17 @@
     <div class="row g-3 mb-4">
         <!-- Improvement Status -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding: 1.25rem 1.35rem !important;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 fs-3">
+                    <div class="flex-shrink-0" style="width: 48px; height: 48px; background: rgba(0, 194, 136, 0.12); color: #00c288; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                         <i class="bi bi-graph-up-arrow"></i>
                     </div>
-                    <div>
-                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Progress Status</small>
-                        <h4 class="fw-bold text-dark mb-0" id="kpiStatus">
+                    <div class="overflow-hidden">
+                        <small class="text-secondary d-block fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em;">Progress Status</small>
+                        <h4 class="fw-bold mb-1" id="kpiStatus" style="font-size: 1.25rem; color: #ffffff;">
                             {{ analytics.ai_insights.improvement|default:"Stable" }}
                         </h4>
-                        <small class="fw-bold text-success" id="kpiImprovementPct">{{ analytics.improvement_percentage }}</small>
+                        <small class="fw-bold text-truncate d-block" id="kpiImprovementPct" style="font-size: 0.8rem; color: #00c288;">{{ analytics.improvement_percentage }}</small>
                     </div>
                 </div>
             </div>
@@ -77,17 +77,17 @@
 
         <!-- Skills Acquired / Removed from Gaps -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding: 1.25rem 1.35rem !important;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 fs-3">
+                    <div class="flex-shrink-0" style="width: 48px; height: 48px; background: rgba(0, 194, 136, 0.12); color: #00c288; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div>
-                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Acquired Skills</small>
-                        <h4 class="fw-bold text-success mb-0" id="kpiAcquiredCount">
+                    <div class="overflow-hidden">
+                        <small class="text-secondary d-block fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em;">Acquired Skills</small>
+                        <h4 class="fw-bold mb-1" style="color: #00c288; font-size: 1.25rem;" id="kpiAcquiredCount">
                             {{ analytics.acquired_skills|length }}
                         </h4>
-                        <small class="text-muted">Removed from gap list</small>
+                        <small class="text-secondary text-truncate d-block" style="font-size: 0.78rem;">Removed from gap list</small>
                     </div>
                 </div>
             </div>
@@ -95,17 +95,17 @@
 
         <!-- Top Weak Skills -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding: 1.25rem 1.35rem !important;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 fs-3">
+                    <div class="flex-shrink-0" style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                         <i class="bi bi-exclamation-octagon-fill"></i>
                     </div>
-                    <div>
-                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Missing Skill Gaps</small>
-                        <h4 class="fw-bold text-warning mb-0" id="kpiMissingCount">
+                    <div class="overflow-hidden">
+                        <small class="text-secondary d-block fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em;">Missing Skill Gaps</small>
+                        <h4 class="fw-bold mb-1" style="color: #f59e0b; font-size: 1.25rem;" id="kpiMissingCount">
                             {{ analytics.top_missing_skills|length }}
                         </h4>
-                        <small class="text-muted">Tracked across matches</small>
+                        <small class="text-secondary text-truncate d-block" style="font-size: 0.78rem;">Tracked across matches</small>
                     </div>
                 </div>
             </div>
@@ -113,17 +113,17 @@
 
         <!-- Strong Skills Count -->
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding: 1.25rem 1.35rem !important;">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-info bg-opacity-10 text-info p-3 rounded-4 fs-3">
+                    <div class="flex-shrink-0" style="width: 48px; height: 48px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
                         <i class="bi bi-patch-check-fill"></i>
                     </div>
-                    <div>
-                        <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Verified Strengths</small>
-                        <h4 class="fw-bold text-info mb-0" id="kpiStrongCount">
+                    <div class="overflow-hidden">
+                        <small class="text-secondary d-block fw-semibold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em;">Verified Strengths</small>
+                        <h4 class="fw-bold mb-1" style="color: #38bdf8; font-size: 1.25rem;" id="kpiStrongCount">
                             {{ analytics.ai_insights.strong_skills|length }}
                         </h4>
-                        <small class="text-muted">Verified candidate skills</small>
+                        <small class="text-secondary text-truncate d-block" style="font-size: 0.78rem;">Verified candidate skills</small>
                     </div>
                 </div>
             </div>
@@ -134,11 +134,14 @@
     <div class="row g-4 mb-4">
         <!-- Line Chart: Match Score Over Time -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                <h6 class="fw-bold text-dark mb-3">
-                    <i class="bi bi-activity text-primary me-2"></i>Match Score Trajectory (Time-Series)
-                </h6>
-                <div style="position: relative; height: 300px;">
+            <div class="card border-0 rounded-4 p-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold text-white mb-0">
+                        <i class="bi bi-activity me-2" style="color: #00c288;"></i>Match Score Trajectory (Time-Series)
+                    </h6>
+                    <span class="badge px-2.5 py-1 rounded-pill small" style="background: rgba(0, 194, 136, 0.15); color: #00c288;">Historical Scores</span>
+                </div>
+                <div style="position: relative; height: 280px;">
                     <canvas id="scoreLineChart"></canvas>
                 </div>
             </div>
@@ -146,11 +149,14 @@
 
         <!-- Bar Chart: Most Missing Skill Frequency -->
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                <h6 class="fw-bold text-dark mb-3">
-                    <i class="bi bi-bar-chart-line text-warning me-2"></i>Most Frequent Skill Gaps
-                </h6>
-                <div style="position: relative; height: 300px;">
+            <div class="card border-0 rounded-4 p-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold text-white mb-0">
+                        <i class="bi bi-bar-chart-line me-2" style="color: #f59e0b;"></i>Most Frequent Skill Gaps
+                    </h6>
+                    <span class="badge px-2.5 py-1 rounded-pill small" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">Gap Frequency</span>
+                </div>
+                <div style="position: relative; height: 280px;">
                     <canvas id="skillsBarChart"></canvas>
                 </div>
             </div>
@@ -161,29 +167,29 @@
     <div class="row g-4">
         <!-- Acquired & Strong Skills Card -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                <h6 class="fw-bold text-success mb-3">
+            <div class="card border-0 rounded-4 p-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <h6 class="fw-bold mb-3" style="color: #00c288;">
                     <i class="bi bi-award-fill me-2"></i>Verified Strengths & Acquired Capabilities
                 </h6>
                 <div class="mb-3">
-                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem;">Skills Removed From Gap List (Acquired)</small>
-                    <div class="d-flex flex-wrap gap-1" id="acquiredSkillsContainer">
+                    <small class="text-secondary d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.05em;">Skills Removed From Gap List (Acquired)</small>
+                    <div class="d-flex flex-wrap gap-1.5" id="acquiredSkillsContainer">
                         {% for s in analytics.acquired_skills %}
-                            <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                            <span class="badge px-2.5 py-1.5 rounded-pill" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
                                 <i class="bi bi-check2-all me-1"></i>{{ s }}
                             </span>
                         {% empty %}
-                            <span class="text-muted small">No gap skills converted yet.</span>
+                            <span class="text-secondary small">No gap skills converted yet.</span>
                         {% endfor %}
                     </div>
                 </div>
                 <div>
-                    <small class="text-muted d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem;">Core Technical Strengths</small>
-                    <div class="d-flex flex-wrap gap-1" id="strongSkillsContainer">
+                    <small class="text-secondary d-block fw-semibold text-uppercase mb-2" style="font-size: 0.7rem; letter-spacing: 0.05em;">Core Technical Strengths</small>
+                    <div class="d-flex flex-wrap gap-1.5" id="strongSkillsContainer">
                         {% for sk in analytics.ai_insights.strong_skills %}
-                            <span class="badge bg-info bg-opacity-10 text-info border border-info">{{ sk }}</span>
+                            <span class="badge px-2.5 py-1.5 rounded-pill" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">{{ sk }}</span>
                         {% empty %}
-                            <span class="text-muted small">None listed</span>
+                            <span class="text-secondary small">None listed</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -192,20 +198,20 @@
 
         <!-- AI Actionable Recommendations -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                <h6 class="fw-bold text-primary mb-3">
-                    <i class="bi bi-robot me-2"></i>Gemini AI Skill Recommendations
+            <div class="card border-0 rounded-4 p-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <h6 class="fw-bold text-white mb-3">
+                    <i class="bi bi-robot me-2" style="color: #00c288;"></i>Gemini AI Skill Recommendations
                 </h6>
-                <ul class="list-group list-group-flush border-0" id="recommendationsList">
+                <div class="d-flex flex-column gap-2" id="recommendationsList">
                     {% for rec in analytics.ai_insights.recommendations %}
-                        <li class="list-group-item border-0 px-0 d-flex align-items-start gap-2">
-                            <i class="bi bi-lightning-charge-fill text-warning flex-shrink-0 mt-1"></i>
-                            <span class="small text-dark fw-medium">{{ rec }}</span>
-                        </li>
+                        <div class="p-3 rounded-3 d-flex align-items-start gap-2.5" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.06);">
+                            <i class="bi bi-lightning-charge-fill flex-shrink-0 mt-0.5" style="color: #f59e0b;"></i>
+                            <span class="small text-white" style="line-height: 1.5;">{{ rec }}</span>
+                        </div>
                     {% empty %}
-                        <li class="list-group-item border-0 px-0 text-muted small">Run more matches for personalized AI recommendations.</li>
+                        <div class="p-3 rounded-3 text-secondary small" style="background: #090e17;">Run more matches for personalized AI recommendations.</div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -227,9 +233,38 @@
             const response = await fetch("{% url 'skill_gap_analytics_api' %}");
             const data = await response.json();
 
+            // Configure chart defaults for Dark Theme
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
+
+            // Update Dynamic KPI Status Colors
+            const statusEl = document.getElementById('kpiStatus');
+            const pctEl = document.getElementById('kpiImprovementPct');
+            const statusText = (data.ai_insights && data.ai_insights.improvement) ? data.ai_insights.improvement : 'Stable';
+            const pctText = data.improvement_percentage || '0%';
+
+            statusEl.textContent = statusText;
+            pctEl.textContent = pctText;
+
+            if (statusText === 'Declined' || pctText.includes('-')) {
+                statusEl.style.color = '#f87171';
+                pctEl.style.color = '#f87171';
+            } else if (statusText === 'Improved' || pctText.includes('+')) {
+                statusEl.style.color = '#00c288';
+                pctEl.style.color = '#00c288';
+            } else {
+                statusEl.style.color = '#ffffff';
+                pctEl.style.color = '#94a3b8';
+            }
+
             // Update Line Chart
             const ctxLine = document.getElementById('scoreLineChart').getContext('2d');
             if (lineChartInstance) lineChartInstance.destroy();
+
+            const lineGrad = ctxLine.createLinearGradient(0, 0, 0, 260);
+            lineGrad.addColorStop(0, 'rgba(0, 194, 136, 0.35)');
+            lineGrad.addColorStop(1, 'rgba(0, 194, 136, 0.0)');
 
             lineChartInstance = new Chart(ctxLine, {
                 type: 'line',
@@ -238,23 +273,51 @@
                     datasets: [{
                         label: 'Match Score (%)',
                         data: data.scores || [],
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderColor: '#00c288',
+                        backgroundColor: lineGrad,
                         borderWidth: 3,
                         fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#2563eb',
-                        pointRadius: 5
+                        tension: 0.35,
+                        pointBackgroundColor: '#00c288',
+                        pointBorderColor: '#0f1724',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#090e17',
+                            titleColor: '#ffffff',
+                            bodyColor: '#00c288',
+                            borderColor: 'rgba(0, 194, 136, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: (ctx) => `Match Score: ${ctx.parsed.y}%`
+                            }
+                        }
+                    },
                     scales: {
                         y: {
                             min: 0,
                             max: 100,
-                            ticks: { callback: value => value + '%' }
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { 
+                                stepSize: 20, 
+                                callback: value => value + '%', 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 } }
                         }
                     }
                 }
@@ -264,9 +327,14 @@
             const ctxBar = document.getElementById('skillsBarChart').getContext('2d');
             if (barChartInstance) barChartInstance.destroy();
 
+            const barGrad = ctxBar.createLinearGradient(0, 0, 0, 260);
+            barGrad.addColorStop(0, 'rgba(245, 158, 11, 0.85)');
+            barGrad.addColorStop(1, 'rgba(245, 158, 11, 0.2)');
+
             const topSkills = data.top_missing_skills || [];
             const barLabels = topSkills.map(item => item.skill);
             const barCounts = topSkills.map(item => item.count);
+            const maxVal = Math.max(...barCounts, 1);
 
             barChartInstance = new Chart(ctxBar, {
                 type: 'bar',
@@ -275,15 +343,49 @@
                     datasets: [{
                         label: 'Frequency Missing',
                         data: barCounts,
-                        backgroundColor: '#f59e0b',
-                        borderRadius: 6
+                        backgroundColor: barGrad,
+                        borderColor: '#f59e0b',
+                        borderWidth: 1.5,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        maxBarThickness: 36,
+                        barPercentage: 0.5
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#090e17',
+                            titleColor: '#ffffff',
+                            bodyColor: '#f59e0b',
+                            borderColor: 'rgba(245, 158, 11, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: (ctx) => `Missing in ${ctx.parsed.y} Job Description(s)`
+                            }
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                        y: { 
+                            beginAtZero: true, 
+                            suggestedMax: maxVal + 2,
+                            ticks: { 
+                                precision: 0, 
+                                stepSize: 1, 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 } }
+                        }
                     }
                 }
             });

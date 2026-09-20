@@ -6,47 +6,38 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-7">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body p-4 p-md-5">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="icon-wrapper">
-                            <i class="bi bi-file-earmark-arrow-up"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0">Upload PDF Resume</h3>
-                            <p class="text-secondary small mb-0">Extract skills, contact info, education, and projects automatically</p>
+            <div class="card p-4 p-md-5" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div class="icon-wrapper">
+                        <i class="bi bi-file-earmark-arrow-up text-emerald"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-extrabold text-white mb-0" style="letter-spacing: -0.5px;">Upload PDF Resume</h3>
+                        <p class="text-slate-400 small mb-0">Extract skills, contact info, education, and projects automatically with AI</p>
+                    </div>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.file.id_for_label }}" class="form-label small fw-semibold text-slate-300">Select PDF File (.pdf, Max 5MB) *</label>
+                        {{ form.file }}
+                        {% for error in form.file.errors %}
+                            <div class="text-danger small mt-1.5"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text text-slate-400 small mt-2">
+                            <i class="bi bi-info-circle me-1 text-emerald"></i>Supports standard PDF resumes. Text extraction and AI skill gap analysis are processed securely.
                         </div>
                     </div>
 
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="{{ form.title.id_for_label }}" class="form-label small fw-medium text-secondary">Resume Title</label>
-                            {{ form.title }}
-                            {% for error in form.title.errors %}
-                                <div class="text-danger small mt-1">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="{{ form.file.id_for_label }}" class="form-label small fw-medium text-secondary">Select PDF File (.pdf, Max 5MB) *</label>
-                            {{ form.file }}
-                            {% for error in form.file.errors %}
-                                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
-                            {% endfor %}
-                            <div class="form-text text-muted small mt-2">
-                                <i class="bi bi-info-circle me-1"></i>Supports standard PDF resumes. Text extraction is performed locally using PyMuPDF.
-                            </div>
-                        </div>
-
-                        <div class="d-flex gap-3">
-                            <button type="submit" class="btn btn-primary-custom flex-grow-1 py-2">
-                                Upload & Process Resume <i class="bi bi-gear-wide-connected ms-1"></i>
-                            </button>
-                            <a href="{% url 'resume_index' %}" class="btn btn-outline-secondary py-2">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary-custom flex-grow-1 py-2.5 fw-bold">
+                            Upload & Process Resume <i class="bi bi-gear-wide-connected ms-1"></i>
+                        </button>
+                        <a href="{% url 'resume_index' %}" class="btn btn-outline-secondary py-2.5 px-4 rounded-pill">Cancel</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

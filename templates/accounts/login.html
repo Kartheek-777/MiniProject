@@ -5,45 +5,46 @@
 {% block extra_css %}
 <style>
     .auth-card {
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-radius: 1.5rem;
-        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 1.5rem !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 194, 136, 0.08) !important;
         overflow: hidden;
-        background: #ffffff;
+        background: #0f1724 !important;
     }
     .auth-banner {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
+        background: linear-gradient(135deg, #060a12 0%, #0c1322 100%) !important;
         position: relative;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
     .auth-banner::before {
         content: '';
         position: absolute;
         top: -50px;
         right: -50px;
-        width: 200px;
-        height: 200px;
+        width: 220px;
+        height: 220px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(0, 194, 136, 0.2) 0%, transparent 70%);
         pointer-events: none;
     }
     .custom-pill-group {
-        border: 1px solid #cbd5e1;
-        border-radius: 50rem;
-        background-color: #f8fafc;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.75rem;
+        background-color: #0d131d;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         overflow: hidden;
     }
     .custom-pill-group:focus-within {
-        background-color: #ffffff;
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+        background-color: #0d131d;
+        border-color: var(--primary-emerald);
+        box-shadow: 0 0 0 3px rgba(0, 194, 136, 0.25);
     }
     .custom-pill-group .input-icon {
-        padding-left: 1.2rem;
+        padding-left: 1rem;
         padding-right: 0.25rem;
-        color: #94a3b8;
+        color: #64748b;
         display: flex;
         align-items: center;
         font-size: 1.1rem;
@@ -52,20 +53,24 @@
         border: none !important;
         background: transparent !important;
         box-shadow: none !important;
-        padding: 0.65rem 0.75rem;
+        color: #ffffff !important;
+        padding: 0.7rem 0.75rem;
         font-size: 0.95rem;
+    }
+    .custom-pill-group .form-control::placeholder {
+        color: #64748b !important;
     }
     .custom-pill-group .btn-toggle-eye {
         border: none !important;
         background: transparent !important;
         box-shadow: none !important;
-        padding-right: 1.2rem;
+        padding-right: 1rem;
         padding-left: 0.5rem;
         color: #64748b;
         cursor: pointer;
     }
     .custom-pill-group .btn-toggle-eye:hover {
-        color: #4f46e5;
+        color: var(--primary-emerald);
     }
 </style>
 {% endblock %}
@@ -76,55 +81,55 @@
         <div class="col-lg-10 col-xl-9">
             <div class="card auth-card">
                 <div class="row g-0">
-                    <!-- Left Column: Brand Showcase -->
+                    <!-- Left Column: Brand Showcase Banner -->
                     <div class="col-md-5 auth-banner p-4 p-lg-5 text-white d-flex flex-column justify-content-between">
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-4">
-                                <div class="bg-primary text-white p-2 rounded-3 fs-5">
-                                    <i class="bi bi-cpu-fill"></i>
+                                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.15);">
+                                    <i class="bi bi-cpu-fill fs-4 text-emerald"></i>
                                 </div>
-                                <span class="fw-bold text-white fs-4">PlacementCopilot</span>
+                                <span class="fw-extrabold text-white fs-4" style="letter-spacing: -0.5px;">PlacementCopilot<span class="text-emerald">.</span></span>
                             </div>
-                            <h3 class="fw-bold mb-3 text-white">Accelerate Your Engineering Career</h3>
-                            <p class="text-white-50 small mb-4">Log in to access your personal AI Placement Copilot, ATS score analyzer, and mock interview suite.</p>
+                            <h3 class="fw-extrabold mb-3 text-white">Accelerate Your Engineering Career</h3>
+                            <p class="text-slate-400 small mb-4">Log in to access your personal AI Placement Copilot, ATS score analyzer, and mock interview suite.</p>
                         </div>
 
                         <!-- Feature List -->
                         <div class="d-flex flex-column gap-3 my-4">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-white bg-opacity-10 rounded-circle p-2 text-info">
-                                    <i class="bi bi-file-earmark-check-fill"></i>
+                                <div class="rounded-circle p-2 text-emerald d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.12); width: 34px; height: 34px;">
+                                    <i class="bi bi-file-earmark-check-fill fs-6"></i>
                                 </div>
-                                <small class="text-white">Instant ATS Resume Analyzer</small>
+                                <small class="text-slate-300 fw-medium">Instant ATS Resume Analyzer</small>
                             </div>
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-white bg-opacity-10 rounded-circle p-2 text-warning">
-                                    <i class="bi bi-graph-up-arrow"></i>
+                                <div class="rounded-circle p-2 text-emerald d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.12); width: 34px; height: 34px;">
+                                    <i class="bi bi-graph-up-arrow fs-6"></i>
                                 </div>
-                                <small class="text-white">Real-Time Skill Gap Tracker</small>
+                                <small class="text-slate-300 fw-medium">Real-Time Skill Gap Tracker</small>
                             </div>
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-white bg-opacity-10 rounded-circle p-2 text-success">
-                                    <i class="bi bi-mic-fill"></i>
+                                <div class="rounded-circle p-2 text-emerald d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.12); width: 34px; height: 34px;">
+                                    <i class="bi bi-mic-fill fs-6"></i>
                                 </div>
-                                <small class="text-white">AI Voice Technical Mock Interview</small>
+                                <small class="text-slate-300 fw-medium">AI Voice Technical Mock Interview</small>
                             </div>
                         </div>
 
-                        <div class="pt-3 border-top border-white border-opacity-10 text-white-50 small">
-                            <i class="bi bi-shield-lock me-1 text-success"></i> Enterprise End-to-End Encryption
+                        <div class="pt-3 border-top border-secondary border-opacity-25 text-slate-400 small">
+                            <i class="bi bi-shield-lock me-1 text-emerald"></i> Enterprise End-to-End Encryption
                         </div>
                     </div>
 
                     <!-- Right Column: Login Form -->
-                    <div class="col-md-7 p-4 p-lg-5 bg-white d-flex flex-column justify-content-center">
+                    <div class="col-md-7 p-4 p-lg-5 d-flex flex-column justify-content-center" style="background: #0b101a;">
                         <div class="mb-4">
-                            <h4 class="fw-bold text-dark mb-1">Welcome Back! 👋</h4>
-                            <p class="text-secondary small mb-0">Please enter your student credentials to log in.</p>
+                            <h4 class="fw-bold text-white mb-1">Welcome Back! 👋</h4>
+                            <p class="text-slate-400 small mb-0">Please enter your student credentials to log in.</p>
                         </div>
 
                         {% if form.non_field_errors %}
-                            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4">
+                            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 bg-danger bg-opacity-25 text-white">
                                 {% for error in form.non_field_errors %}
                                     <div class="small"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ error }}</div>
                                 {% endfor %}
@@ -135,7 +140,7 @@
                             {% csrf_token %}
 
                             <div class="mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label small fw-semibold text-dark">Username</label>
+                                <label for="{{ form.username.id_for_label }}" class="form-label small fw-semibold text-slate-300">Username</label>
                                 <div class="custom-pill-group">
                                     <span class="input-icon"><i class="bi bi-person"></i></span>
                                     <input type="text" 
@@ -151,7 +156,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="{{ form.password.id_for_label }}" class="form-label small fw-semibold text-dark">Password</label>
+                                <label for="{{ form.password.id_for_label }}" class="form-label small fw-semibold text-slate-300">Password</label>
                                 <div class="custom-pill-group">
                                     <span class="input-icon"><i class="bi bi-lock"></i></span>
                                     <input type="password" 
@@ -169,37 +174,14 @@
                                 {% endfor %}
                             </div>
 
-                            <button type="submit" class="btn btn-primary-custom w-100 py-2.5 fs-6 shadow">
+                            <button type="submit" class="btn btn-primary-custom w-100 py-3 fs-6">
                                 Log In to Copilot <i class="bi bi-arrow-right-short fs-5 ms-1"></i>
                             </button>
                         </form>
 
-
-                        <!-- Divider Line -->
-                        <div class="d-flex align-items-center my-3">
-                            <hr class="flex-grow-1 border-secondary border-opacity-25 my-0">
-                            <span class="px-3 text-muted small fw-semibold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Or sign in with</span>
-                            <hr class="flex-grow-1 border-secondary border-opacity-25 my-0">
-                        </div>
-
-                        <!-- Google SSO Sign-In Button (Positioned Below Form & Submit Button) -->
-                        <div>
-                            <a href="{% url 'google_login' %}" class="btn btn-outline-secondary w-100 rounded-pill py-2.5 d-flex align-items-center justify-content-center gap-2 shadow-sm border text-dark fw-semibold bg-white hover-lift">
-                                <svg width="18" height="18" viewBox="0 0 24 24">
-                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                                </svg>
-                                <span>Sign in with Google</span>
-                            </a>
-                        </div>
-
-
-
-                        <div class="text-center mt-4 pt-3 border-top">
-                            <span class="text-secondary small">Don't have an account yet?</span>
-                            <a href="{% url 'register' %}" class="small fw-bold text-primary text-decoration-none ms-1">
+                        <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
+                            <span class="text-slate-400 small">Don't have an account yet?</span>
+                            <a href="{% url 'register' %}" class="small fw-bold text-emerald text-decoration-none ms-1">
                                 Create Account
                             </a>
                         </div>
@@ -225,4 +207,3 @@
     }
 </script>
 {% endblock %}
-

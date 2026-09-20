@@ -5,22 +5,22 @@
 {% block content %}
 <div class="container py-4">
     <!-- Breadcrumb & Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small mb-1">
-                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'career_index' %}">Career Roadmaps</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ roadmap.target_role }}</li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}" style="color: #94a3b8;">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'career_index' %}" style="color: #94a3b8;">Career Roadmaps</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ roadmap.target_role }}</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold text-dark mb-0">{{ roadmap.title }}</h2>
+            <h2 class="fw-bold text-white mb-0" style="letter-spacing: -0.02em;">{{ roadmap.title }}</h2>
             <span class="text-secondary small">
-                Target Role: <strong class="text-primary">{{ roadmap.target_role }}</strong> • Created on {{ roadmap.created_at|date:"F d, Y" }}
+                Target Role: <strong style="color: #00c288;">{{ roadmap.target_role }}</strong> • Created on {{ roadmap.created_at|date:"F d, Y" }}
             </span>
         </div>
         <div class="mt-3 mt-md-0">
-            <a href="{% url 'career_create' %}" class="btn btn-primary-custom">
+            <a href="{% url 'career_create' %}" class="btn btn-emerald px-4">
                 <i class="bi bi-plus-circle me-1"></i>New Roadmap
             </a>
         </div>
@@ -28,21 +28,21 @@
 
     <!-- AI Summary Banner -->
     {% if roadmap_data.summary %}
-        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-dark text-white p-4">
+        <div class="card border-0 rounded-4 mb-4 p-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f1724 0%, #080c14 100%); border: 1px solid rgba(0, 194, 136, 0.3) !important; box-shadow: 0 0 30px rgba(0, 194, 136, 0.12) !important;">
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-primary p-3 rounded-3 fs-3 text-white">
+                <div class="p-3 rounded-3 fs-3 text-white" style="background: rgba(0, 194, 136, 0.2); color: #00c288;">
                     <i class="bi bi-stars"></i>
                 </div>
                 <div>
-                    <h5 class="fw-bold text-warning mb-1">90-Day Placement Acceleration Strategy</h5>
-                    <p class="mb-0 text-white-50 lead fs-6">{{ roadmap_data.summary }}</p>
+                    <h5 class="fw-bold mb-1" style="color: #00c288;">90-Day Placement Acceleration Strategy</h5>
+                    <p class="mb-0 text-secondary lead fs-6" style="line-height: 1.6;">{{ roadmap_data.summary }}</p>
                 </div>
             </div>
         </div>
     {% endif %}
 
     <!-- Monthly Navigation Tabs -->
-    <ul class="nav nav-pills nav-fill mb-4 p-2 bg-white rounded-3 shadow-sm" id="roadmapTab" role="tablist">
+    <ul class="nav nav-pills nav-fill mb-4 p-2 rounded-4" id="roadmapTab" role="tablist" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08);">
         {% for month in months %}
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold py-3 {% if forloop.first %}active{% endif %}" 
@@ -64,44 +64,44 @@
                 <div class="row g-4">
                     {% for week in month.weeks %}
                         <div class="col-md-6">
-                            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="fw-bold mb-0 text-dark">
-                                        <i class="bi bi-flag-fill text-primary me-2"></i>{{ week.title|default:"Week Details" }}
+                            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                                <div class="card-header border-bottom py-3 px-4 d-flex justify-content-between align-items-center" style="background: #090e17; border-bottom-color: rgba(255, 255, 255, 0.08) !important;">
+                                    <h6 class="fw-bold mb-0 text-white">
+                                        <i class="bi bi-flag-fill me-2" style="color: #00c288;"></i>{{ week.title|default:"Week Details" }}
                                     </h6>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                                    <span class="badge px-2.5 py-1 rounded-pill small" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
                                         {{ week.focus_skill|default:"Core Focus" }}
                                     </span>
                                 </div>
                                 <div class="card-body p-4 d-flex flex-column">
                                     <!-- Tasks Checklist -->
-                                    <h6 class="fw-bold text-secondary small text-uppercase tracking-wider mb-2">Learning Milestones & Tasks</h6>
-                                    <ul class="list-unstyled mb-4 flex-grow-1">
+                                    <h6 class="fw-bold text-secondary small text-uppercase tracking-wider mb-2" style="letter-spacing: 0.05em; font-size: 0.7rem;">Learning Milestones & Tasks</h6>
+                                    <div class="d-flex flex-column gap-2 mb-4 flex-grow-1">
                                         {% for task in week.tasks %}
-                                            <li class="d-flex align-items-start gap-2 mb-2 small text-dark">
-                                                <i class="bi bi-check-square-fill text-success mt-1"></i>
-                                                <span>{{ task }}</span>
-                                            </li>
+                                            <div class="d-flex align-items-start gap-2.5 p-2 rounded-3" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.04);">
+                                                <i class="bi bi-check-square-fill mt-0.5" style="color: #00c288;"></i>
+                                                <span class="text-white small" style="line-height: 1.5;">{{ task }}</span>
+                                            </div>
                                         {% endfor %}
-                                    </ul>
+                                    </div>
 
                                     <!-- Project Milestone -->
                                     {% if week.project_milestone %}
-                                        <div class="p-3 bg-light rounded-3 border-start border-warning border-4 mb-3">
-                                            <div class="small fw-bold text-dark mb-1">
-                                                <i class="bi bi-folder-symlink text-warning me-1"></i>Hands-on Project Milestone:
+                                        <div class="p-3 rounded-3 mb-3" style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; border-radius: 0.5rem;">
+                                            <div class="small fw-bold mb-1" style="color: #f59e0b;">
+                                                <i class="bi bi-folder-symlink me-1"></i>Hands-on Project Milestone:
                                             </div>
-                                            <div class="small text-secondary">{{ week.project_milestone }}</div>
+                                            <div class="small text-white" style="line-height: 1.5;">{{ week.project_milestone }}</div>
                                         </div>
                                     {% endif %}
 
                                     <!-- Recommended Resources -->
                                     {% if week.recommended_resources %}
                                         <div>
-                                            <div class="small fw-bold text-secondary mb-1">Recommended Resources:</div>
+                                            <div class="small fw-bold text-secondary mb-1" style="font-size: 0.75rem;">Recommended Resources:</div>
                                             <div class="d-flex flex-wrap gap-1">
                                                 {% for res in week.recommended_resources %}
-                                                    <span class="badge bg-secondary-subtle text-dark border small">{{ res }}</span>
+                                                    <span class="badge px-2.5 py-1 rounded-pill small" style="background: rgba(255, 255, 255, 0.06); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1);">{{ res }}</span>
                                                 {% endfor %}
                                             </div>
                                         </div>

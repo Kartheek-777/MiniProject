@@ -7,6 +7,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/generate-summary/', views.GenerateSummaryView.as_view(), name='generate_ai_summary'),
+    path('profile/generate-bio/', views.GenerateSummaryView.as_view(), name='generate_ai_bio'),
     path('google/login/', views.google_login_view, name='google_login'),
     path('google/select-account/', views.google_select_account_view, name='google_select_account'),
     path('google/login/callback/', views.google_callback_view, name='google_callback'),

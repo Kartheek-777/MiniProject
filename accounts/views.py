@@ -178,5 +178,7 @@ class GenerateSummaryView(LoginRequiredMixin, View):
         summary = generate_ai_profile_summary(request.user, profile, stats, force_refresh=True)
 
         return JsonResponse({
-            "summary": summary
+            "status": "success",
+            "summary": summary,
+            "bio": summary
         })

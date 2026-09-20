@@ -4,145 +4,155 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Header Banner -->
-    <div class="card border-0 bg-gradient text-white p-4 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
-        <div class="row align-items-center">
+    <!-- Header Hero Banner -->
+    <div class="card border-0 p-4 mb-4 rounded-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f1724 0%, #080c14 100%); border: 1px solid rgba(0, 194, 136, 0.3) !important; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 194, 136, 0.12) !important;">
+        <div class="row align-items-center position-relative z-1">
             <div class="col-md-8">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-2 rounded-pill">
-                        <i class="bi bi-cpu me-1"></i>Phase 6 Active
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="badge px-3 py-2 rounded-pill" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
+                        <i class="bi bi-cpu-fill me-1"></i>Phase 6 Probing Engine
                     </span>
-                    <span class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-2 rounded-pill">
-                        <i class="bi bi-shield-check me-1"></i>Gemini 3.6 Flash Engine
+                    <span class="badge px-3 py-2 rounded-pill" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">
+                        <i class="bi bi-shield-check me-1"></i>Gemini AI Interviewer
                     </span>
                 </div>
-                <h2 class="fw-bold text-white mb-2">AI Technical Mock Interview Simulation</h2>
-                <p class="text-white-50 mb-0">
-                    Simulate high-pressure multi-round technical interviews with our Senior AI Technical Interviewer (8+ yrs experience). Practice HR, DSA, AI/ML, Project Deep Dives, and System Design with real-time feedback.
+                <h2 class="fw-bold text-white mb-2" style="font-size: 1.85rem; letter-spacing: -0.02em;">
+                    AI Technical Mock Interview Simulation
+                </h2>
+                <p class="text-secondary mb-0 style-body" style="font-size: 0.95rem; line-height: 1.6;">
+                    Simulate high-pressure multi-round technical interviews with our Senior AI Technical Interviewer (8+ yrs experience). Practice HR, Core CS, System Design, and Project Deep Dives with instant real-time evaluation.
                 </p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <button type="button" class="btn btn-primary btn-lg rounded-pill px-4 shadow" data-bs-toggle="modal" data-bs-target="#startInterviewModal">
+                <button type="button" class="btn btn-emerald btn-lg px-4 shadow" data-bs-toggle="modal" data-bs-target="#startInterviewModal">
                     <i class="bi bi-play-fill me-1"></i>Start New Interview
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Features & Structure Overview Cards -->
+    <!-- Feature Pillars -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 fs-3">
+            <div class="card border-0 rounded-4 h-100 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="d-flex align-items-center gap-3.5">
+                    <div class="icon-wrapper flex-shrink-0" style="width: 48px; height: 48px; background: rgba(0, 194, 136, 0.12); color: #00c288; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
                         <i class="bi bi-diagram-3-fill"></i>
                     </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">6-Phase Progression</h6>
-                        <small class="text-muted">HR Screening → Core CS → AI/GenAI → Project Deep Dive → System Design → Evaluation</small>
+                    <div class="ps-1">
+                        <h6 class="fw-bold text-white mb-1.5" style="font-size: 0.95rem;">6-Phase Progression</h6>
+                        <small class="text-secondary d-block" style="font-size: 0.8rem; line-height: 1.5;">HR Screening → Core CS → AI/GenAI → Project Deep Dive → System Design → Scorecard</small>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 fs-3">
+            <div class="card border-0 rounded-4 h-100 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="d-flex align-items-center gap-3.5">
+                    <div class="icon-wrapper flex-shrink-0" style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
                         <i class="bi bi-lightning-charge-fill"></i>
                     </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Strict Probing Persona</h6>
-                        <small class="text-muted">Single-question focus, probing weak points, challenging assumptions & asking "WHY"</small>
+                    <div class="ps-1">
+                        <h6 class="fw-bold text-white mb-1.5" style="font-size: 0.95rem;">Strict Probing Persona</h6>
+                        <small class="text-secondary d-block" style="font-size: 0.8rem; line-height: 1.5;">Single-question focus, probing weak points, challenging assumptions & asking "WHY"</small>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3 bg-white">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 fs-3">
+            <div class="card border-0 rounded-4 h-100 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="d-flex align-items-center gap-3.5">
+                    <div class="icon-wrapper flex-shrink-0" style="width: 48px; height: 48px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
                         <i class="bi bi-clipboard2-check-fill"></i>
                     </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Instant AI Scorecard</h6>
-                        <small class="text-muted">Hire/No Hire verdict, ratings, strengths, weaknesses & structured action roadmap</small>
+                    <div class="ps-1">
+                        <h6 class="fw-bold text-white mb-1.5" style="font-size: 0.95rem;">Instant AI Scorecard</h6>
+                        <small class="text-secondary d-block" style="font-size: 0.8rem; line-height: 1.5;">Hire/No Hire verdict, rating breakdown, key strengths & tailored improvement steps</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Previous Sessions History -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-        <div class="d-flex align-items-center justify-between mb-3">
+    <!-- History Table Container -->
+    <div class="card border-0 rounded-4 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h5 class="fw-bold mb-1"><i class="bi bi-clock-history me-2 text-primary"></i>Interview History & Scorecards</h5>
-                <p class="text-muted small mb-0">Track your past practice sessions and evaluation progress.</p>
+                <h5 class="fw-bold text-white mb-1">
+                    <i class="bi bi-clock-history me-2" style="color: #00c288;"></i>Interview History & Scorecards
+                </h5>
+                <p class="text-secondary small mb-0">Track your past technical practice sessions and evaluation progress.</p>
             </div>
         </div>
 
         {% if sessions %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="table align-middle mb-0" style="color: #ffffff;">
+                    <thead style="background: #090e17; color: #00c288; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                         <tr>
-                            <th>Target Role</th>
-                            <th>Interview Mode</th>
-                            <th>Phase / Status</th>
-                            <th>Rating</th>
-                            <th>Decision</th>
-                            <th>Date</th>
-                            <th class="text-end">Action</th>
+                            <th class="py-3 px-3 border-0">Target Role</th>
+                            <th class="py-3 px-3 border-0">Interview Scope</th>
+                            <th class="py-3 px-3 border-0">Phase / Status</th>
+                            <th class="py-3 px-3 border-0">Rating</th>
+                            <th class="py-3 px-3 border-0">Decision</th>
+                            <th class="py-3 px-3 border-0">Date</th>
+                            <th class="py-3 px-3 border-0 text-end">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="border-top: none;">
                         {% for s in sessions %}
-                            <tr>
-                                <td>
-                                    <span class="fw-semibold text-dark">{{ s.target_role }}</span>
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                                <td class="py-3 px-3">
+                                    <span class="fw-semibold text-white d-block">{{ s.target_role }}</span>
                                 </td>
-                                <td>
-                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1">
+                                <td class="py-3 px-3">
+                                    <span class="badge px-2.5 py-1 rounded-pill" style="background: rgba(255, 255, 255, 0.06); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1);">
                                         {{ s.interview_mode }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="py-3 px-3">
                                     {% if s.status == 'completed' %}
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Completed</span>
+                                        <span class="badge px-2.5 py-1 rounded-pill" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                        </span>
                                     {% else %}
-                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">
+                                        <span class="badge px-2.5 py-1 rounded-pill" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">
                                             <i class="bi bi-arrow-repeat spin me-1"></i>{{ s.current_phase }}
                                         </span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="py-3 px-3">
                                     {% if s.evaluation_data and s.evaluation_data.rating %}
-                                        <span class="fw-bold text-primary">{{ s.evaluation_data.rating }}</span>
+                                        <span class="fw-bold" style="color: #00c288;">{{ s.evaluation_data.rating }}</span>
                                     {% else %}
-                                        <span class="text-muted">—</span>
+                                        <span class="text-secondary">—</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="py-3 px-3">
                                     {% if s.evaluation_data and s.evaluation_data.hire_decision %}
                                         {% if s.evaluation_data.hire_decision == 'Hire' %}
-                                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Hire</span>
+                                            <span class="badge px-2.5 py-1 rounded-pill" style="background: rgba(0, 194, 136, 0.2); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.4);">
+                                                <i class="bi bi-check-circle me-1"></i>Hire
+                                            </span>
                                         {% else %}
-                                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>No Hire</span>
+                                            <span class="badge px-2.5 py-1 rounded-pill" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                                <i class="bi bi-x-circle me-1"></i>No Hire
+                                            </span>
                                         {% endif %}
                                     {% else %}
-                                        <span class="text-muted">In Progress</span>
+                                        <span class="text-secondary small">In Progress</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <small class="text-muted">{{ s.started_at|date:"M d, Y H:i" }}</small>
+                                <td class="py-3 px-3">
+                                    <small class="text-secondary">{{ s.started_at|date:"M d, Y H:i" }}</small>
                                 </td>
-                                <td class="text-end">
+                                <td class="py-3 px-3 text-end">
                                     {% if s.status == 'completed' %}
-                                        <a href="{% url 'interview_scorecard' s.pk %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                        <a href="{% url 'interview_scorecard' s.pk %}" class="btn btn-outline-emerald btn-sm px-3">
                                             <i class="bi bi-file-earmark-text me-1"></i>Scorecard
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'interview_room' s.pk %}" class="btn btn-primary btn-sm rounded-pill">
+                                        <a href="{% url 'interview_room' s.pk %}" class="btn btn-emerald btn-sm px-3">
                                             <i class="bi bi-chat-dots me-1"></i>Continue
                                         </a>
                                     {% endif %}
@@ -154,10 +164,12 @@
             </div>
         {% else %}
             <div class="text-center py-5">
-                <i class="bi bi-mic text-muted display-4 d-block mb-3"></i>
-                <h6 class="fw-bold text-secondary">No Interview Sessions Yet</h6>
-                <p class="text-muted small mb-3">Launch your first AI mock interview to test your technical skills under pressure!</p>
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#startInterviewModal">
+                <div class="mx-auto mb-3" style="width: 64px; height: 64px; background: rgba(0, 194, 136, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00c288; font-size: 1.75rem;">
+                    <i class="bi bi-mic"></i>
+                </div>
+                <h6 class="fw-bold text-white mb-1">No Interview Sessions Yet</h6>
+                <p class="text-secondary small mb-3">Launch your first AI mock interview to test your technical skills under pressure!</p>
+                <button type="button" class="btn btn-emerald px-4" data-bs-toggle="modal" data-bs-target="#startInterviewModal">
                     <i class="bi bi-play-fill me-1"></i>Start First Interview
                 </button>
             </div>
@@ -168,30 +180,52 @@
 <!-- Start New Interview Modal -->
 <div class="modal fade" id="startInterviewModal" tabindex="-1" aria-labelledby="startInterviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+        <div class="modal-content border-0 rounded-4" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #ffffff;">
             <form method="POST" action="{% url 'start_interview' %}">
                 {% csrf_token %}
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold" id="startInterviewModalLabel">
-                        <i class="bi bi-headset me-2 text-primary"></i>Launch AI Mock Interview
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold text-white" id="startInterviewModalLabel">
+                        <i class="bi bi-headset me-2" style="color: #00c288;"></i>Launch AI Mock Interview
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-4">
+                <div class="modal-body p-4">
+                    {% if active_resume %}
+                        <div class="p-3 rounded-3 mb-3" style="background: rgba(0, 194, 136, 0.1); border: 1px solid rgba(0, 194, 136, 0.3);">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-check-fill fs-5" style="color: #00c288;"></i>
+                                <div>
+                                    <strong class="d-block text-white small">Linked Candidate Resume</strong>
+                                    <span class="small text-secondary">{{ active_resume.title }} (AI will ask project questions from your actual resume)</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="p-3 rounded-3 mb-3" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-exclamation-triangle-fill fs-5" style="color: #f59e0b;"></i>
+                                <div>
+                                    <strong class="d-block text-white small">No Uploaded Resume Detected</strong>
+                                    <span class="small text-secondary">The interview will focus on general role requirements. <a href="{% url 'resume_upload' %}" class="fw-bold" style="color: #00c288;">Upload a resume</a> to unlock personalized project deep-dives.</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Target Engineering Role</label>
+                        <label class="form-label fw-semibold text-white small">Target Engineering Role</label>
                         {{ form.target_role }}
-                        <small class="form-text text-muted">Defines the interviewer's technical depth and question scope.</small>
+                        <small class="form-text text-secondary d-block mt-1" style="font-size: 0.75rem;">Defines the interviewer's technical depth and question scope.</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Interview Scope & Mode</label>
+                        <label class="form-label fw-semibold text-white small">Interview Scope & Mode</label>
                         {{ form.interview_mode }}
-                        <small class="form-text text-muted">Choose full multi-round simulation or specific focus area.</small>
+                        <small class="form-text text-secondary d-block mt-1" style="font-size: 0.75rem;">Choose full multi-round simulation or specific focus area.</small>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-emerald px-4">
                         <i class="bi bi-rocket-takeoff me-1"></i>Begin Simulation
                     </button>
                 </div>

@@ -5,16 +5,17 @@
 {% block extra_css %}
 <style>
     .profile-hero-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 1.5rem;
+        background: #0f1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 1.5rem !important;
         overflow: hidden;
-        box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 194, 136, 0.08) !important;
     }
     .profile-cover-banner {
         height: 160px;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
+        background: linear-gradient(135deg, #060a12 0%, #0c1322 100%) !important;
         position: relative;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .profile-cover-banner::before {
         content: '';
@@ -23,7 +24,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        background: radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.25) 0%, transparent 60%);
+        background: radial-gradient(circle at 80% 20%, rgba(0, 194, 136, 0.18) 0%, transparent 60%);
     }
     .profile-avatar-container {
         margin-top: -55px;
@@ -34,27 +35,47 @@
         width: 110px;
         height: 110px;
         border-radius: 50%;
-        border: 4px solid #ffffff;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        border: 4px solid #00c288 !important;
+        box-shadow: 0 8px 25px rgba(0, 194, 136, 0.35);
         object-fit: cover;
     }
     .profile-avatar-fallback {
         width: 110px;
         height: 110px;
         border-radius: 50%;
-        border: 4px solid #ffffff;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        background: var(--primary-gradient);
-        color: #ffffff;
+        border: 4px solid #00c288 !important;
+        box-shadow: 0 8px 25px rgba(0, 194, 136, 0.35);
+        background: #00c288 !important;
+        color: #080c14 !important;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2.8rem;
         font-weight: 800;
     }
-    .nav-pills .nav-link.active {
-        background: var(--primary-gradient);
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    .profile-nav-pills {
+        background: #0f1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 1.25rem !important;
+        padding: 0.5rem !important;
+    }
+    .profile-nav-pills .nav-link {
+        color: #94a3b8 !important;
+        border-radius: 50rem !important;
+        padding: 0.6rem 1.4rem !important;
+        font-weight: 600 !important;
+        transition: all 0.25s ease;
+    }
+    .profile-nav-pills .nav-link.active {
+        background: #00c288 !important;
+        color: #080c14 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 16px rgba(0, 194, 136, 0.35) !important;
+    }
+    .profile-card-inset {
+        background: #0d131d !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 1.25rem !important;
     }
 </style>
 {% endblock %}
@@ -80,19 +101,19 @@
                         </div>
                         <div class="mb-1">
                             <div class="d-flex align-items-center gap-2 flex-wrap">
-                                <h2 class="fw-bold text-dark mb-0">{{ user.get_full_name|default:user.username }}</h2>
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-1 rounded-pill">
+                                <h2 class="fw-extrabold text-white mb-0" style="letter-spacing: -0.5px;">{{ user.get_full_name|default:user.username }}</h2>
+                                <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
                                     <i class="bi bi-briefcase me-1"></i>{{ profile.target_role|default:"Software Engineer" }}
                                 </span>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2.5 py-1 rounded-pill">
+                                <span class="badge bg-dark text-slate-400 border border-secondary border-opacity-25 px-2.5 py-1 rounded-pill">
                                     @{{ user.username }}
                                 </span>
                             </div>
-                            <p class="text-secondary small mb-0 mt-1">
-                                <i class="bi bi-mortarboard me-1 text-info"></i>{{ profile.degree|default:"B.Tech" }} in {{ profile.branch|default:"Computer Science" }} (Class of {{ profile.graduation_year|default:2026 }})
+                            <p class="text-slate-400 small mb-0 mt-1.5">
+                                <i class="bi bi-mortarboard me-1 text-emerald"></i>{{ profile.degree|default:"B.Tech" }} in {{ profile.branch|default:"Computer Science" }} (Class of {{ profile.graduation_year|default:2026 }})
                                 <span class="mx-1">•</span>
-                                <i class="bi bi-building me-1 text-primary"></i>{{ profile.college|default:"Engineering Institute" }}
-                                {% if profile.cgpa %}<span class="mx-1">•</span><span class="text-warning fw-semibold">CGPA: {{ profile.cgpa }}</span>{% endif %}
+                                <i class="bi bi-building me-1 text-emerald"></i>{{ profile.college|default:"Engineering Institute" }}
+                                {% if profile.cgpa %}<span class="mx-1">•</span><span class="text-emerald fw-semibold">CGPA: {{ profile.cgpa }}</span>{% endif %}
                             </p>
                         </div>
                     </div>
@@ -101,29 +122,29 @@
                 <!-- Action Controls (Edit Profile, AI Summary, Logout) -->
                 <div class="col-md-5 text-md-end">
                     <div class="d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
-                        <button type="button" class="btn btn-primary-custom btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                            <i class="bi bi-pencil-square me-1"></i>Edit Profile
+                        <button type="button" class="btn btn-primary-custom btn-sm px-3.5 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="bi bi-pencil-square me-1.5"></i>Edit Profile
                         </button>
-                        <button type="button" id="generateAiBioBtn" class="btn btn-outline-purple btn-sm rounded-pill px-3" style="color: #7c3aed; border-color: #7c3aed;">
-                            <i class="bi bi-stars me-1"></i>Generate AI Bio
+                        <button type="button" id="generateAiBioBtn" class="btn btn-outline-emerald btn-sm px-3.5 py-2 fw-semibold">
+                            <i class="bi bi-stars me-1.5"></i>Generate AI Bio
                         </button>
-                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-right me-1.5"></i>Logout
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Profile Completeness Engine Meter -->
-            <div class="mt-4 pt-3 border-top">
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
                 <div class="row align-items-center g-2">
                     <div class="col-md-6">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                            <small class="fw-bold text-uppercase text-secondary" style="font-size: 0.75rem;">Profile Completeness Engine</small>
-                            <span class="badge bg-primary rounded-pill">{{ completeness }}% Complete</span>
+                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                            <small class="fw-bold text-uppercase text-slate-400" style="font-size: 0.75rem; letter-spacing: 0.5px;">Profile Completeness Engine</small>
+                            <span class="badge rounded-pill px-2.5 py-1 small" style="background: rgba(0, 194, 136, 0.15); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">{{ completeness }}% Complete</span>
                         </div>
-                        <div class="progress rounded-pill" style="height: 8px;">
-                            <div class="progress-bar bg-primary rounded-pill progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ completeness }}%;"></div>
+                        <div class="progress" style="height: 8px; background-color: #0d131d; border-radius: 50rem;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ completeness }}%; background: linear-gradient(90deg, #00c288 0%, #059669 100%); border-radius: 50rem;"></div>
                         </div>
                     </div>
                     <div class="col-md-6 text-md-end">
@@ -132,7 +153,7 @@
                                 <i class="bi bi-exclamation-triangle-fill me-1"></i>Add {{ missing_fields|slice:":2"|join:", " }} to achieve 100% placement index.
                             </small>
                         {% else %}
-                            <small class="text-success fw-semibold" style="font-size: 0.78rem;">
+                            <small class="text-emerald fw-semibold" style="font-size: 0.78rem;">
                                 <i class="bi bi-check-circle-fill me-1"></i>100% Profile Completeness Achieved
                             </small>
                         {% endif %}
@@ -142,26 +163,26 @@
         </div>
     </div>
 
-    <!-- Candidate Navigation Tabs -->
-    <ul class="nav nav-pills mb-4 gap-2 bg-white p-2 rounded-4 border shadow-sm" id="profileTabs" role="tablist">
+    <!-- Candidate Navigation Tabs (Obsidian Emerald Theme) -->
+    <ul class="nav profile-nav-pills mb-4 gap-2" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-pill px-4 fw-semibold small" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
-                <i class="bi bi-person-vcard me-1"></i>Overview & Bio
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
+                <i class="bi bi-person-vcard me-1.5"></i>Overview & Bio
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill px-4 fw-semibold small" id="analytics-tab" data-bs-toggle="pill" data-bs-target="#analytics" type="button" role="tab">
-                <i class="bi bi-bar-chart me-1"></i>Placement Metrics
+            <button class="nav-link" id="analytics-tab" data-bs-toggle="pill" data-bs-target="#analytics" type="button" role="tab">
+                <i class="bi bi-bar-chart me-1.5"></i>Placement Metrics
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill px-4 fw-semibold small" id="resumes-tab" data-bs-toggle="pill" data-bs-target="#resumes" type="button" role="tab">
-                <i class="bi bi-file-earmark-pdf me-1"></i>Resumes ({{ stats.resumes_count }})
+            <button class="nav-link" id="resumes-tab" data-bs-toggle="pill" data-bs-target="#resumes" type="button" role="tab">
+                <i class="bi bi-file-earmark-pdf me-1.5"></i>Resumes ({{ stats.resumes_count }})
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill px-4 fw-semibold small" id="settings-tab" data-bs-toggle="pill" data-bs-target="#settings" type="button" role="tab">
-                <i class="bi bi-gear me-1"></i>Account & Settings
+            <button class="nav-link" id="settings-tab" data-bs-toggle="pill" data-bs-target="#settings" type="button" role="tab">
+                <i class="bi bi-gear me-1.5"></i>Account & Settings
             </button>
         </li>
     </ul>
@@ -174,45 +195,45 @@
             <div class="row g-4">
                 <div class="col-lg-8">
                     <!-- AI Executive Bio Card -->
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 card-modern">
+                    <div class="card p-4 mb-4 profile-card-inset">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h6 class="fw-bold text-dark mb-0"><i class="bi bi-robot me-2 text-primary"></i>ATS-Optimized Professional Summary</h6>
-                            <span class="badge bg-purple text-purple border rounded-pill small" style="color: #7c3aed; background: #f3e8ff;">
+                            <h6 class="fw-bold text-white mb-0"><i class="bi bi-robot me-2 text-emerald"></i>ATS-Optimized Professional Summary</h6>
+                            <span class="badge rounded-pill small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
                                 <i class="bi bi-lightning-charge me-1"></i>Gemini AI Engine
                             </span>
                         </div>
-                        <div class="p-3 rounded-3 bg-light border" id="bioContainer">
-                            <p class="text-secondary mb-0" id="profileBioText" style="line-height: 1.6; white-space: pre-wrap;">
+                        <div class="p-3.5 rounded-3" id="bioContainer" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.06);">
+                            <p class="text-slate-300 mb-0" id="profileBioText" style="line-height: 1.65; white-space: pre-wrap; font-size: 0.92rem;">
                                 {% if profile.ai_summary %}
                                     {{ profile.ai_summary }}
                                 {% elif profile.bio %}
                                     {{ profile.bio }}
                                 {% else %}
-                                    <span class="text-muted italic">Click "Generate AI Bio" to synthesize an ATS-optimized professional summary using Google Gemini API based on your academic profile and candidate skills.</span>
+                                    <span class="text-slate-400 italic">Click "Generate AI Bio" to synthesize an ATS-optimized professional summary using Google Gemini API based on your academic profile and candidate skills.</span>
                                 {% endif %}
                             </p>
                         </div>
                     </div>
 
                     <!-- Academic Details Summary Card -->
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white card-modern">
-                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-mortarboard me-2 text-info"></i>Academic Profile Summary</h6>
+                    <div class="card p-4 profile-card-inset">
+                        <h6 class="fw-bold text-white mb-3"><i class="bi bi-mortarboard me-2 text-emerald"></i>Academic Profile Summary</h6>
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Institution</small>
-                                <span class="fw-semibold text-dark">{{ profile.college|default:"Engineering Institute" }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Institution</small>
+                                <span class="fw-semibold text-white">{{ profile.college|default:"Engineering Institute" }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Degree & Major</small>
-                                <span class="fw-semibold text-dark">{{ profile.degree|default:"B.Tech" }} - {{ profile.branch|default:"Computer Science" }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Degree & Major</small>
+                                <span class="fw-semibold text-white">{{ profile.degree|default:"B.Tech" }} - {{ profile.branch|default:"Computer Science" }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Graduation Year</small>
-                                <span class="fw-semibold text-dark">{{ profile.graduation_year|default:2026 }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Graduation Year</small>
+                                <span class="fw-semibold text-white">{{ profile.graduation_year|default:2026 }}</span>
                             </div>
                             <div class="col-sm-6">
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Cumulative CGPA</small>
-                                <span class="fw-semibold text-warning">{{ profile.cgpa|default:"Not specified" }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Cumulative CGPA</small>
+                                <span class="fw-semibold text-emerald">{{ profile.cgpa|default:"Not specified" }}</span>
                             </div>
                         </div>
                     </div>
@@ -220,24 +241,24 @@
 
                 <div class="col-lg-4">
                     <!-- Contact Info Card -->
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 card-modern">
-                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-card-checklist me-2 text-primary"></i>Candidate Information</h6>
+                    <div class="card p-4 profile-card-inset">
+                        <h6 class="fw-bold text-white mb-3"><i class="bi bi-card-checklist me-2 text-emerald"></i>Candidate Information</h6>
                         <div class="d-flex flex-column gap-3">
                             <div>
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Full Name</small>
-                                <span class="fw-semibold text-dark">{{ user.get_full_name|default:user.username }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Full Name</small>
+                                <span class="fw-semibold text-white">{{ user.get_full_name|default:user.username }}</span>
                             </div>
                             <div>
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Email Address</small>
-                                <span class="fw-semibold text-dark">{{ user.email|default:"No email registered" }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Email Address</small>
+                                <span class="fw-semibold text-white">{{ user.email|default:"No email registered" }}</span>
                             </div>
                             <div>
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Phone Number</small>
-                                <span class="fw-semibold text-dark">{{ profile.phone_number|default:"Not specified" }}</span>
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Phone Number</small>
+                                <span class="fw-semibold text-white">{{ profile.phone_number|default:"Not specified" }}</span>
                             </div>
                             <div>
-                                <small class="text-muted d-block" style="font-size: 0.75rem;">Target Engineering Role</small>
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-1 rounded-pill">
+                                <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Target Engineering Role</small>
+                                <span class="badge rounded-pill px-3 py-1 mt-1" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
                                     {{ profile.target_role|default:"Software Engineer" }}
                                 </span>
                             </div>
@@ -251,28 +272,28 @@
         <div class="tab-pane fade" id="analytics" role="tabpanel">
             <div class="row g-3 mb-4">
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 card-modern">
+                    <div class="card p-3 h-100 profile-card-inset">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4 fs-3">
+                            <div class="icon-wrapper">
                                 <i class="bi bi-file-earmark-text-fill"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Resumes Uploaded</small>
-                                <h3 class="fw-bold text-dark mb-0">{{ stats.resumes_count }}</h3>
+                                <small class="text-slate-400 d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Resumes Uploaded</small>
+                                <h3 class="fw-extrabold text-white mb-0">{{ stats.resumes_count }}</h3>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 card-modern">
+                    <div class="card p-3 h-100 profile-card-inset">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-success bg-opacity-10 text-success p-3 rounded-4 fs-3">
+                            <div class="icon-wrapper">
                                 <i class="bi bi-award-fill"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Latest ATS Score</small>
-                                <h3 class="fw-bold text-success mb-0">
+                                <small class="text-slate-400 d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Latest ATS Score</small>
+                                <h3 class="fw-extrabold text-emerald mb-0">
                                     {% if stats.ats_score %}{{ stats.ats_score }}%{% else %}—{% endif %}
                                 </h3>
                             </div>
@@ -281,14 +302,14 @@
                 </div>
 
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 card-modern">
+                    <div class="card p-3 h-100 profile-card-inset">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4 fs-3">
+                            <div class="icon-wrapper">
                                 <i class="bi bi-bullseye"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Job Match Avg</small>
-                                <h3 class="fw-bold text-warning mb-0">
+                                <small class="text-slate-400 d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Job Match Avg</small>
+                                <h3 class="fw-extrabold text-emerald mb-0">
                                     {% if stats.job_match_avg %}{{ stats.job_match_avg }}%{% else %}0%{% endif %}
                                 </h3>
                             </div>
@@ -297,14 +318,14 @@
                 </div>
 
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100 card-modern">
+                    <div class="card p-3 h-100 profile-card-inset">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-info bg-opacity-10 text-info p-3 rounded-4 fs-3">
+                            <div class="icon-wrapper">
                                 <i class="bi bi-headset"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Interview Score</small>
-                                <h3 class="fw-bold text-info mb-0">{{ stats.avg_interview_score }}</h3>
+                                <small class="text-slate-400 d-block fw-semibold text-uppercase" style="font-size: 0.75rem;">Interview Score</small>
+                                <h3 class="fw-extrabold text-emerald mb-0">{{ stats.avg_interview_score }}</h3>
                             </div>
                         </div>
                     </div>
@@ -314,10 +335,10 @@
 
         <!-- TAB 3: RESUMES & DOCUMENTS -->
         <div class="tab-pane fade" id="resumes" role="tabpanel">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white card-modern">
+            <div class="card p-4 profile-card-inset">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-file-text me-2 text-danger"></i>Uploaded Candidate Resumes</h6>
-                    <a href="{% url 'resume_upload' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+                    <h6 class="fw-bold mb-0 text-white"><i class="bi bi-file-text me-2 text-emerald"></i>Uploaded Candidate Resumes</h6>
+                    <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom btn-sm px-3.5 fw-bold">
                         <i class="bi bi-plus-lg me-1"></i>Upload New Resume
                     </a>
                 </div>
@@ -326,7 +347,7 @@
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead>
-                                <tr class="text-muted small text-uppercase">
+                                <tr class="text-slate-400 small text-uppercase" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                                     <th>Document</th>
                                     <th>Uploaded Date</th>
                                     <th>Skills Extracted</th>
@@ -335,21 +356,21 @@
                             </thead>
                             <tbody>
                                 {% for r in recent_resumes %}
-                                    <tr>
+                                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
                                         <td>
                                             <div class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-file-pdf-fill text-danger fs-4"></i>
-                                                <span class="fw-semibold text-dark small">{{ r.filename }}</span>
+                                                <i class="bi bi-file-pdf-fill text-emerald fs-4"></i>
+                                                <span class="fw-semibold text-white small">{{ r.filename }}</span>
                                             </div>
                                         </td>
-                                        <td class="small text-muted">{{ r.uploaded_at|date:"M d, Y H:i" }}</td>
+                                        <td class="small text-slate-400">{{ r.uploaded_at|date:"M d, Y H:i" }}</td>
                                         <td>
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            <span class="badge bg-dark text-emerald border border-emerald border-opacity-30">
                                                 {{ r.extracted_skills|length }} Technical Skills
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <a href="{% url 'resume_detail' r.pk %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1">View ATS Score</a>
+                                            <a href="{% url 'resume_detail' r.pk %}" class="btn btn-outline-emerald btn-sm rounded-pill px-3 me-1">View ATS Score</a>
                                             <form method="POST" action="{% url 'resume_delete' r.pk %}" class="d-inline" onsubmit="return confirm('Permanently delete {{ r.filename }}?');">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="next" value="{% url 'profile' %}">
@@ -364,7 +385,7 @@
                         </table>
                     </div>
                 {% else %}
-                    <p class="text-muted small my-auto">No resumes uploaded yet. <a href="{% url 'resume_upload' %}">Upload resume</a>.</p>
+                    <p class="text-slate-400 small my-auto">No resumes uploaded yet. <a href="{% url 'resume_upload' %}" class="text-emerald fw-semibold">Upload resume</a>.</p>
                 {% endif %}
             </div>
         </div>
@@ -373,25 +394,25 @@
         <div class="tab-pane fade" id="settings" role="tabpanel">
             <div class="row g-4">
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white card-modern">
-                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Account Information</h6>
+                    <div class="card p-4 profile-card-inset">
+                        <h6 class="fw-bold text-white mb-3"><i class="bi bi-shield-lock me-2 text-emerald"></i>Account Information</h6>
                         <div class="mb-3">
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Registered Username</small>
-                            <span class="fw-semibold text-dark">@{{ user.username }}</span>
+                            <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Registered Username</small>
+                            <span class="fw-semibold text-white">@{{ user.username }}</span>
                         </div>
                         <div class="mb-3">
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Account Member Since</small>
-                            <span class="fw-semibold text-dark">{{ user.date_joined|date:"F d, Y" }}</span>
+                            <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Account Member Since</small>
+                            <span class="fw-semibold text-white">{{ user.date_joined|date:"F d, Y" }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6">
                     <!-- Session Danger Zone (Logout) -->
-                    <div class="card border-danger border-opacity-25 shadow-sm rounded-4 p-4 bg-white card-modern">
+                    <div class="card p-4 profile-card-inset" style="border: 1px solid rgba(239, 68, 68, 0.3) !important;">
                         <h6 class="fw-bold text-danger mb-2"><i class="bi bi-box-arrow-right me-2"></i>Account Session Controls</h6>
-                        <p class="text-secondary small mb-3">Ending your current session will sign you out of PlacementCopilot on this browser.</p>
-                        <a href="{% url 'logout' %}" class="btn btn-danger rounded-pill px-4 align-self-start shadow-sm">
+                        <p class="text-slate-400 small mb-3">Ending your current session will sign you out of PlacementCopilot on this browser.</p>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger rounded-pill px-4 align-self-start fw-semibold">
                             <i class="bi bi-box-arrow-right me-2"></i>Log Out of PlacementCopilot
                         </a>
                     </div>
@@ -402,177 +423,139 @@
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
+<!-- Edit Profile Modal (Dark Obsidian Theme) -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content theme-modal">
+        <div class="modal-content" style="background: #0d131d !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #ffffff !important;">
             <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="modal-header theme-modal-header border-0 d-flex align-items-center justify-content-between">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 d-flex align-items-center justify-content-between p-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-primary bg-opacity-25 text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center border border-primary border-opacity-25 shadow-sm" style="width: 46px; height: 46px;">
-                            <i class="bi bi-person-gear fs-4 text-cyan" style="color: #38bdf8;"></i>
+                        <div class="p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.15); width: 44px; height: 44px;">
+                            <i class="bi bi-person-gear fs-4 text-emerald"></i>
                         </div>
                         <div>
                             <h5 class="modal-title fw-bold text-white mb-0" id="editProfileModalLabel">Update Candidate Profile</h5>
-                            <small class="text-white-50">Manage your candidate identity, academic metrics, and target role.</small>
+                            <small class="text-slate-400">Manage your candidate identity, academic metrics, and target role.</small>
                         </div>
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body p-4 bg-light bg-opacity-50">
+                <div class="modal-body p-4" style="background: #090e17;">
                     <div class="d-flex flex-column gap-4">
 
                         <!-- Section 1: Avatar & Personal Information -->
-                        <div class="theme-form-card">
-                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                                <h6 class="fw-bold text-dark mb-0">
-                                    <i class="bi bi-person-circle text-primary me-2"></i>Personal & Contact Identity
+                        <div class="p-4 rounded-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                <h6 class="fw-bold text-white mb-0">
+                                    <i class="bi bi-person-circle text-emerald me-2"></i>Personal & Contact Identity
                                 </h6>
-                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill small">Step 1 of 3</span>
+                                <span class="badge bg-dark text-emerald border border-emerald border-opacity-30 rounded-pill small">Step 1 of 3</span>
                             </div>
 
                             <div class="row g-3">
                                 <!-- Profile Picture Upload Card -->
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">
-                                        <i class="bi bi-image me-1 text-info"></i>Candidate Profile Photo
+                                    <label class="form-label fw-semibold text-slate-300 small mb-1">
+                                        <i class="bi bi-image me-1 text-emerald"></i>Candidate Profile Photo
                                     </label>
-                                    <div class="custom-file-upload-box d-flex align-items-center gap-3 flex-wrap flex-sm-nowrap">
+                                    <div class="d-flex align-items-center gap-3 flex-wrap flex-sm-nowrap p-3 rounded-3" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.08);">
                                         <div class="position-relative">
                                             {% if profile.profile_picture %}
-                                                <img src="{{ profile.profile_picture.url }}" id="modalAvatarPreview" class="rounded-circle object-fit-cover border border-2 border-primary shadow-sm" style="width: 64px; height: 64px;" alt="Preview">
+                                                <img src="{{ profile.profile_picture.url }}" id="modalAvatarPreview" class="rounded-circle object-fit-cover shadow-sm" style="width: 64px; height: 64px; border: 2px solid #00c288;" alt="Preview">
                                             {% else %}
-                                                <div id="modalAvatarFallback" class="bg-primary text-white rounded-circle fs-3 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 64px; height: 64px; background: var(--primary-gradient);">
+                                                <div id="modalAvatarFallback" class="bg-emerald text-dark rounded-circle fs-3 fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 64px; height: 64px; background-color: #00c288;">
                                                     {{ user.username|slice:":1"|upper }}
                                                 </div>
                                             {% endif %}
                                         </div>
-                                        <div class="text-start flex-grow-1">
-                                            {{ form.profile_picture }}
-                                            <small class="form-text text-muted d-block mt-1">Recommended size: 400x400px (JPG, PNG, WebP).</small>
+                                        <div class="flex-grow-1">
+                                            <input type="file" name="profile_picture" id="id_profile_picture" class="form-control form-control-sm mb-1" accept="image/*">
+                                            <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Allowed formats: PNG, JPG, JPEG (Max 5MB). Professional photo recommended.</small>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">First Name</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-                                        {{ form.first_name }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">First Name</label>
+                                    <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control" placeholder="First Name">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Last Name</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
-                                        {{ form.last_name }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">Last Name</label>
+                                    <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control" placeholder="Last Name">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Email Address</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-envelope-at text-muted"></i></span>
-                                        {{ form.email }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">Email Address</label>
+                                    <input type="email" name="email" value="{{ user.email }}" class="form-control" placeholder="name@college.edu">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Phone Number</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-telephone text-muted"></i></span>
-                                        {{ form.phone_number }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">Phone Number</label>
+                                    <input type="tel" name="phone_number" value="{{ profile.phone_number }}" class="form-control" placeholder="+91 9876543210">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Section 2: Target Role & Academic Credentials -->
-                        <div class="theme-form-card">
-                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                                <h6 class="fw-bold text-dark mb-0">
-                                    <i class="bi bi-mortarboard text-info me-2"></i>Engineering Credentials & Placement Goal
+                        <!-- Section 2: Academic Profile & Target Role -->
+                        <div class="p-4 rounded-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                <h6 class="fw-bold text-white mb-0">
+                                    <i class="bi bi-mortarboard text-emerald me-2"></i>Academic Details & Target Role
                                 </h6>
-                                <span class="badge bg-info bg-opacity-10 text-info rounded-pill small">Step 2 of 3</span>
+                                <span class="badge bg-dark text-emerald border border-emerald border-opacity-30 rounded-pill small">Step 2 of 3</span>
                             </div>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Target Engineering Role</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-briefcase text-primary"></i></span>
-                                        {{ form.target_role }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">College / University</label>
+                                    <input type="text" name="college" value="{{ profile.college }}" class="form-control" placeholder="e.g. National Institute of Technology">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">College / University</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-building text-purple" style="color: #8b5cf6;"></i></span>
-                                        {{ form.college }}
-                                    </div>
+                                    <label class="form-label text-slate-300 small">Degree</label>
+                                    <input type="text" name="degree" value="{{ profile.degree }}" class="form-control" placeholder="e.g. B.Tech / B.E.">
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Degree</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-mortarboard text-info"></i></span>
-                                        {{ form.degree }}
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-slate-300 small">Branch / Engineering Major</label>
+                                    <input type="text" name="branch" value="{{ profile.branch }}" class="form-control" placeholder="e.g. Computer Science & Engineering">
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Branch / Major</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text"><i class="bi bi-diagram-3 text-warning"></i></span>
-                                        {{ form.branch }}
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-slate-300 small">Target Engineering Role</label>
+                                    <input type="text" name="target_role" value="{{ profile.target_role }}" class="form-control" placeholder="e.g. Software Engineer / Data Scientist">
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">Grad Year</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text p-2"><i class="bi bi-calendar-event text-danger"></i></span>
-                                        {{ form.graduation_year }}
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-slate-300 small">Graduation Year</label>
+                                    <input type="number" name="graduation_year" value="{{ profile.graduation_year }}" class="form-control" placeholder="2026">
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-semibold text-secondary small mb-1">CGPA</label>
-                                    <div class="input-group theme-input-group">
-                                        <span class="input-group-text p-2"><i class="bi bi-award text-success"></i></span>
-                                        {{ form.cgpa }}
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-slate-300 small">Cumulative CGPA</label>
+                                    <input type="number" step="0.01" name="cgpa" value="{{ profile.cgpa }}" class="form-control" placeholder="e.g. 8.50">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Section 3: Professional Executive Bio -->
-                        <div class="theme-form-card">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h6 class="fw-bold text-dark mb-0">
-                                    <i class="bi bi-card-text text-purple me-2" style="color: #7c3aed;"></i>Professional Executive Summary
+                        <!-- Section 3: Executive Bio -->
+                        <div class="p-4 rounded-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                <h6 class="fw-bold text-white mb-0">
+                                    <i class="bi bi-file-text text-emerald me-2"></i>Executive Summary & Bio
                                 </h6>
-                                <span class="badge bg-purple bg-opacity-10 text-purple rounded-pill small" style="color: #7c3aed; background: #f3e8ff;">
-                                    <i class="bi bi-stars me-1"></i>Gemini AI Ready
-                                </span>
+                                <span class="badge bg-dark text-emerald border border-emerald border-opacity-30 rounded-pill small">Step 3 of 3</span>
                             </div>
-                            <small class="text-muted d-block mb-2">Provide a brief overview of your technical background or use the AI bio generator on your main profile page.</small>
 
-                            <div class="input-group theme-input-group">
-                                <span class="input-group-text align-items-start pt-3"><i class="bi bi-quote text-secondary fs-5"></i></span>
-                                {{ form.bio }}
+                            <div class="mb-2">
+                                <label class="form-label text-slate-300 small">Professional Bio / Summary</label>
+                                <textarea name="bio" rows="4" class="form-control" placeholder="Brief executive summary highlighting key engineering skills, project accomplishments, and placement target...">{{ profile.bio }}</textarea>
                             </div>
                         </div>
 
                     </div>
                 </div>
 
-                <div class="modal-footer border-top bg-white px-4 py-3 d-flex align-items-center justify-content-between">
-                    <small class="text-muted d-none d-sm-inline">
-                        <i class="bi bi-shield-check text-success me-1"></i>Placement index auto-updates on save.
-                    </small>
-                    <div class="d-flex align-items-center gap-2 ms-auto">
-                        <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold border" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary-custom px-4 py-2.5 shadow-sm d-inline-flex align-items-center gap-2">
-                            <i class="bi bi-check-lg fs-6"></i>Save Profile Changes
-                        </button>
-                    </div>
+                <div class="modal-footer border-top border-secondary border-opacity-25 p-3">
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-custom px-4 fw-bold">
+                        <i class="bi bi-check2-circle me-1.5"></i>Save Profile Changes
+                    </button>
                 </div>
             </form>
         </div>
@@ -582,49 +565,70 @@
 
 {% block extra_js %}
 <script>
-    document.getElementById('generateAiBioBtn').addEventListener('click', async function() {
-        const btn = this;
-        const origHtml = btn.innerHTML;
-        const bioText = document.getElementById('profileBioText');
+    // Live preview for profile picture upload
+    const avatarInput = document.getElementById('id_profile_picture');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const preview = document.getElementById('modalAvatarPreview');
+                    const fallback = document.getElementById('modalAvatarFallback');
+                    if (preview) {
+                        preview.src = evt.target.result;
+                    } else if (fallback) {
+                        const img = document.createElement('img');
+                        img.id = 'modalAvatarPreview';
+                        img.src = evt.target.result;
+                        img.className = 'rounded-circle object-fit-cover shadow-sm';
+                        img.style.width = '64px';
+                        img.style.height = '64px';
+                        img.style.border = '2px solid #00c288';
+                        fallback.parentNode.replaceChild(img, fallback);
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
-        // Show spinner and disable button
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating AI Bio...';
+    // AI Bio Generation via AJAX
+    const generateAiBioBtn = document.getElementById('generateAiBioBtn');
+    if (generateAiBioBtn) {
+        generateAiBioBtn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Generating AI Bio...';
 
-        try {
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            const response = await fetch("{% url 'generate_ai_summary' %}", {
+            fetch("{% url 'generate_ai_bio' %}", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
                 }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const bioContent = data.bio || data.summary;
+                if ((data.status === 'success' || bioContent) && bioContent) {
+                    const bioText = document.getElementById('profileBioText');
+                    if (bioText) {
+                        bioText.innerText = bioContent;
+                    }
+                } else {
+                    alert(data.message || 'Error generating AI bio.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Server error generating AI Bio.');
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.innerHTML = originalHtml;
             });
-
-            if (!response.ok) {
-                throw new Error('HTTP status ' + response.status);
-            }
-
-            const data = await response.json();
-            if (data.summary) {
-                // Update UI dynamically without page reload
-                bioText.innerHTML = escapeHtml(data.summary);
-                bioText.classList.add('text-dark', 'fw-medium');
-            } else {
-                alert('Failed to generate AI summary. Please try again.');
-            }
-        } catch (err) {
-            console.error('API Error:', err);
-            alert('Error connecting to Gemini AI service. Please check your network connection.');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = origHtml;
-        }
-    });
-
-    function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        });
     }
 </script>
 {% endblock %}
-

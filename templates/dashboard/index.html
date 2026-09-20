@@ -5,44 +5,68 @@
 {% block extra_css %}
 <style>
     .hero-dash-card {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
-        border: none;
-        border-radius: 1.5rem;
-        box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.2);
+        background: #0f1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 1.5rem !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 194, 136, 0.08) !important;
     }
     .kpi-accent-card {
-        background: #ffffff;
-        border: 1px solid #f1f5f9;
-        border-radius: 1.25rem;
+        background: #0f1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 1.25rem !important;
         padding: 1.25rem;
         transition: all 0.25s ease;
-        box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
     }
     .kpi-accent-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 25px -5px rgba(79, 70, 229, 0.12);
-        border-color: rgba(79, 70, 229, 0.2);
+        border-color: rgba(0, 194, 136, 0.35) !important;
+        box-shadow: var(--emerald-glow) !important;
     }
     .kpi-icon-pill {
         width: 44px;
         height: 44px;
         border-radius: 12px;
+        background: rgba(0, 194, 136, 0.12) !important;
+        color: var(--primary-emerald) !important;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.25rem;
     }
     .module-card-clean {
-        background: #ffffff;
-        border: 1px solid #f1f5f9;
-        border-radius: 1.25rem;
+        background: #0f1724 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 1.25rem !important;
         transition: all 0.25s ease;
-        box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
     }
     .module-card-clean:hover {
         transform: translateY(-4px);
-        box-shadow: 0 15px 30px -8px rgba(79, 70, 229, 0.14);
-        border-color: rgba(79, 70, 229, 0.25);
+        border-color: rgba(0, 194, 136, 0.35) !important;
+        box-shadow: var(--emerald-glow) !important;
+    }
+    .radial-progress-bg {
+        fill: none;
+        stroke: #1e293b;
+    }
+    .radial-progress-val {
+        fill: none;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+    .radial-progress-container {
+        position: relative;
+        display: inline-block;
+    }
+    .radial-progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
     }
 </style>
 {% endblock %}
@@ -50,78 +74,74 @@
 {% block content %}
 <div class="container py-4">
 
-    <!-- Hero Executive Placement Banner -->
+    <!-- Hero Executive Placement Banner (Obsidian Emerald Theme) -->
     <div class="hero-dash-card text-white p-4 p-md-5 mb-4 position-relative overflow-hidden">
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <a href="{% url 'profile' %}" class="position-relative text-decoration-none">
                         {% if profile.profile_picture %}
-                            <img src="{{ profile.profile_picture.url }}" class="rounded-circle object-fit-cover shadow border border-2 border-white" style="width: 68px; height: 68px;" alt="Avatar">
+                            <img src="{{ profile.profile_picture.url }}" class="rounded-circle object-fit-cover shadow" style="width: 68px; height: 68px; border: 2px solid #00c288;" alt="Avatar">
                         {% else %}
-                            <div class="bg-primary text-white rounded-circle fs-3 fw-bold d-flex align-items-center justify-content-center shadow border border-2 border-white" style="width: 68px; height: 68px; background: var(--primary-gradient);">
+                            <div class="bg-emerald text-dark rounded-circle fs-3 fw-bold d-flex align-items-center justify-content-center shadow" style="width: 68px; height: 68px; background-color: #00c288; border: 2px solid #00c288;">
                                 {{ student_name|slice:":1"|upper }}
                             </div>
                         {% endif %}
-                        <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle p-1" title="Online"></span>
+                        <span class="position-absolute bottom-0 end-0 rounded-circle p-1" style="width: 12px; height: 12px; background-color: #00c288; border: 2px solid #0f1724;" title="Online"></span>
                     </a>
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <h2 class="fw-bold text-white mb-0">{{ student_name }}</h2>
-                            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary px-3 py-1 rounded-pill small">
+                            <h2 class="fw-extrabold text-white mb-0" style="letter-spacing: -0.5px;">{{ student_name }}</h2>
+                            <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
                                 <i class="bi bi-briefcase me-1"></i>Target: {{ profile.target_role|default:"Software Engineer" }}
                             </span>
                         </div>
-                        <p class="text-white-50 small mb-0 mt-1">
-                            <i class="bi bi-building me-1 text-info"></i>{{ profile.college|default:"Engineering Institute" }} • {{ profile.branch|default:"Computer Science" }} ({{ profile.graduation_year|default:2026 }})
-                            {% if profile.cgpa %} • <span class="text-warning fw-semibold">CGPA: {{ profile.cgpa }}</span>{% endif %}
+                        <p class="text-slate-400 small mb-0 mt-1.5">
+                            <i class="bi bi-building me-1 text-emerald"></i>{{ profile.college|default:"Engineering Institute" }} • {{ profile.branch|default:"Computer Science" }} ({{ profile.graduation_year|default:2026 }})
+                            {% if profile.cgpa %} • <span class="text-emerald fw-semibold">CGPA: {{ profile.cgpa }}</span>{% endif %}
                         </p>
                     </div>
                 </div>
 
-                <p class="text-white-50 small mb-3" style="max-width: 540px; line-height: 1.6;">
+                <p class="text-slate-400 small mb-4" style="max-width: 540px; line-height: 1.6;">
                     Welcome to your Executive AI Placement Control Center. Leverage live ATS resume evaluation, AI job matching, automated skill gap tracking, and multi-round mock interviews.
                 </p>
 
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom btn-sm px-4">
-                        <i class="bi bi-cloud-arrow-up me-1"></i>Upload Resume
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom btn-sm px-4 fw-bold me-1">
+                        <i class="bi bi-cloud-arrow-up me-1.5"></i>Upload Resume
                     </a>
-                    <a href="{% url 'job_auto_apply' %}" class="btn btn-outline-light rounded-pill btn-sm px-3 fw-semibold">
-                        <i class="bi bi-stars text-warning me-1"></i>AI Auto-Apply
-                    </a>
-                    <a href="{% url 'profile' %}" class="btn btn-link text-white-50 btn-sm text-decoration-none">
-                        <i class="bi bi-pencil-square me-1"></i>Edit Profile
+                    <a href="{% url 'job_auto_apply' %}" class="btn btn-outline-emerald btn-sm px-4 fw-semibold">
+                        <i class="bi bi-stars me-1.5"></i>AI Auto-Apply
                     </a>
                 </div>
             </div>
 
             <!-- Right Column: SVG Readiness Gauge -->
             <div class="col-lg-5 text-center text-lg-end">
-                <div class="d-inline-flex align-items-center gap-4 bg-white bg-opacity-10 p-3 px-4 rounded-4 border border-white border-opacity-10">
+                <div class="d-inline-flex align-items-center gap-4 p-3.5 px-4 rounded-4" style="background: rgba(13, 19, 29, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);">
                     <div class="radial-progress-container" style="width: 100px; height: 100px;">
                         <svg viewBox="0 0 100 100">
                             <defs>
                                 <linearGradient id="heroScoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8"/>
-                                    <stop offset="50%" stop-color="#818cf8"/>
-                                    <stop offset="100%" stop-color="#34d399"/>
+                                    <stop offset="0%" stop-color="#00c288"/>
+                                    <stop offset="100%" stop-color="#059669"/>
                                 </linearGradient>
                             </defs>
                             <circle class="radial-progress-bg" cx="50" cy="50" r="42" stroke-width="8"/>
                             <circle class="radial-progress-val" cx="50" cy="50" r="42" stroke="url(#heroScoreGrad)" stroke-width="8" style="stroke-dasharray: 264; stroke-dashoffset: calc(264 - (264 * {{ readiness_score }}) / 100);"/>
                         </svg>
                         <div class="radial-progress-text">
-                            <span class="fs-4 fw-bold text-white d-block" style="line-height: 1;">{{ readiness_score }}%</span>
-                            <small class="text-white-50" style="font-size: 0.65rem;">READINESS</small>
+                            <span class="fs-4 fw-extrabold text-white d-block" style="line-height: 1;">{{ readiness_score }}%</span>
+                            <small class="text-emerald fw-bold" style="font-size: 0.65rem;">READINESS</small>
                         </div>
                     </div>
                     <div class="text-start">
-                        <span class="badge bg-success bg-opacity-25 text-success border border-success px-2 py-1 rounded-pill small mb-1">
-                            <i class="live-pulse-dot me-1"></i>Live AI Index
+                        <span class="badge rounded-pill px-2.5 py-1 small mb-1.5" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
+                            <span class="live-pulse-dot me-1"></span>Live AI Index
                         </span>
                         <h6 class="fw-bold text-white mb-1">Placement Readiness</h6>
-                        <small class="text-white-50 d-block" style="font-size: 0.75rem;">Profile: {{ completion_status }}% Complete</small>
+                        <small class="text-slate-400 d-block" style="font-size: 0.75rem;">Profile: {{ completion_status }}% Complete</small>
                     </div>
                 </div>
             </div>
@@ -133,14 +153,14 @@
         <div class="col-6 col-lg-3">
             <a href="{% url 'resume_index' %}" class="text-decoration-none">
                 <div class="kpi-accent-card d-flex align-items-center gap-3">
-                    <div class="kpi-icon-pill bg-primary bg-opacity-10 text-primary">
+                    <div class="kpi-icon-pill">
                         <i class="bi bi-file-earmark-check"></i>
                     </div>
                     <div>
-                        <span class="fs-4 fw-bold text-dark d-block" style="line-height: 1.1;">
+                        <span class="fs-4 fw-extrabold text-white d-block" style="line-height: 1.1;">
                             {% if ats_score %}{{ ats_score }}%{% else %}--{% endif %}
                         </span>
-                        <small class="text-secondary" style="font-size: 0.78rem;">ATS Resume Score</small>
+                        <small class="text-slate-400 fw-medium" style="font-size: 0.78rem;">ATS Resume Score</small>
                     </div>
                 </div>
             </a>
@@ -148,14 +168,14 @@
         <div class="col-6 col-lg-3">
             <a href="{% url 'job_index' %}" class="text-decoration-none">
                 <div class="kpi-accent-card d-flex align-items-center gap-3">
-                    <div class="kpi-icon-pill bg-success bg-opacity-10 text-success">
+                    <div class="kpi-icon-pill">
                         <i class="bi bi-bullseye"></i>
                     </div>
                     <div>
-                        <span class="fs-4 fw-bold text-dark d-block" style="line-height: 1.1;">
+                        <span class="fs-4 fw-extrabold text-white d-block" style="line-height: 1.1;">
                             {% if job_match_avg %}{{ job_match_avg }}%{% else %}--{% endif %}
                         </span>
-                        <small class="text-secondary" style="font-size: 0.78rem;">Job Match Avg</small>
+                        <small class="text-slate-400 fw-medium" style="font-size: 0.78rem;">Job Match Avg</small>
                     </div>
                 </div>
             </a>
@@ -163,12 +183,12 @@
         <div class="col-6 col-lg-3">
             <a href="{% url 'skill_gap_analytics' %}" class="text-decoration-none">
                 <div class="kpi-accent-card d-flex align-items-center gap-3">
-                    <div class="kpi-icon-pill bg-warning bg-opacity-10 text-warning">
+                    <div class="kpi-icon-pill">
                         <i class="bi bi-graph-up-arrow"></i>
                     </div>
                     <div>
-                        <span class="fs-4 fw-bold text-dark d-block" style="line-height: 1.1;">{{ skill_gaps_count }}</span>
-                        <small class="text-secondary" style="font-size: 0.78rem;">Skill Gaps Tracked</small>
+                        <span class="fs-4 fw-extrabold text-white d-block" style="line-height: 1.1;">{{ skill_gaps_count }}</span>
+                        <small class="text-slate-400 fw-medium" style="font-size: 0.78rem;">Skill Gaps Tracked</small>
                     </div>
                 </div>
             </a>
@@ -176,12 +196,12 @@
         <div class="col-6 col-lg-3">
             <a href="{% url 'interview_index' %}" class="text-decoration-none">
                 <div class="kpi-accent-card d-flex align-items-center gap-3">
-                    <div class="kpi-icon-pill bg-info bg-opacity-10 text-info">
+                    <div class="kpi-icon-pill">
                         <i class="bi bi-headset"></i>
                     </div>
                     <div>
-                        <span class="fs-4 fw-bold text-dark d-block" style="line-height: 1.1;">{{ mock_interviews_count }}</span>
-                        <small class="text-secondary" style="font-size: 0.78rem;">Mock Interviews</small>
+                        <span class="fs-4 fw-extrabold text-white d-block" style="line-height: 1.1;">{{ mock_interviews_count }}</span>
+                        <small class="text-slate-400 fw-medium" style="font-size: 0.78rem;">Mock Interviews</small>
                     </div>
                 </div>
             </a>
@@ -193,28 +213,35 @@
 
         <!-- Left Main Area (8 cols): Core AI Modules -->
         <div class="col-lg-8">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-cpu text-primary me-2"></i>AI Placement Engines</h5>
-                <span class="badge bg-light text-muted border">4 Integrated Modules</span>
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-1">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-cpu text-emerald fs-5"></i>
+                    <h5 class="fw-bold text-white mb-0">AI Placement Engines</h5>
+                </div>
+                <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); color: #94a3b8;">4 Integrated Modules</span>
             </div>
 
-            <div class="row g-3 mb-4">
+            <div class="row g-4 mb-4">
                 {% for module in modules %}
                     <div class="col-md-6">
-                        <div class="card module-card-clean h-100 p-3">
-                            <div class="d-flex align-items-start justify-content-between mb-2">
-                                <div class="icon-wrapper" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                        <div class="card module-card-clean h-100 p-4 d-flex flex-column">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="icon-wrapper flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.25rem; border-radius: 12px; background: rgba(0, 194, 136, 0.12); color: #00c288;">
                                     <i class="bi {{ module.icon }}"></i>
                                 </div>
-                                <span class="badge bg-light text-dark border small">{{ module.status_badge }}</span>
+                                <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
+                                    {{ module.status_badge }}
+                                </span>
                             </div>
-                            <h6 class="fw-bold text-dark mb-1">{{ module.name }}</h6>
-                            <p class="text-secondary small mb-3" style="font-size: 0.8rem; line-height: 1.4; min-height: 2.8em;">
+                            <h5 class="fw-bold text-white mb-2" style="letter-spacing: -0.3px;">{{ module.name }}</h5>
+                            <p class="text-slate-400 small mb-4 flex-grow-1" style="font-size: 0.85rem; line-height: 1.6;">
                                 {{ module.desc }}
                             </p>
-                            <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                                <small class="text-muted" style="font-size: 0.75rem;">{{ module.count_label }}</small>
-                                <a href="{% url module.url %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1 fs-7">
+                            <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25 mt-auto">
+                                <span class="text-slate-400 small" style="font-size: 0.8rem;">
+                                    <i class="bi bi-layers text-emerald me-1.5"></i>{{ module.count_label }}
+                                </span>
+                                <a href="{% url module.url %}" class="btn btn-outline-emerald btn-sm rounded-pill px-3.5 py-1.5 fw-semibold">
                                     Launch <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -224,14 +251,17 @@
             </div>
 
             <!-- Quick Shortcut Assistant Banner -->
-            <div class="card border-0 bg-hero-gradient text-white p-4 rounded-4 shadow-sm">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="card p-4" style="background: #0f1724; border: 1px solid rgba(0, 194, 136, 0.3) !important; border-radius: 1.25rem; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);">
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
                     <div>
-                        <h6 class="fw-bold text-white mb-1"><i class="bi bi-stars me-2 text-warning"></i>Phase 10 AI Auto-Apply Assistant</h6>
-                        <small class="text-white-50">Generate custom ATS cover letters and personalized application advice instantly.</small>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-stars text-emerald fs-5"></i>
+                            <h6 class="fw-bold text-white mb-0">AI Auto-Apply Assistant</h6>
+                        </div>
+                        <p class="text-slate-400 small mb-0" style="font-size: 0.85rem;">Generate custom ATS cover letters and personalized application advice instantly.</p>
                     </div>
-                    <a href="{% url 'job_auto_apply' %}" class="btn btn-light rounded-pill btn-sm px-4 fw-semibold shadow-sm">
-                        Open Auto-Apply Assistant <i class="bi bi-arrow-right ms-1 text-primary"></i>
+                    <a href="{% url 'job_auto_apply' %}" class="btn btn-outline-emerald btn-sm px-4 py-2 fw-semibold text-nowrap rounded-pill">
+                        Open Auto-Apply Assistant <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
@@ -241,63 +271,65 @@
         <div class="col-lg-4">
             
             <!-- Real-Time Activity Feed Stream -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4 card-modern">
+            <div class="card p-4 mb-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-activity text-danger me-2"></i>Real-Time Stream</h6>
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success small"><span class="live-pulse-dot me-1"></span>Live</span>
+                    <h6 class="fw-bold mb-0 text-white"><i class="bi bi-activity text-emerald me-2"></i>Real-Time Stream</h6>
+                    <span class="badge rounded-pill px-2.5 py-1 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
+                        <span class="live-pulse-dot me-1" style="width: 6px; height: 6px;"></span>Live
+                    </span>
                 </div>
 
                 <div class="d-flex flex-column gap-3">
                     <!-- Latest Resume Event -->
                     {% if latest_resume %}
-                        <div class="p-3 bg-light rounded-3 border">
+                        <div class="p-3 rounded-3" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.06);">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="badge bg-danger-subtle text-danger small">Latest Resume</span>
-                                <small class="text-muted" style="font-size: 0.7rem;">{{ latest_resume.uploaded_at|date:"M d" }}</small>
+                                <span class="badge rounded-pill px-2.5 py-1 small" style="background: rgba(0, 194, 136, 0.12); color: #00c288; font-size: 0.7rem;">Latest Resume</span>
+                                <small class="text-slate-400" style="font-size: 0.72rem;">{{ latest_resume.uploaded_at|date:"M d" }}</small>
                             </div>
-                            <span class="fw-semibold text-dark d-block text-truncate small mb-1">{{ latest_resume.filename }}</span>
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Extracted {{ latest_resume.extracted_skills|length }} technical skills.</small>
+                            <span class="fw-semibold text-white d-block text-truncate small mb-1">{{ latest_resume.filename }}</span>
+                            <small class="text-slate-400 d-block" style="font-size: 0.78rem;">Extracted {{ latest_resume.extracted_skills|length }} technical skills.</small>
                         </div>
                     {% endif %}
 
                     <!-- Latest Job Match Event -->
                     {% if latest_job_match %}
-                        <div class="p-3 bg-light rounded-3 border">
+                        <div class="p-3 rounded-3" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.06);">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="badge bg-warning-subtle text-warning-emphasis small">Job Match</span>
-                                <span class="fw-bold text-warning small">{{ latest_job_match.match_score }}%</span>
+                                <span class="badge rounded-pill px-2.5 py-1 small" style="background: rgba(0, 194, 136, 0.12); color: #00c288; font-size: 0.7rem;">Job Match</span>
+                                <span class="fw-bold text-emerald small">{{ latest_job_match.match_score }}%</span>
                             </div>
-                            <span class="fw-semibold text-dark d-block text-truncate small mb-1">{{ latest_job_match.job_title }}</span>
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Fit Level: {{ latest_job_match.fit_level }}</small>
+                            <span class="fw-semibold text-white d-block text-truncate small mb-1">{{ latest_job_match.job_title }}</span>
+                            <small class="text-slate-400 d-block" style="font-size: 0.78rem;">Fit Level: {{ latest_job_match.fit_level }}</small>
                         </div>
                     {% endif %}
 
                     <!-- Latest Interview Event -->
                     {% if latest_interview %}
-                        <div class="p-3 bg-light rounded-3 border">
+                        <div class="p-3 rounded-3" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.06);">
                             <div class="d-flex align-items-center justify-content-between mb-1">
-                                <span class="badge bg-info-subtle text-info small">AI Mock Interview</span>
-                                <small class="text-muted" style="font-size: 0.7rem;">{{ latest_interview.started_at|date:"M d" }}</small>
+                                <span class="badge rounded-pill px-2.5 py-1 small" style="background: rgba(0, 194, 136, 0.12); color: #00c288; font-size: 0.7rem;">AI Mock Interview</span>
+                                <small class="text-slate-400" style="font-size: 0.72rem;">{{ latest_interview.started_at|date:"M d" }}</small>
                             </div>
-                            <span class="fw-semibold text-dark d-block text-truncate small mb-1">{{ latest_interview.target_role }}</span>
-                            <small class="text-muted d-block" style="font-size: 0.75rem;">Current Phase: {{ latest_interview.current_phase }}</small>
+                            <span class="fw-semibold text-white d-block text-truncate small mb-1">{{ latest_interview.target_role }}</span>
+                            <small class="text-slate-400 d-block" style="font-size: 0.78rem;">Current Phase: {{ latest_interview.current_phase }}</small>
                         </div>
                     {% endif %}
 
                     {% if not latest_resume and not latest_job_match and not latest_interview %}
-                        <p class="text-muted small mb-0">No recent activity logged yet.</p>
+                        <p class="text-slate-400 small mb-0">No recent activity logged yet.</p>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Dynamic AI Career Tip -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary bg-opacity-10 border-primary border-opacity-25">
-                <div class="d-flex align-items-center gap-2 mb-2 text-primary">
+            <div class="card p-4" style="background: #0f1724; border: 1px solid rgba(0, 194, 136, 0.25); border-radius: 1.25rem; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);">
+                <div class="d-flex align-items-center gap-2 mb-2 text-emerald">
                     <i class="bi bi-lightbulb-fill fs-5"></i>
-                    <strong class="small text-dark">AI Placement Tip</strong>
+                    <strong class="small text-white">AI Placement Tip</strong>
                 </div>
-                <p class="text-secondary small mb-0" style="font-size: 0.825rem; line-height: 1.5;">
-                    "Targeting <strong>{{ profile.target_role|default:'Software Engineer' }}</strong>? Ensure your resume highlights hands-on experience with FastAPI, System Design, and Docker for optimal ATS match scores."
+                <p class="text-slate-400 small mb-0" style="font-size: 0.85rem; line-height: 1.6;">
+                    "Targeting <strong class="text-white">{{ profile.target_role|default:'Software Engineer' }}</strong>? Ensure your resume highlights hands-on experience with FastAPI, System Design, and Docker for optimal ATS match scores."
                 </p>
             </div>
 
@@ -306,4 +338,3 @@
 
 </div>
 {% endblock %}
-

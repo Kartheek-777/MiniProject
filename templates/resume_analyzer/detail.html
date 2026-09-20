@@ -4,77 +4,92 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Breadcrumb & Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb small mb-1">
-                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'resume_index' %}">Resumes</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ resume.title }}</li>
-                </ol>
-            </nav>
-            <h2 class="fw-bold text-dark mb-0">{{ resume.title }}</h2>
-            <span class="text-secondary small">Uploaded on {{ resume.uploaded_at|date:"F d, Y at H:i" }} • {{ resume.filename }}</span>
-        </div>
-        <div class="mt-3 mt-md-0 d-flex gap-2">
-            {% if resume.file %}
-                <a href="{{ resume.file.url }}" target="_blank" class="btn btn-outline-secondary">
-                    <i class="bi bi-file-earmark-pdf me-1"></i>View PDF
+    <!-- Header & Action Bar (Obsidian Emerald Theme) -->
+    <div class="card p-4 mb-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small mb-2">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}" class="text-slate-400 text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'resume_index' %}" class="text-slate-400 text-decoration-none">Resumes</a></li>
+                        <li class="breadcrumb-item active text-emerald" aria-current="page">{{ resume.title }}</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-extrabold text-white mb-1" style="letter-spacing: -0.5px;">{{ resume.title }}</h2>
+                <div class="d-flex align-items-center gap-2 flex-wrap text-slate-400 small">
+                    <span><i class="bi bi-calendar3 me-1 text-emerald"></i>Uploaded {{ resume.uploaded_at|date:"F d, Y \a\t H:i" }}</span>
+                    <span>•</span>
+                    <span class="text-slate-300"><i class="bi bi-file-earmark-code me-1 text-emerald"></i>{{ resume.filename }}</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                {% if resume.file %}
+                    <a href="{{ resume.file.url }}" target="_blank" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
+                        <i class="bi bi-file-earmark-pdf me-1.5"></i>View PDF
+                    </a>
+                {% endif %}
+                <button type="button" class="btn btn-outline-danger btn-sm px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#deleteResumeDetailModal">
+                    <i class="bi bi-trash me-1.5"></i>Delete
+                </button>
+                <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom btn-sm px-3.5 py-2 fw-bold">
+                    <i class="bi bi-cloud-arrow-up me-1.5"></i>Upload Another
                 </a>
-            {% endif %}
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteResumeDetailModal">
-                <i class="bi bi-trash me-1"></i>Delete
-            </button>
-            <a href="{% url 'resume_upload' %}" class="btn btn-primary-custom">
-                <i class="bi bi-cloud-arrow-up me-1"></i>Upload Another
-            </a>
+            </div>
         </div>
     </div>
 
     <!-- AI RESUME INSIGHTS SECTION (GEMINI POWERED) -->
-    <div class="card border-0 shadow rounded-4 mb-5 overflow-hidden border-start border-primary border-4">
-        <div class="card-header bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-stars fs-4 text-warning"></i>
-                <h4 class="fw-bold mb-0">AI Resume Insights</h4>
-                <span class="badge bg-primary-subtle text-primary ms-2 fs-6">Gemini Copilot Engine</span>
+    <div class="card mb-4 overflow-hidden" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 1.25rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);">
+        <div class="card-header py-3.5 px-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3" style="background: #090e17; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="d-flex align-items-center gap-2.5 flex-wrap">
+                <div class="p-2 rounded-3 d-flex align-items-center justify-content-center" style="background: rgba(0, 194, 136, 0.15);">
+                    <i class="bi bi-stars fs-4 text-emerald"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-white mb-0">AI Resume Insights</h5>
+                    <small class="text-slate-400" style="font-size: 0.78rem;">Powered by Google Gemini AI Engine</small>
+                </div>
+                <span class="badge rounded-pill px-3 py-1.5 small ms-md-2" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
+                    <i class="bi bi-lightning-charge me-1"></i>Gemini Copilot Engine
+                </span>
             </div>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
                 {% if ai_analysis.experience_level %}
-                    <div>
-                        <span class="text-white-50 small me-2">Evaluated Level:</span>
-                        <span class="badge bg-gradient bg-primary fs-6 px-3 py-2 rounded-pill shadow-sm">
+                    <div class="d-flex align-items-center gap-1.5">
+                        <small class="text-slate-400" style="font-size: 0.8rem;">Evaluated Level:</small>
+                        <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;">
                             <i class="bi bi-award me-1"></i>{{ ai_analysis.experience_level }}
                         </span>
                     </div>
                 {% endif %}
-                <a href="{% url 'resume_reanalyze' pk=resume.pk %}" class="btn btn-warning btn-sm fw-semibold">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Re-Analyze with AI
+                <a href="{% url 'resume_reanalyze' pk=resume.pk %}" class="btn btn-outline-emerald btn-sm px-3.5 py-2 fw-semibold">
+                    <i class="bi bi-arrow-clockwise me-1.5"></i>Re-Analyze with AI
                 </a>
             </div>
         </div>
-        <div class="card-body p-4 bg-light-subtle">
+
+        <div class="card-body p-4" style="background: #0d131d;">
             <div class="row g-4">
                 <!-- AI Strengths Card -->
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                        <div class="card-header bg-success-subtle text-success border-0 py-3">
-                            <h6 class="fw-bold mb-0">
+                    <div class="card h-100" style="background: #090e17; border: 1px solid rgba(0, 194, 136, 0.25); border-radius: 1rem;">
+                        <div class="card-header py-3 px-3.5" style="background: rgba(0, 194, 136, 0.1); border-bottom: 1px solid rgba(0, 194, 136, 0.2);">
+                            <h6 class="fw-bold mb-0 text-emerald">
                                 <i class="bi bi-check-circle-fill me-2"></i>Key Technical Strengths
                             </h6>
                         </div>
-                        <div class="card-body p-3">
+                        <div class="card-body p-3.5">
                             {% if ai_analysis.strengths %}
-                                <ul class="list-group list-group-flush small">
+                                <ul class="list-unstyled mb-0 d-flex flex-column gap-2.5 small">
                                     {% for strength in ai_analysis.strengths %}
-                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
-                                            <i class="bi bi-check2 text-success me-2 fw-bold"></i>{{ strength }}
+                                        <li class="d-flex align-items-start text-slate-200" style="line-height: 1.5;">
+                                            <i class="bi bi-check2 text-emerald me-2 fw-bold fs-6 flex-shrink-0 mt-0.5"></i>
+                                            <span>{{ strength }}</span>
                                         </li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-secondary small mb-0">No specific strengths generated.</p>
+                                <p class="text-slate-400 small mb-0">No specific strengths generated.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -82,23 +97,24 @@
 
                 <!-- AI Weaknesses / Gaps Card -->
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                        <div class="card-header bg-danger-subtle text-danger border-0 py-3">
-                            <h6 class="fw-bold mb-0">
+                    <div class="card h-100" style="background: #090e17; border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 1rem;">
+                        <div class="card-header py-3 px-3.5" style="background: rgba(239, 68, 68, 0.1); border-bottom: 1px solid rgba(239, 68, 68, 0.2);">
+                            <h6 class="fw-bold mb-0" style="color: #f87171;">
                                 <i class="bi bi-exclamation-triangle-fill me-2"></i>Areas Lacking Depth or Clarity
                             </h6>
                         </div>
-                        <div class="card-body p-3">
+                        <div class="card-body p-3.5">
                             {% if ai_analysis.weaknesses %}
-                                <ul class="list-group list-group-flush small">
+                                <ul class="list-unstyled mb-0 d-flex flex-column gap-2.5 small">
                                     {% for weakness in ai_analysis.weaknesses %}
-                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
-                                            <i class="bi bi-x-circle text-danger me-2"></i>{{ weakness }}
+                                        <li class="d-flex align-items-start text-slate-200" style="line-height: 1.5;">
+                                            <i class="bi bi-x-circle me-2 flex-shrink-0 mt-0.5" style="color: #f87171;"></i>
+                                            <span>{{ weakness }}</span>
                                         </li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-secondary small mb-0">No specific weaknesses identified.</p>
+                                <p class="text-slate-400 small mb-0">No specific weaknesses identified.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -106,23 +122,23 @@
 
                 <!-- Missing Target Industry Skills Card -->
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                        <div class="card-header bg-warning-subtle text-dark border-0 py-3">
-                            <h6 class="fw-bold mb-0">
-                                <i class="bi bi-shield-slash-fill text-warning me-2"></i>Recommended Missing Target Skills
+                    <div class="card h-100" style="background: #090e17; border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 1rem;">
+                        <div class="card-header py-3 px-3.5" style="background: rgba(245, 158, 11, 0.1); border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
+                            <h6 class="fw-bold mb-0" style="color: #fbbf24;">
+                                <i class="bi bi-shield-slash-fill me-2"></i>Recommended Missing Target Skills
                             </h6>
                         </div>
-                        <div class="card-body p-3">
+                        <div class="card-body p-3.5">
                             {% if ai_analysis.missing_skills %}
                                 <div class="d-flex flex-wrap gap-2">
                                     {% for skill in ai_analysis.missing_skills %}
-                                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-3 py-2 rounded-pill small">
-                                            <i class="bi bi-plus-circle me-1"></i>{{ skill }}
+                                        <span class="badge rounded-pill px-3 py-2 small" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24;">
+                                            <i class="bi bi-plus-circle me-1.5"></i>{{ skill }}
                                         </span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <p class="text-secondary small mb-0">No missing skills flagged.</p>
+                                <p class="text-slate-400 small mb-0">No missing skills flagged.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -130,23 +146,24 @@
 
                 <!-- Actionable Suggestions Card -->
                 <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
-                        <div class="card-header bg-info-subtle text-info-emphasis border-0 py-3">
-                            <h6 class="fw-bold mb-0">
-                                <i class="bi bi-lightbulb-fill text-info me-2"></i>Actionable Career Recommendations
+                    <div class="card h-100" style="background: #090e17; border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 1rem;">
+                        <div class="card-header py-3 px-3.5" style="background: rgba(14, 165, 233, 0.1); border-bottom: 1px solid rgba(14, 165, 233, 0.2);">
+                            <h6 class="fw-bold mb-0" style="color: #38bdf8;">
+                                <i class="bi bi-lightbulb-fill me-2"></i>Actionable Career Recommendations
                             </h6>
                         </div>
-                        <div class="card-body p-3">
+                        <div class="card-body p-3.5">
                             {% if ai_analysis.suggestions %}
-                                <ul class="list-group list-group-flush small">
+                                <ul class="list-unstyled mb-0 d-flex flex-column gap-2.5 small">
                                     {% for suggestion in ai_analysis.suggestions %}
-                                        <li class="list-group-item bg-transparent px-0 text-dark border-bottom-0 py-2">
-                                            <i class="bi bi-arrow-right-circle text-info me-2"></i>{{ suggestion }}
+                                        <li class="d-flex align-items-start text-slate-200" style="line-height: 1.5;">
+                                            <i class="bi bi-arrow-right-circle me-2 flex-shrink-0 mt-0.5" style="color: #38bdf8;"></i>
+                                            <span>{{ suggestion }}</span>
                                         </li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-secondary small mb-0">No suggestions available.</p>
+                                <p class="text-slate-400 small mb-0">No suggestions available.</p>
                             {% endif %}
                         </div>
                     </div>
@@ -155,11 +172,15 @@
                 <!-- Normalized AI Skills List -->
                 {% if ai_analysis.skills %}
                     <div class="col-12">
-                        <div class="p-3 bg-white border rounded-3">
-                            <h6 class="fw-bold text-secondary mb-2 small"><i class="bi bi-tags me-1"></i>Normalized AI Extracted Skills Vocabulary:</h6>
+                        <div class="p-3.5 rounded-3" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <h6 class="fw-bold text-slate-400 mb-2.5 small" style="letter-spacing: 0.5px;">
+                                <i class="bi bi-tags text-emerald me-1.5"></i>NORMALIZED AI EXTRACTED SKILLS VOCABULARY:
+                            </h6>
                             <div class="d-flex flex-wrap gap-2">
                                 {% for skill in ai_analysis.skills %}
-                                    <span class="badge bg-secondary-subtle text-dark border px-2 py-1 small rounded-1">{{ skill }}</span>
+                                    <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.25); color: #00c288;">
+                                        {{ skill }}
+                                    </span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -170,92 +191,95 @@
     </div>
 
     <!-- PHASE 3 BASIC PARSER RESULTS SECTION (HYBRID LAYER) -->
-    <h4 class="fw-bold text-dark mb-3"><i class="bi bi-layers me-2 text-secondary"></i>Basic Parser Extraction (Phase 3 Foundation)</h4>
-    <div class="row g-4">
+    <div class="d-flex align-items-center gap-2 mb-3 mt-4">
+        <i class="bi bi-layers text-emerald fs-5"></i>
+        <h5 class="fw-bold text-white mb-0">Rule-Based Structural Extraction (Phase 3 Engine)</h5>
+    </div>
+
+    <div class="row g-4 mb-4">
         <!-- Technical Skills Section -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-code-slash text-primary me-2"></i>Rule-Based Extracted Skills ({{ basic_skills_count }})
-                    </h5>
+            <div class="card h-100 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem;">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                    <h6 class="fw-bold text-white mb-0">
+                        <i class="bi bi-code-slash text-emerald me-2"></i>Extracted Skills ({{ basic_skills_count }})
+                    </h6>
+                    <span class="badge bg-dark text-slate-400 border border-secondary border-opacity-25">PyMuPDF Parser</span>
                 </div>
-                <div class="card-body p-4">
-                    {% if resume.extracted_skills %}
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for skill in resume.extracted_skills %}
-                                <span class="badge bg-indigo-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6 fw-medium">
-                                    <i class="bi bi-check-circle-fill me-1 small"></i>{{ skill }}
-                                </span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-secondary mb-0">No technical skills detected by rule parser.</p>
-                    {% endif %}
-                </div>
+                {% if resume.extracted_skills %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in resume.extracted_skills %}
+                            <span class="badge rounded-pill px-3 py-1.5 small" style="background: rgba(0, 194, 136, 0.12); border: 1px solid rgba(0, 194, 136, 0.3); color: #00c288;">
+                                <i class="bi bi-check-circle-fill me-1"></i>{{ skill }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-slate-400 small mb-0">No technical skills detected by rule parser.</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- Education Section -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-mortarboard text-success me-2"></i>Detected Education Details
-                    </h5>
+            <div class="card h-100 p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem;">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                    <h6 class="fw-bold text-white mb-0">
+                        <i class="bi bi-mortarboard text-emerald me-2"></i>Detected Education Details
+                    </h6>
+                    <span class="badge bg-dark text-slate-400 border border-secondary border-opacity-25">Academic Parser</span>
                 </div>
-                <div class="card-body p-4">
-                    {% if resume.extracted_education %}
-                        <ul class="list-group list-group-flush">
-                            {% for item in resume.extracted_education %}
-                                <li class="list-group-item bg-transparent px-0 border-bottom-0 text-secondary">
-                                    <i class="bi bi-dot fs-4 text-success me-1"></i>{{ item }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-secondary mb-0">No explicit education keywords detected.</p>
-                    {% endif %}
-                </div>
+                {% if resume.extracted_education %}
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small text-slate-300">
+                        {% for item in resume.extracted_education %}
+                            <li class="d-flex align-items-start">
+                                <i class="bi bi-dot fs-4 text-emerald me-1 flex-shrink-0 lh-1"></i>
+                                <span>{{ item }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-slate-400 small mb-0">No explicit education keywords detected.</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- Projects Section -->
         <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4 bg-white">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-folder-check text-warning me-2"></i>Detected Projects & Experience
-                    </h5>
+            <div class="card p-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem;">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                    <h6 class="fw-bold text-white mb-0">
+                        <i class="bi bi-folder-check text-emerald me-2"></i>Detected Projects & Experience
+                    </h6>
+                    <span class="badge bg-dark text-slate-400 border border-secondary border-opacity-25">Header Matcher</span>
                 </div>
-                <div class="card-body p-4">
-                    {% if resume.extracted_projects %}
-                        <ul class="list-group list-group-flush">
-                            {% for proj in resume.extracted_projects %}
-                                <li class="list-group-item bg-transparent px-0 text-secondary">
-                                    <i class="bi bi-arrow-right-short text-warning fs-5 me-1"></i>{{ proj }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-secondary mb-0">No explicit project headers detected.</p>
-                    {% endif %}
-                </div>
+                {% if resume.extracted_projects %}
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2.5 small text-slate-300">
+                        {% for proj in resume.extracted_projects %}
+                            <li class="d-flex align-items-start">
+                                <i class="bi bi-arrow-right-short text-emerald fs-5 me-1.5 flex-shrink-0"></i>
+                                <span>{{ proj }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-slate-400 small mb-0">No explicit project headers detected.</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- Raw Text Preview Accordion -->
         <div class="col-12">
             <div class="accordion" id="rawTextAccordion">
-                <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="accordion-item" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; overflow: hidden;">
                     <h2 class="accordion-header" id="headingRawText">
-                        <button class="accordion-button collapsed fw-bold bg-white text-dark py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRawText" aria-expanded="false" aria-controls="collapseRawText">
-                            <i class="bi bi-file-text me-2"></i>View Extracted Plain Text Preview
+                        <button class="accordion-button collapsed fw-bold text-white py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRawText" aria-expanded="false" aria-controls="collapseRawText" style="background: #0f1724; border: none; shadow: none;">
+                            <i class="bi bi-file-text me-2 text-emerald"></i>View Extracted Plain Text Preview
                         </button>
                     </h2>
                     <div id="collapseRawText" class="accordion-collapse collapse" aria-labelledby="headingRawText" data-bs-parent="#rawTextAccordion">
-                        <div class="accordion-body bg-light p-4">
-                            <pre class="bg-white p-3 border rounded text-dark font-monospace small" style="white-space: pre-wrap; max-height: 400px; overflow-y: auto;">{{ resume.extracted_text|default:"No text available." }}</pre>
+                        <div class="accordion-body p-4" style="background: #0d131d;">
+                            <pre class="p-3 border rounded text-emerald font-monospace small mb-0" style="background: #060a10; border-color: rgba(255, 255, 255, 0.08) !important; white-space: pre-wrap; max-height: 400px; overflow-y: auto;">{{ resume.extracted_text|default:"No text available." }}</pre>
                         </div>
                     </div>
                 </div>
@@ -267,23 +291,23 @@
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteResumeDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+        <div class="modal-content p-2" style="background: #0d131d; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 1.25rem;">
             <form method="POST" action="{% url 'resume_delete' pk=resume.pk %}">
                 {% csrf_token %}
-                <div class="modal-header border-0">
+                <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold text-danger">
                         <i class="bi bi-trash me-2"></i>Delete Resume?
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-2">
-                    <p class="text-secondary mb-0">
+                <div class="modal-body py-3">
+                    <p class="text-slate-300 mb-0">
                         Are you sure you want to delete <strong>{{ resume.title }}</strong>? This action cannot be undone.
                     </p>
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger rounded-pill px-4">Delete Resume</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Delete Resume</button>
                 </div>
             </form>
         </div>

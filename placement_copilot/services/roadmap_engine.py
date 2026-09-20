@@ -8,70 +8,45 @@ from resume_analyzer.models import Resume
 from job_matcher.models import JobMatch
 from career.models import CareerRoadmap
 
-def get_fallback_roadmap(target_role: str, current_skills: list, missing_skills: list, difficulty_level: str) -> dict:
+def get_fallback_roadmap(target_role: str, current_skills: list, missing_skills: list, difficulty_level: str, duration_weeks: int = 6) -> dict:
     """
     Rule-based fallback weekly course roadmap generator used if AI API key is missing or service errors out.
     """
     sk1 = current_skills[:3] if current_skills else ["Python", "SQL", "Git"]
     m_sk = missing_skills if missing_skills else ["Docker", "System Design", "AWS Deployment", "CI/CD Pipelines"]
-
     topic = target_role or "Software Engineering"
 
-    return {
-        "roadmap": [
-            {
-                "phase": f"Week 1: Foundations of {topic} & Core Syntax",
-                "duration": "Week 1",
-                "skills": sk1 + ["Environment Setup", "Core Language Mechanics"],
-                "resources": [f"Official {topic} Documentation", "FreeCodeCamp Interactive Guide"],
-                "milestone": f"Complete environment setup and build your first baseline prototype in {topic}."
-            },
-            {
-                "phase": f"Week 2: Essential Algorithms & Skill Gap Bridging",
-                "duration": "Week 2",
-                "skills": m_sk[:2] if len(m_sk) >= 2 else ["Data Structures", "REST APIs"],
-                "resources": ["LeetCode 75", "GeeksforGeeks Skill Gap Practice"],
-                "milestone": "Solve 15 core technical exercises and document architecture patterns."
-            },
-            {
-                "phase": f"Week 3: Framework Architecture & Database Systems",
-                "duration": "Week 3",
-                "skills": m_sk[2:4] if len(m_sk) >= 4 else ["Django / FastAPI", "PostgreSQL / SQL"],
-                "resources": ["Framework Deep Dive Guide", "PostgreSQL Tuning Guide"],
-                "milestone": "Implement a full database-driven web module with user authentication."
-            },
-            {
-                "phase": f"Week 4: Advanced Services & System Design",
-                "duration": "Week 4",
-                "skills": ["RESTful APIs", "Redis Caching", "Async Processing"],
-                "resources": ["System Design Primer", "Postman API Benchmark Guide"],
-                "milestone": "Build and secure high-throughput REST API endpoints with caching."
-            },
-            {
-                "phase": f"Week 5: Containerization, Testing & CI/CD",
-                "duration": "Week 5",
-                "skills": ["Docker Containerization", "Unit Testing", "GitHub Actions"],
-                "resources": ["Docker Get Started", "GitHub Actions CI/CD Tutorial"],
-                "milestone": "Containerize full application with Docker Compose and set up automated unit test workflow."
-            },
-            {
-                "phase": f"Week 6: Cloud Deployment & Capstone Portfolio Project",
-                "duration": "Week 6",
-                "skills": ["AWS Cloud Deployment", "Monitoring", "Interview Preparation"],
-                "resources": ["AWS Free Tier Labs", "Mock Technical Interview Practice"],
-                "milestone": "Deploy project live to cloud environment and complete full capstone portfolio presentation."
-            }
-        ]
-    }
+    topic_templates = [
+        (f"Foundations of {topic} & Environment Setup", sk1 + ["Environment Setup", "Core Syntax"], ["Official Documentation", "Interactive Practice"], "Complete environment setup and build initial code module."),
+        (f"Core Data Structures & Algorithmic Problem Solving", ["Data Structures", "Algorithms"], ["LeetCode 75", "GeeksforGeeks"], "Solve 15 core technical exercises and document complexity patterns."),
+        (f"Framework Architecture & Database Engineering", m_sk[:2] if len(m_sk)>=2 else ["Web Frameworks", "Database Tuning"], ["Framework Deep Dive Guide", "Database Operations"], "Implement a full database-driven web application module."),
+        (f"Advanced Microservices & System Design", ["RESTful APIs", "System Design", "Redis Caching"], ["System Design Primer", "Postman API Guide"], "Build and secure high-throughput REST API endpoints with caching."),
+        (f"Containerization, Testing & CI/CD Workflows", ["Docker Containerization", "Unit Testing", "GitHub Actions"], ["Docker Documentation", "GitHub Actions CI/CD Tutorial"], "Containerize application with Docker and configure automated CI/CD pipeline."),
+        (f"Cloud Infrastructure & Capstone Deployment", ["Cloud Deployment", "AWS / GCP", "Portfolio Project"], ["Cloud Free Tier Labs", "Mock Technical Practice"], "Deploy project live to cloud environment and present capstone portfolio presentation.")
+    ]
+
+    weeks = []
+    for w in range(1, duration_weeks + 1):
+        tmpl_idx = (w - 1) % len(topic_templates)
+        t_title, t_skills, t_res, t_milestone = topic_templates[tmpl_idx]
+        weeks.append({
+            "phase": f"Week {w}: {t_title}",
+            "duration": f"Week {w}",
+            "skills": t_skills,
+            "resources": t_res,
+            "milestone": f"Week {w} Milestone: {t_milestone}"
+        })
+
+    return {"roadmap": weeks}
 
 
-def generate_career_roadmap(user, custom_target_role: str = None) -> CareerRoadmap:
+def generate_career_roadmap(user, custom_target_role: str = None, duration_weeks: int = 6) -> CareerRoadmap:
     """
     Pipeline function:
     1. Collects UserProfile, Resume Skills, Job Match gaps, and ATS metrics.
     2. Determines difficulty level (Beginner <50%, Intermediate 50-75%, Advanced >75%).
-    3. Prompts Gemini API for a structured 6-Week Course Learning Roadmap.
-    4. Saves to database as CareerRoadmap model instance and triggers daily execution breakdown.
+    3. Prompts Gemini API for a structured N-Week Course Learning Roadmap.
+    4. Saves to database as CareerRoadmap model instance.
     """
     load_dotenv(override=True)
     api_key = os.getenv('GEMINI_API_KEY', '').strip()
@@ -106,13 +81,13 @@ def generate_career_roadmap(user, custom_target_role: str = None) -> CareerRoadm
     else:
         difficulty_level = 'Advanced'
 
-    fallback_data = get_fallback_roadmap(target_role, current_skills, missing_skills, difficulty_level)
+    fallback_data = get_fallback_roadmap(target_role, current_skills, missing_skills, difficulty_level, duration_weeks)
     roadmap_json = fallback_data
 
     if api_key:
         system_prompt = "You are a Chief Technology Officer and Master Curriculum Architect designing weekly course learning roadmaps."
         user_prompt = f"""
-Design a structured, week-by-week (6 Weeks) Course Learning Roadmap for the topic/course/target role: "{target_role}".
+Design a structured, week-by-week ({duration_weeks} Weeks) Course Learning Roadmap for the topic/course/target role: "{target_role}".
 
 CANDIDATE CONTEXT:
 - Candidate Name: {user.get_full_name() or user.username}
@@ -121,7 +96,7 @@ CANDIDATE CONTEXT:
 - Alignment Level: {match_score}% ({difficulty_level})
 
 INSTRUCTIONS:
-1. Break the course/topic into EXACTLY 6 distinct weekly modules (Week 1, Week 2, Week 3, Week 4, Week 5, Week 6).
+1. Break the course/topic into EXACTLY {duration_weeks} distinct weekly modules (Week 1, Week 2, ..., Week {duration_weeks}).
 2. For each week, provide specific technical skills to master, recommended learning resources, and a concrete weekly hands-on project milestone.
 
 OUTPUT STRICT JSON ONLY (no markdown outside JSON):
@@ -130,88 +105,44 @@ OUTPUT STRICT JSON ONLY (no markdown outside JSON):
     {{
       "phase": "Week 1: [Module Title / Focus Topic]",
       "duration": "Week 1",
-      "skills": ["Skill 1", "Skill 2", "Skill 3"],
+      "skills": ["Skill 1", "Skill 2"],
       "resources": ["Resource 1", "Resource 2"],
-      "milestone": "Actionable weekly hands-on mini-project milestone goal."
-    }},
-    {{
-      "phase": "Week 2: [Module Title / Focus Topic]",
-      "duration": "Week 2",
-      "skills": ["Skill 4", "Skill 5"],
-      "resources": ["Resource 3", "Resource 4"],
-      "milestone": "Actionable weekly hands-on milestone goal."
-    }},
-    {{
-      "phase": "Week 3: [Module Title / Focus Topic]",
-      "duration": "Week 3",
-      "skills": ["Skill 6", "Skill 7"],
-      "resources": ["Resource 5", "Resource 6"],
-      "milestone": "Actionable weekly hands-on milestone goal."
-    }},
-    {{
-      "phase": "Week 4: [Module Title / Focus Topic]",
-      "duration": "Week 4",
-      "skills": ["Skill 8", "Skill 9"],
-      "resources": ["Resource 7", "Resource 8"],
-      "milestone": "Actionable weekly hands-on milestone goal."
-    }},
-    {{
-      "phase": "Week 5: [Module Title / Focus Topic]",
-      "duration": "Week 5",
-      "skills": ["Skill 10", "Skill 11"],
-      "resources": ["Resource 9", "Resource 10"],
-      "milestone": "Actionable weekly hands-on milestone goal."
-    }},
-    {{
-      "phase": "Week 6: [Module Title / Capstone Project]",
-      "duration": "Week 6",
-      "skills": ["Skill 12", "Skill 13"],
-      "resources": ["Resource 11", "Resource 12"],
-      "milestone": "Final capstone project deployment & milestone goal."
+      "milestone": "Actionable weekly hands-on project milestone goal."
     }}
   ]
 }}
 """
+        models_to_try = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest']
         try:
             from google import genai
             client = genai.Client(api_key=api_key)
-            res = client.models.generate_content(
-                model='gemini-3.6-flash',
-                contents=f"{system_prompt}\n\n{user_prompt}"
-            )
-            raw_text = res.text.strip()
-            if raw_text.startswith("```"):
-                raw_text = re.sub(r"^```(?:json)?\n?", "", raw_text)
-                raw_text = re.sub(r"\n?```$", "", raw_text)
-            raw_text = raw_text.strip()
 
-            parsed = json.loads(raw_text)
-            if isinstance(parsed, dict) and "roadmap" in parsed and len(parsed["roadmap"]) > 0:
-                roadmap_json = parsed
+            for model_name in models_to_try:
+                try:
+                    res = client.models.generate_content(
+                        model=model_name,
+                        contents=f"{system_prompt}\n\n{user_prompt}"
+                    )
+                    if res and res.text and res.text.strip():
+                        raw_text = res.text.strip()
+                        if raw_text.startswith("```"):
+                            raw_text = re.sub(r"^```(?:json)?\n?", "", raw_text)
+                            raw_text = re.sub(r"\n?```$", "", raw_text)
+                        raw_text = raw_text.strip()
+
+                        parsed = json.loads(raw_text)
+                        if isinstance(parsed, dict) and "roadmap" in parsed and len(parsed["roadmap"]) > 0:
+                            roadmap_json = parsed
+                            break
+                except Exception:
+                    continue
         except Exception:
-            try:
-                from google import genai
-                client = genai.Client(api_key=api_key)
-                res = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=f"{system_prompt}\n\n{user_prompt}"
-                )
-                raw_text = res.text.strip()
-                if raw_text.startswith("```"):
-                    raw_text = re.sub(r"^```(?:json)?\n?", "", raw_text)
-                    raw_text = re.sub(r"\n?```$", "", raw_text)
-                raw_text = raw_text.strip()
-
-                parsed = json.loads(raw_text)
-                if isinstance(parsed, dict) and "roadmap" in parsed and len(parsed["roadmap"]) > 0:
-                    roadmap_json = parsed
-            except Exception:
-                roadmap_json = fallback_data
+            roadmap_json = fallback_data
 
     # Save to Database
     roadmap_obj = CareerRoadmap.objects.create(
         user=user,
-        title=f"6-Week Course Roadmap: {target_role} ({difficulty_level})",
+        title=f"{duration_weeks}-Week Course Roadmap: {target_role} ({difficulty_level})",
         target_role=target_role,
         current_skills=current_skills,
         missing_skills=missing_skills,
@@ -220,4 +151,3 @@ OUTPUT STRICT JSON ONLY (no markdown outside JSON):
     )
 
     return roadmap_obj
-

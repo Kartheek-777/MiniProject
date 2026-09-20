@@ -1,45 +1,337 @@
 {% extends 'base.html' %}
 
-{% block title %}Mock Interview Room - {{ session.target_role }}{% endblock %}
+{% block title %}Google Meet AI Interview - {{ session.target_role }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    .chat-container {
-        height: 520px;
-        overflow-y: auto;
-        scroll-behavior: smooth;
-        background: #0f172a;
-        border-radius: 1rem;
-    }
-    .msg-interviewer {
-        background: #1e293b;
+    body {
+        background-color: #0b0f17 !important;
         color: #f8fafc;
-        border-left: 4px solid #3b82f6;
-        border-radius: 0.75rem;
     }
-    .msg-candidate {
+    
+    .meet-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Google Meet Stage & Video Tiles */
+    .meet-stage-wrapper {
+        position: relative;
+        flex-grow: 1;
+        background: #111827;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .meet-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        height: 100%;
+        padding: 1rem;
+    }
+
+    @media (min-width: 992px) {
+        .meet-grid.has-sidebar {
+            grid-template-columns: 1fr 360px;
+        }
+    }
+
+    /* Main AI Stage Card */
+    .ai-video-tile {
+        position: relative;
+        background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(59, 130, 246, 0.3);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        min-height: 480px;
+    }
+
+    .ai-video-tile.speaking {
+        border-color: #3b82f6;
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.35);
+    }
+
+    /* AI Avatar Visualizer */
+    .ai-avatar-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .ai-avatar-circle {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: #ffffff;
-        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        position: relative;
+        z-index: 2;
     }
-    .phase-badge-pill {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.75rem;
-        border-radius: 50rem;
+
+    .ai-pulse-ring {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 2px solid rgba(59, 130, 246, 0.4);
+        animation: pulse-ring 2s infinite ease-in-out;
+        opacity: 0;
     }
-    .phase-step {
-        opacity: 0.4;
+
+    .ai-video-tile.speaking .ai-pulse-ring {
+        opacity: 1;
+    }
+
+    @keyframes pulse-ring {
+        0% { transform: scale(0.85); opacity: 0.8; }
+        100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* Audio Soundwave Animation */
+    .wave-bars {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 30px;
+    }
+
+    .wave-bar {
+        width: 5px;
+        height: 8px;
+        background-color: #38bdf8;
+        border-radius: 3px;
+        transition: height 0.1s ease;
+    }
+
+    .ai-video-tile.speaking .wave-bar {
+        animation: soundwave 1.2s infinite ease-in-out alternate;
+    }
+
+    .ai-video-tile.speaking .wave-bar:nth-child(1) { animation-delay: 0.1s; }
+    .ai-video-tile.speaking .wave-bar:nth-child(2) { animation-delay: 0.3s; }
+    .ai-video-tile.speaking .wave-bar:nth-child(3) { animation-delay: 0.5s; }
+    .ai-video-tile.speaking .wave-bar:nth-child(4) { animation-delay: 0.2s; }
+    .ai-video-tile.speaking .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes soundwave {
+        0% { height: 6px; }
+        100% { height: 28px; }
+    }
+
+    /* User Candidate Webcam Self-View Tile */
+    .user-video-tile {
+        position: absolute;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        width: 220px;
+        height: 140px;
+        background: #1e293b;
+        border-radius: 0.85rem;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        z-index: 10;
         transition: all 0.3s ease;
     }
-    .phase-step.active {
-        opacity: 1;
-        transform: scale(1.05);
+
+    .user-video-tile:hover {
+        transform: scale(1.03);
     }
+
+    .webcam-video-element {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scaleX(-1); /* Mirror effect like Google Meet */
+    }
+
+    .cam-off-avatar {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #334155;
+        color: #94a3b8;
+    }
+
+    /* Video Overlay Badges */
+    .video-nameplate {
+        position: absolute;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
+        color: #ffffff;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .video-top-badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Closed Captions Subtitle Overlay */
+    .cc-overlay-banner {
+        position: absolute;
+        bottom: 4.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 800px;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 0.85rem;
+        padding: 0.85rem 1.25rem;
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        z-index: 15;
+        transition: all 0.3s ease;
+    }
+
+    .cc-speaker-tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #38bdf8;
+        margin-bottom: 0.25rem;
+    }
+
+    .cc-text-content {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        color: #f1f5f9;
+        font-weight: 400;
+    }
+
+    /* Google Meet Bottom Floating Control Dock */
+    .meet-control-dock {
+        position: relative;
+        margin-top: 1rem;
+        background: #1e293b;
+        border-radius: 50rem;
+        padding: 0.6rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .dock-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: #334155;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .dock-btn:hover {
+        background: #475569;
+        transform: translateY(-2px);
+    }
+
+    .dock-btn.active {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+    }
+
+    .dock-btn.danger {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+    .dock-btn.danger:hover {
+        background: #b91c1c;
+    }
+
+    .dock-btn.muted {
+        background: #ea580c;
+        color: #ffffff;
+    }
+
+    /* In-Call Live Transcript Drawer */
+    .transcript-drawer {
+        background: #0f172a;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .transcript-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        scroll-behavior: smooth;
+    }
+
+    .msg-interviewer-card {
+        background: #1e293b;
+        border-left: 3px solid #3b82f6;
+        border-radius: 0.6rem;
+        padding: 0.75rem;
+        margin-bottom: 0.85rem;
+        font-size: 0.875rem;
+    }
+
+    .msg-candidate-card {
+        background: #1e40af;
+        border-radius: 0.6rem;
+        padding: 0.75rem;
+        margin-bottom: 0.85rem;
+        font-size: 0.875rem;
+    }
+
     .typing-dots span {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         margin: 0 2px;
-        background-color: #94a3b8;
+        background-color: #38bdf8;
         border-radius: 50%;
         display: inline-block;
         animation: typing 1.4s infinite ease-in-out both;
@@ -54,147 +346,228 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-3">
-    <!-- Top Interview Bar -->
-    <div class="card border-0 bg-dark text-white rounded-4 p-3 mb-3 shadow-sm">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <div class="bg-primary text-white p-2 rounded-3 fs-4">
-                    <i class="bi bi-headset"></i>
+<div class="container-fluid px-lg-4 py-3 meet-container">
+    <!-- Top Header Bar -->
+    <div class="d-flex align-items-center justify-content-between mb-3 px-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary bg-opacity-25 text-primary p-2 rounded-3 border border-primary border-opacity-25">
+                <i class="bi bi-camera-video-fill fs-5"></i>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="fw-bold mb-0 text-white">{{ session.target_role }} AI Technical Interview</h5>
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1">
+                        <i class="bi bi-circle-fill fs-8 me-1 align-middle"></i> Live Call
+                    </span>
                 </div>
-                <div>
-                    <h5 class="fw-bold mb-0 text-white">{{ session.target_role }}</h5>
-                    <small class="text-white-50">Senior Technical Interviewer Engine (8+ yrs exp)</small>
-                </div>
+                <small class="text-slate-400">Senior AI Technical Interviewer (8+ yrs exp)</small>
             </div>
+        </div>
 
-            <!-- Phase Step Indicators -->
-            <div class="d-none d-lg-flex align-items-center gap-2">
-                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'HR Screening' %}active bg-primary{% endif %}">1. HR</span>
-                <i class="bi bi-chevron-right text-muted fs-7"></i>
-                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'Core CS' %}active bg-primary{% endif %}">2. CS</span>
-                <i class="bi bi-chevron-right text-muted fs-7"></i>
-                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'AI/ML + GenAI' %}active bg-primary{% endif %}">3. AI/GenAI</span>
-                <i class="bi bi-chevron-right text-muted fs-7"></i>
-                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'Project Deep Dive' %}active bg-primary{% endif %}">4. Projects</span>
-                <i class="bi bi-chevron-right text-muted fs-7"></i>
-                <span class="phase-step phase-badge-pill border border-light text-light {% if session.current_phase == 'System Design' %}active bg-primary{% endif %}">5. System Design</span>
-            </div>
-
-            <!-- Header Actions -->
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-dark bg-opacity-50 border border-secondary text-info px-3 py-2" id="sessionTimer" title="Session Elapsed Time">
-                    <i class="bi bi-clock-history me-1"></i>00:00
-                </span>
-                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2" id="currentPhaseBadge">
-                    <i class="bi bi-disc me-1"></i>{{ session.current_phase }}
-                </span>
-                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#endInterviewModal">
-                    <i class="bi bi-flag-fill me-1"></i>End & Evaluate
-                </button>
-            </div>
+        <!-- Header Status Badges -->
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-dark bg-opacity-75 border border-secondary text-info px-3 py-2" id="sessionTimer">
+                <i class="bi bi-clock me-1.5"></i>00:00
+            </span>
+            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 px-3 py-2" id="currentPhaseBadge">
+                <i class="bi bi-disc me-1"></i>{{ session.current_phase }}
+            </span>
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#endInterviewModal">
+                <i class="bi bi-telephone-x-fill me-1"></i>End Interview
+            </button>
         </div>
     </div>
 
-    <!-- Chat Window Container -->
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-3">
-        <div class="chat-container p-4" id="chatStream">
-            {% for msg in chat_messages %}
-                {% if msg.sender == 'interviewer' %}
-                    <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="bg-primary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-robot fs-5"></i>
-                        </div>
-                        <div class="msg-interviewer p-3 shadow-sm flex-grow-1" style="max-width: 85%;">
-                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-secondary border-opacity-25">
-                                <span class="fw-bold text-info small">Senior AI Interviewer</span>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-secondary bg-opacity-50 text-light small">{{ msg.round_name }}</span>
-                                    <button class="btn btn-link btn-sm p-0 text-info tts-btn" onclick="speakText(this)" data-text="{{ msg.message }}">
-                                        <i class="bi bi-volume-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="msg-content text-slate-100" style="white-space: pre-wrap; line-height: 1.6;">{{ msg.message }}</div>
-                            <div class="text-end mt-1"><small class="text-muted" style="font-size: 0.7rem;">{{ msg.created_at|date:"H:i" }}</small></div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="d-flex align-items-start justify-content-end gap-3 mb-4">
-                        <div class="msg-candidate p-3 shadow-sm" style="max-width: 80%;">
-                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-white border-opacity-25">
-                                <span class="fw-bold small text-white">You (Candidate)</span>
-                                <small class="text-white-50" style="font-size: 0.7rem;">{{ msg.created_at|date:"H:i" }}</small>
-                            </div>
-                            <div class="msg-content" style="white-space: pre-wrap; line-height: 1.6;">{{ msg.message }}</div>
-                        </div>
-                        <div class="bg-secondary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person-fill fs-5"></i>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+    <!-- Main Google Meet Stage -->
+    <div class="meet-stage-wrapper flex-grow-1">
+        <div class="meet-grid has-sidebar" id="meetGrid">
+            
+            <!-- Main Video Stage (AI Interviewer Card) -->
+            <div class="ai-video-tile shadow-lg" id="aiVideoTile">
+                <!-- Top Left Status Badge -->
+                <div class="video-top-badge text-white d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-success"></i>
+                    <span>Gemini AI Senior Interviewer</span>
+                </div>
 
-            <!-- Typing indicator element (hidden by default) -->
-            <div id="typingIndicator" class="d-none mb-4">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="bg-primary text-white p-2 rounded-circle shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-robot fs-5"></i>
+                <!-- Center AI Avatar & Visualizer -->
+                <div class="text-center">
+                    <div class="ai-avatar-container">
+                        <div class="ai-pulse-ring"></div>
+                        <div class="ai-avatar-circle">
+                            <i class="bi bi-robot text-white display-4"></i>
+                        </div>
                     </div>
-                    <div class="msg-interviewer p-3 shadow-sm">
-                        <small class="text-info me-2 fw-semibold">Interviewer is evaluating response...</small>
-                        <span class="typing-dots"><span></span><span></span><span></span></span>
+                    <h5 class="fw-bold text-white mb-1">Senior Technical AI Interviewer</h5>
+                    <p class="text-info small mb-3" id="aiStatusText">Listening to your answer...</p>
+                    
+                    <!-- Audio Waveform Visualizer -->
+                    <div class="d-flex justify-content-center">
+                        <div class="wave-bars">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Nameplate -->
+                <div class="video-nameplate">
+                    <i class="bi bi-cpu-fill text-primary"></i>
+                    <span>AI Interviewer Engine</span>
+                </div>
+
+                <!-- Candidate Self-View Webcam Tile (Floating PiP) -->
+                <div class="user-video-tile" id="userVideoTile">
+                    <video id="candidateWebcamFeed" autoplay muted playsinline class="webcam-video-element"></video>
+                    <div id="camOffFallback" class="cam-off-avatar d-none">
+                        <i class="bi bi-person-fill fs-2 mb-1"></i>
+                        <span class="small fw-semibold">{{ request.user.first_name|default:request.user.username }}</span>
+                    </div>
+                    <div class="video-nameplate py-1 px-2" style="font-size: 0.7rem;">
+                        <i class="bi bi-mic-fill text-success" id="userMicStatusIcon"></i>
+                        <span>You (Candidate)</span>
+                    </div>
+                </div>
+
+                <!-- Closed Captions (Live Subtitles Banner) -->
+                <div class="cc-overlay-banner" id="ccBanner">
+                    <div class="cc-speaker-tag" id="ccSpeakerTag">Senior AI Interviewer</div>
+                    <div class="cc-text-content" id="ccText">
+                        {% if chat_messages %}
+                            {% for msg in chat_messages %}
+                                {% if forloop.last and msg.sender == 'interviewer' %}
+                                    {{ msg.message }}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Connecting to AI Interviewer...
+                        {% endif %}
                     </div>
                 </div>
             </div>
+
+            <!-- In-Call Side Panel (Transcript & Input Drawer) -->
+            <div class="transcript-drawer shadow" id="transcriptDrawer">
+                <div class="p-3 border-bottom border-secondary border-opacity-25 d-flex align-items-center justify-content-between bg-dark bg-opacity-50">
+                    <span class="fw-bold text-white small">
+                        <i class="bi bi-chat-text-fill me-1.5 text-primary"></i>Interview Transcript & Input
+                    </span>
+                    <span class="badge bg-secondary bg-opacity-50 text-light small" id="liveWordBadge">0 Words</span>
+                </div>
+                
+                <div class="transcript-body" id="transcriptBody">
+                    {% for msg in chat_messages %}
+                        {% if msg.sender == 'interviewer' %}
+                            <div class="msg-interviewer-card">
+                                <div class="d-flex align-items-center justify-content-between mb-1 text-info font-monospace" style="font-size: 0.75rem;">
+                                    <span>AI Interviewer</span>
+                                    <span>{{ msg.created_at|date:"H:i" }}</span>
+                                </div>
+                                <div class="text-slate-200" style="white-space: pre-wrap;">{{ msg.message }}</div>
+                            </div>
+                        {% else %}
+                            <div class="msg-candidate-card">
+                                <div class="d-flex align-items-center justify-content-between mb-1 text-white-50 font-monospace" style="font-size: 0.75rem;">
+                                    <span>You</span>
+                                    <span>{{ msg.created_at|date:"H:i" }}</span>
+                                </div>
+                                <div class="text-white" style="white-space: pre-wrap;">{{ msg.message }}</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="msg-interviewer-card d-none">
+                        <span class="text-info me-2">AI is evaluating response...</span>
+                        <span class="typing-dots"><span></span><span></span><span></span></span>
+                    </div>
+                </div>
+
+                <!-- Text Form Input (Secondary/Fallback Input) -->
+                <div class="p-3 bg-dark border-top border-secondary border-opacity-25">
+                    <form id="chatForm">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <textarea id="userInput" class="form-control bg-slate-900 border-secondary text-white rounded-3 shadow-none" rows="2" placeholder="Type your answer or use microphone controls below... (Enter to send)" required style="background: #0f172a; border-color: rgba(255,255,255,0.15);"></textarea>
+                            <button type="submit" id="sendBtn" class="btn btn-primary px-3 rounded-3 ms-2 shadow-sm">
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Google Meet Bottom Floating Control Dock Bar -->
+    <div class="meet-control-dock">
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-white fw-semibold small d-none d-md-inline">
+                <i class="bi bi-shield-lock-fill me-1 text-primary"></i>Secure Session
+            </span>
         </div>
 
-        <!-- Input Control Footer -->
-        <div class="card-footer bg-white border-0 p-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <small class="text-muted" style="font-size: 0.75rem;">
-                    <i class="bi bi-mic me-1 text-primary"></i>Live Speech Dictation & Response Meter
-                </small>
-                <span id="wordCounter" class="badge bg-light text-dark border" style="font-size: 0.7rem;">0 Words</span>
-            </div>
-            <form id="chatForm" class="d-flex gap-2 align-items-center">
-                {% csrf_token %}
-                <textarea id="userInput" class="form-control rounded-3 border-secondary border-opacity-25" rows="2" placeholder="Type your answer or click mic to dictate... (Press Enter to send)" required></textarea>
-                
-                <!-- Voice Dictation Button -->
-                <button type="button" id="sttBtn" class="btn btn-outline-primary rounded-3 px-3 shadow-sm align-self-stretch d-flex align-items-center justify-content-center" title="Dictate Answer via Voice Microphone">
-                    <i class="bi bi-mic-fill fs-5"></i>
-                </button>
-                
-                <button type="submit" id="sendBtn" class="btn btn-primary btn-lg rounded-3 px-4 shadow-sm align-self-stretch d-flex align-items-center justify-content-center">
-                    <i class="bi bi-send-fill fs-5"></i>
-                </button>
-            </form>
+        <!-- Center Controls -->
+        <div class="d-flex align-items-center gap-3">
+            <!-- Mic Toggle Button -->
+            <button class="dock-btn active" id="meetMicBtn" title="Toggle Microphone (Voice Dictation)">
+                <i class="bi bi-mic-fill" id="micIcon"></i>
+            </button>
+
+            <!-- Camera Toggle Button -->
+            <button class="dock-btn active" id="meetCamBtn" title="Toggle Webcam">
+                <i class="bi bi-camera-video-fill" id="camIcon"></i>
+            </button>
+
+            <!-- Closed Captions Toggle Button -->
+            <button class="dock-btn active" id="meetCcBtn" title="Toggle Subtitles / Closed Captions">
+                <i class="bi bi-subtitles-fill"></i>
+            </button>
+
+            <!-- AI Voice Output Mute/Unmute Toggle -->
+            <button class="dock-btn active" id="meetTtsBtn" title="Toggle AI Voice Output">
+                <i class="bi bi-volume-up-fill" id="ttsIcon"></i>
+            </button>
+
+            <!-- In-Call Transcript Drawer Toggle -->
+            <button class="dock-btn active" id="meetTranscriptBtn" title="Toggle Side Transcript Panel">
+                <i class="bi bi-chat-text-fill"></i>
+            </button>
+
+            <!-- End Call Red Button -->
+            <button class="dock-btn danger ms-2" data-bs-toggle="modal" data-bs-target="#endInterviewModal" title="Leave & End Interview">
+                <i class="bi bi-telephone-x-fill"></i>
+            </button>
+        </div>
+
+        <div class="d-none d-md-block">
+            <small class="text-slate-400 font-monospace">PlacementCopilot Meet</small>
         </div>
     </div>
 </div>
 
-
 <!-- End Interview Confirmation Modal -->
 <div class="modal fade" id="endInterviewModal" tabindex="-1" aria-labelledby="endInterviewModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-4 bg-dark text-white border border-secondary border-opacity-25">
             <form method="POST" action="{% url 'end_interview' session.pk %}">
                 {% csrf_token %}
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="endInterviewModalLabel">
-                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Complete Interview Session?
+                    <h5 class="modal-title fw-bold text-white" id="endInterviewModalLabel">
+                        <i class="bi bi-telephone-x-fill text-danger me-2"></i>Leave & Evaluate Interview?
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body py-3">
-                    <p class="text-secondary mb-0">
-                        Ending the session will submit your transcript to the AI Evaluation Engine to generate your structured scorecard, rating, and actionable feedback.
-                    </p>
+                <div class="modal-body py-3 text-slate-300">
+                    Ending the meeting will process your full voice and text transcript through the AI Evaluation Engine to generate your structured scorecard, rating, and breakdown feedback.
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Continue Interview</button>
-                    <button type="submit" class="btn btn-danger rounded-pill px-4">Generate Scorecard</button>
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Return to Meeting</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 shadow">Generate Scorecard</button>
                 </div>
             </form>
         </div>
@@ -204,31 +577,236 @@
 
 {% block extra_js %}
 <script>
-    const chatStream = document.getElementById('chatStream');
+    // State Flags
+    let isMicActive = true;
+    let isCamActive = true;
+    let isCcActive = true;
+    let isTtsActive = true;
+    let isSidePanelOpen = true;
+
+    // Elements
+    const candidateWebcamFeed = document.getElementById('candidateWebcamFeed');
+    const camOffFallback = document.getElementById('camOffFallback');
+    const aiVideoTile = document.getElementById('aiVideoTile');
+    const aiStatusText = document.getElementById('aiStatusText');
+    const ccBanner = document.getElementById('ccBanner');
+    const ccText = document.getElementById('ccText');
+    const ccSpeakerTag = document.getElementById('ccSpeakerTag');
+    const transcriptBody = document.getElementById('transcriptBody');
     const chatForm = document.getElementById('chatForm');
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const typingIndicator = document.getElementById('typingIndicator');
     const currentPhaseBadge = document.getElementById('currentPhaseBadge');
+    const sessionTimerEl = document.getElementById('sessionTimer');
+    const liveWordBadge = document.getElementById('liveWordBadge');
 
+    // Dock Buttons
+    const meetMicBtn = document.getElementById('meetMicBtn');
+    const meetCamBtn = document.getElementById('meetCamBtn');
+    const meetCcBtn = document.getElementById('meetCcBtn');
+    const meetTtsBtn = document.getElementById('meetTtsBtn');
+    const meetTranscriptBtn = document.getElementById('meetTranscriptBtn');
+    const micIcon = document.getElementById('micIcon');
+    const camIcon = document.getElementById('camIcon');
+    const ttsIcon = document.getElementById('ttsIcon');
+    const userMicStatusIcon = document.getElementById('userMicStatusIcon');
+
+    let mediaStream = null;
+
+    // 1. Initialize Webcam Stream (Google Meet Self-View)
+    async function initWebcam() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            candidateWebcamFeed.srcObject = mediaStream;
+            camOffFallback.classList.add('d-none');
+            candidateWebcamFeed.classList.remove('d-none');
+        } catch (err) {
+            console.warn('Webcam permission denied or camera not available:', err);
+            isCamActive = false;
+            candidateWebcamFeed.classList.add('d-none');
+            camOffFallback.classList.remove('d-none');
+            meetCamBtn.classList.remove('active');
+            meetCamBtn.classList.add('muted');
+            camIcon.className = 'bi bi-camera-video-off-fill';
+        }
+    }
+    initWebcam();
+
+    // 2. Camera Toggle
+    meetCamBtn.addEventListener('click', () => {
+        isCamActive = !isCamActive;
+        if (mediaStream) {
+            mediaStream.getVideoTracks().forEach(track => track.enabled = isCamActive);
+        }
+        if (isCamActive) {
+            candidateWebcamFeed.classList.remove('d-none');
+            camOffFallback.classList.add('d-none');
+            meetCamBtn.classList.remove('muted');
+            meetCamBtn.classList.add('active');
+            camIcon.className = 'bi bi-camera-video-fill';
+        } else {
+            candidateWebcamFeed.classList.add('d-none');
+            camOffFallback.classList.remove('d-none');
+            meetCamBtn.classList.remove('active');
+            meetCamBtn.classList.add('muted');
+            camIcon.className = 'bi bi-camera-video-off-fill';
+        }
+    });
+
+    // 3. AI Speech Synthesis (TTS Voice Speaking)
+    function speakAiQuestion(text) {
+        if (!isTtsActive || !('speechSynthesis' in window) || !text) return;
+
+        window.speechSynthesis.cancel(); // Stop active speech
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = () => {
+            aiVideoTile.classList.add('speaking');
+            aiStatusText.textContent = "AI Interviewer is speaking...";
+            aiStatusText.className = "text-primary fw-bold small mb-3";
+        };
+
+        utterance.onend = () => {
+            aiVideoTile.classList.remove('speaking');
+            aiStatusText.textContent = "Listening to your response...";
+            aiStatusText.className = "text-info small mb-3";
+        };
+
+        utterance.onerror = () => {
+            aiVideoTile.classList.remove('speaking');
+            aiStatusText.textContent = "Listening to your response...";
+            aiStatusText.className = "text-info small mb-3";
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Speak initial interviewer message on call load
+    window.addEventListener('DOMContentLoaded', () => {
+        const initialCcText = ccText.textContent.trim();
+        if (initialCcText && initialCcText !== "Connecting to AI Interviewer...") {
+            speakAiQuestion(initialCcText);
+        }
+    });
+
+    // 4. Speech Recognition (STT Voice Answering)
+    let recognition = null;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            userMicStatusIcon.className = 'bi bi-mic-fill text-danger';
+        };
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            userInput.value = transcript;
+            userInput.dispatchEvent(new Event('input'));
+            
+            // Update CC live user preview
+            ccSpeakerTag.textContent = "You (Candidate Speaking)";
+            ccSpeakerTag.style.color = "#34d399";
+            ccText.textContent = transcript || "...";
+        };
+
+        recognition.onerror = (e) => {
+            console.warn('Speech recognition error:', e.error);
+        };
+
+        recognition.onend = () => {
+            if (isMicActive) {
+                try { recognition.start(); } catch(e){}
+            }
+        };
+
+        // Start listening by default
+        try { recognition.start(); } catch(e){}
+    }
+
+    // Mic Button Toggle
+    meetMicBtn.addEventListener('click', () => {
+        isMicActive = !isMicActive;
+        if (isMicActive) {
+            meetMicBtn.classList.remove('muted');
+            meetMicBtn.classList.add('active');
+            micIcon.className = 'bi bi-mic-fill';
+            userMicStatusIcon.className = 'bi bi-mic-fill text-success';
+            if (recognition) try { recognition.start(); } catch(e){}
+        } else {
+            meetMicBtn.classList.remove('active');
+            meetMicBtn.classList.add('muted');
+            micIcon.className = 'bi bi-mic-mute-fill';
+            userMicStatusIcon.className = 'bi bi-mic-mute-fill text-danger';
+            if (recognition) try { recognition.stop(); } catch(e){}
+        }
+    });
+
+    // CC Toggle Button
+    meetCcBtn.addEventListener('click', () => {
+        isCcActive = !isCcActive;
+        if (isCcActive) {
+            ccBanner.classList.remove('d-none');
+            meetCcBtn.classList.add('active');
+            meetCcBtn.classList.remove('muted');
+        } else {
+            ccBanner.classList.add('d-none');
+            meetCcBtn.classList.remove('active');
+            meetCcBtn.classList.add('muted');
+        }
+    });
+
+    // TTS Output Mute Toggle
+    meetTtsBtn.addEventListener('click', () => {
+        isTtsActive = !isTtsActive;
+        if (isTtsActive) {
+            meetTtsBtn.classList.add('active');
+            meetTtsBtn.classList.remove('muted');
+            ttsIcon.className = 'bi bi-volume-up-fill';
+        } else {
+            window.speechSynthesis.cancel();
+            aiVideoTile.classList.remove('speaking');
+            meetTtsBtn.classList.remove('active');
+            meetTtsBtn.classList.add('muted');
+            ttsIcon.className = 'bi bi-volume-mute-fill';
+        }
+    });
+
+    // Side Transcript Drawer Toggle
+    meetTranscriptBtn.addEventListener('click', () => {
+        const transcriptDrawer = document.getElementById('transcriptDrawer');
+        const meetGrid = document.getElementById('meetGrid');
+        isSidePanelOpen = !isSidePanelOpen;
+
+        if (isSidePanelOpen) {
+            transcriptDrawer.classList.remove('d-none');
+            meetGrid.classList.add('has-sidebar');
+            meetTranscriptBtn.classList.add('active');
+            meetTranscriptBtn.classList.remove('muted');
+        } else {
+            transcriptDrawer.classList.add('d-none');
+            meetGrid.classList.remove('has-sidebar');
+            meetTranscriptBtn.classList.remove('active');
+            meetTranscriptBtn.classList.add('muted');
+        }
+    });
+
+    // 5. Scroll helper & Submit logic
     function scrollToBottom() {
-        chatStream.scrollTop = chatStream.scrollHeight;
+        transcriptBody.scrollTop = transcriptBody.scrollHeight;
     }
     scrollToBottom();
 
-    // Text-to-speech helper
-    function speakText(btn) {
-        const text = btn.getAttribute('data-text');
-        if ('speechSynthesis' in window && text) {
-            window.speechSynthesis.cancel(); // Stop active speech
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    // Submit on Enter key (without Shift)
     userInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -241,28 +819,31 @@
         const text = userInput.value.trim();
         if (!text) return;
 
-        // Disable controls
+        // Reset input
         userInput.value = '';
         userInput.disabled = true;
         sendBtn.disabled = true;
 
-        // Append candidate message immediately
+        // Stop current speech output
+        window.speechSynthesis.cancel();
+
+        // Append candidate message to transcript
         const candHtml = `
-            <div class="d-flex align-items-start justify-content-end gap-3 mb-4">
-                <div class="msg-candidate p-3 shadow-sm" style="max-width: 80%;">
-                    <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-white border-opacity-25">
-                        <span class="fw-bold small text-white">You (Candidate)</span>
-                        <small class="text-white-50" style="font-size: 0.7rem;">Now</small>
-                    </div>
-                    <div class="msg-content" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(text)}</div>
+            <div class="msg-candidate-card">
+                <div class="d-flex align-items-center justify-content-between mb-1 text-white-50 font-monospace" style="font-size: 0.75rem;">
+                    <span>You</span>
+                    <span>Now</span>
                 </div>
-                <div class="bg-secondary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                    <i class="bi bi-person-fill fs-5"></i>
-                </div>
+                <div class="text-white" style="white-space: pre-wrap;">${escapeHtml(text)}</div>
             </div>
         `;
         typingIndicator.insertAdjacentHTML('beforebegin', candHtml);
         scrollToBottom();
+
+        // Update CC banner
+        ccSpeakerTag.textContent = "Senior AI Interviewer";
+        ccSpeakerTag.style.color = "#38bdf8";
+        ccText.textContent = "Processing response and evaluating candidate performance...";
 
         // Show typing indicator
         typingIndicator.classList.remove('d-none');
@@ -287,28 +868,21 @@
             if (data.success) {
                 const interviewerMsg = data.interviewer_message;
                 const intHtml = `
-                    <div class="d-flex align-items-start gap-3 mb-4">
-                        <div class="bg-primary text-white p-2 rounded-circle shadow-sm flex-shrink-0" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-robot fs-5"></i>
+                    <div class="msg-interviewer-card">
+                        <div class="d-flex align-items-center justify-content-between mb-1 text-info font-monospace" style="font-size: 0.75rem;">
+                            <span>AI Interviewer (${escapeHtml(interviewerMsg.phase)})</span>
+                            <span>${interviewerMsg.time}</span>
                         </div>
-                        <div class="msg-interviewer p-3 shadow-sm flex-grow-1" style="max-width: 85%;">
-                            <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom border-secondary border-opacity-25">
-                                <span class="fw-bold text-info small">Senior AI Interviewer</span>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-secondary bg-opacity-50 text-light small">${escapeHtml(interviewerMsg.phase)}</span>
-                                    <button class="btn btn-link btn-sm p-0 text-info tts-btn" onclick="speakText(this)" data-text="${escapeHtml(interviewerMsg.text)}">
-                                        <i class="bi bi-volume-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="msg-content text-slate-100" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(interviewerMsg.text)}</div>
-                            <div class="text-end mt-1"><small class="text-muted" style="font-size: 0.7rem;">${interviewerMsg.time}</small></div>
-                        </div>
+                        <div class="text-slate-200" style="white-space: pre-wrap;">${escapeHtml(interviewerMsg.text)}</div>
                     </div>
                 `;
                 typingIndicator.insertAdjacentHTML('beforebegin', intHtml);
                 currentPhaseBadge.innerHTML = `<i class="bi bi-disc me-1"></i>${escapeHtml(data.current_phase)}`;
                 scrollToBottom();
+
+                // Update Closed Captions text & speak question out loud
+                ccText.textContent = interviewerMsg.text;
+                speakAiQuestion(interviewerMsg.text);
             } else {
                 alert('Error sending response: ' + (data.error || 'Unknown error'));
             }
@@ -324,86 +898,22 @@
     }
 
     // Real-Time Session Timer
-
     let secondsElapsed = 0;
-    const sessionTimerEl = document.getElementById('sessionTimer');
     setInterval(() => {
         secondsElapsed++;
         const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
         const secs = String(secondsElapsed % 60).padStart(2, '0');
         if (sessionTimerEl) {
-            sessionTimerEl.innerHTML = `<i class="bi bi-clock-history me-1"></i>${mins}:${secs}`;
+            sessionTimerEl.innerHTML = `<i class="bi bi-clock me-1.5"></i>${mins}:${secs}`;
         }
     }, 1000);
 
     // Live Word Counter
-    const wordCounter = document.getElementById('wordCounter');
     userInput.addEventListener('input', () => {
         const words = userInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-        if (wordCounter) {
-            wordCounter.textContent = `${words} Words`;
-            if (words < 15) {
-                wordCounter.className = 'badge bg-light text-muted border';
-            } else if (words < 50) {
-                wordCounter.className = 'badge bg-info-subtle text-info border border-info';
-            } else {
-                wordCounter.className = 'badge bg-success-subtle text-success border border-success';
-            }
+        if (liveWordBadge) {
+            liveWordBadge.textContent = `${words} Words`;
         }
     });
-
-    // Web Speech API Voice Dictation (STT)
-    const sttBtn = document.getElementById('sttBtn');
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        let isListening = false;
-
-        sttBtn.addEventListener('click', () => {
-            if (!isListening) {
-                recognition.start();
-            } else {
-                recognition.stop();
-            }
-        });
-
-        recognition.onstart = () => {
-            isListening = true;
-            sttBtn.classList.remove('btn-outline-primary');
-            sttBtn.classList.add('btn-danger');
-            sttBtn.innerHTML = '<span class="spinner-grow spinner-grow-sm me-1"></span>Listening...';
-        };
-
-        recognition.onresult = (event) => {
-            let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                transcript += event.results[i][0].transcript;
-            }
-            userInput.value = transcript;
-            userInput.dispatchEvent(new Event('input'));
-        };
-
-        recognition.onerror = () => {
-            resetSttBtn();
-        };
-
-        recognition.onend = () => {
-            resetSttBtn();
-        };
-
-        function resetSttBtn() {
-            isListening = false;
-            sttBtn.classList.remove('btn-danger');
-            sttBtn.classList.add('btn-outline-primary');
-            sttBtn.innerHTML = '<i class="bi bi-mic-fill fs-5"></i>';
-        }
-    } else {
-        if (sttBtn) sttBtn.style.display = 'none';
-    }
 </script>
 {% endblock %}
-

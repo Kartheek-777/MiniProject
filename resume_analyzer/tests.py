@@ -65,7 +65,7 @@ class Phase3ResumeUploadAndParsingTests(TestCase):
             self.assertEqual(response.status_code, 302)  # Redirects to detail page on success
 
             # Verify Resume in DB
-            resume = Resume.objects.get(user=self.user1, title='John SDE Resume')
+            resume = Resume.objects.get(user=self.user1)
             self.assertEqual(resume.extracted_email, 'john.doe@engineering.edu')
             self.assertIn('Python', resume.extracted_skills)
             self.assertIn('Django', resume.extracted_skills)

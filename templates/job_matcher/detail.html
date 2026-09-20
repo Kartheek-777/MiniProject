@@ -5,52 +5,52 @@
 {% block content %}
 <div class="container py-4">
     <!-- Breadcrumb & Header -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb small mb-1">
-                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'job_index' %}">Job Matches</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ match.job_title }}</li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}" style="color: #94a3b8;">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'job_index' %}" style="color: #94a3b8;">Job Matches</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ match.job_title }}</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold text-dark mb-0">{{ match.job_title }}</h2>
+            <h2 class="fw-bold text-white mb-0" style="letter-spacing: -0.02em;">{{ match.job_title }}</h2>
             <span class="text-secondary small">
                 <i class="bi bi-building me-1"></i>{{ match.company_name|default:"Target Enterprise" }} • 
-                Matched against <a href="{% url 'resume_detail' pk=match.resume.pk %}" class="fw-semibold text-primary text-decoration-none">{{ match.resume.title }}</a>
+                Matched against <a href="{% url 'resume_detail' pk=match.resume.pk %}" class="fw-semibold text-decoration-none" style="color: #00c288;">{{ match.resume.title }}</a>
             </span>
         </div>
         <div class="mt-3 mt-md-0 d-flex gap-2">
-            <a href="{% url 'job_match_create' %}" class="btn btn-primary-custom">
+            <a href="{% url 'job_match_create' %}" class="btn btn-emerald px-4">
                 <i class="bi bi-plus-circle me-1"></i>Match Another Job
             </a>
         </div>
     </div>
 
     <!-- Match Score Gauge & Fit Banner -->
-    <div class="card border-0 shadow rounded-4 mb-4 bg-white overflow-hidden">
+    <div class="card border-0 rounded-4 mb-4 overflow-hidden" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
         <div class="card-body p-4 p-md-5">
             <div class="row align-items-center g-4">
                 <!-- Score Percentage Box -->
-                <div class="col-md-4 text-center border-end-md">
+                <div class="col-md-4 text-center border-end-md" style="border-right: 1px solid rgba(255, 255, 255, 0.08);">
                     <div class="position-relative d-inline-block">
-                        <div class="display-3 fw-bold {% if match.match_score >= 70 %}text-success{% elif match.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">
+                        <div class="display-3 fw-bold" style="{% if match.match_score >= 70 %}color: #00c288;{% elif match.match_score >= 40 %}color: #f59e0b;{% else %}color: #f87171;{% endif %}">
                             {{ match.match_score }}%
                         </div>
-                        <div class="text-secondary fw-semibold small text-uppercase tracking-wider">Skill Overlap Score</div>
+                        <div class="text-secondary fw-semibold small text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Skill Overlap Score</div>
                     </div>
                 </div>
 
                 <!-- AI Fit Assessment Summary -->
                 <div class="col-md-8">
                     <div class="d-flex align-items-center gap-2 mb-2">
-                        <span class="text-secondary small fw-bold text-uppercase">Evaluated Role Fit:</span>
-                        <span class="badge {% if 'Strong' in match.fit_level %}bg-success{% elif 'Moderate' in match.fit_level %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-2 rounded-pill">
+                        <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Evaluated Role Fit:</span>
+                        <span class="badge fs-6 px-3 py-1.5 rounded-pill" style="{% if 'Strong' in match.fit_level %}background: rgba(0, 194, 136, 0.2); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);{% elif 'Moderate' in match.fit_level %}background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);{% else %}background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);{% endif %}">
                             <i class="bi bi-stars me-1"></i>{{ match.fit_level }}
                         </span>
                     </div>
-                    <p class="text-dark lead fs-6 mb-0">
-                        {{ match.match_summary|default:"Hybrid analysis calculated between resume skills and target Job Description." }}
+                    <p class="text-white lead fs-6 mb-0" style="line-height: 1.6;">
+                        {{ match.match_summary|default:"Hybrid analysis calculated between candidate resume skills and target Job Description." }}
                     </p>
                 </div>
             </div>
@@ -61,9 +61,9 @@
     <div class="row g-4 mb-4">
         <!-- Matched Skills Card -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-success-subtle text-success border-bottom-0 py-3">
-                    <h5 class="fw-bold mb-0">
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-header border-bottom-0 py-3 px-4" style="background: rgba(0, 194, 136, 0.1); border-bottom: 1px solid rgba(0, 194, 136, 0.2) !important;">
+                    <h5 class="fw-bold mb-0" style="color: #00c288;">
                         <i class="bi bi-check-circle-fill me-2"></i>Matched Skills ({{ matched_count }})
                     </h5>
                 </div>
@@ -71,7 +71,7 @@
                     {% if match.matched_skills %}
                         <div class="d-flex flex-wrap gap-2">
                             {% for skill in match.matched_skills %}
-                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fs-6">
+                                <span class="badge px-3 py-2 rounded-pill fs-6" style="background: rgba(0, 194, 136, 0.15); color: #00c288; border: 1px solid rgba(0, 194, 136, 0.3);">
                                     <i class="bi bi-check-lg me-1"></i>{{ skill }}
                                 </span>
                             {% endfor %}
@@ -85,23 +85,23 @@
 
         <!-- Missing Skills Card -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-warning-subtle text-dark border-bottom-0 py-3">
-                    <h5 class="fw-bold mb-0">
-                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Missing Skills / Gap Tags ({{ missing_count }})
+            <div class="card border-0 rounded-4 h-100" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-header border-bottom-0 py-3 px-4" style="background: rgba(245, 158, 11, 0.1); border-bottom: 1px solid rgba(245, 158, 11, 0.2) !important;">
+                    <h5 class="fw-bold mb-0" style="color: #f59e0b;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Missing Skills / Gap Tags ({{ missing_count }})
                     </h5>
                 </div>
                 <div class="card-body p-4">
                     {% if match.missing_skills %}
                         <div class="d-flex flex-wrap gap-2">
                             {% for skill in match.missing_skills %}
-                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle px-3 py-2 rounded-pill fs-6">
-                                    <i class="bi bi-plus-lg me-1 text-warning"></i>{{ skill }}
+                                <span class="badge px-3 py-2 rounded-pill fs-6" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                    <i class="bi bi-plus-lg me-1"></i>{{ skill }}
                                 </span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-success fw-medium mb-0"><i class="bi bi-trophy me-1"></i>Outstanding! All required job skills match your resume!</p>
+                        <p class="fw-medium mb-0" style="color: #00c288;"><i class="bi bi-trophy me-1"></i>Outstanding! All required job skills match your resume!</p>
                     {% endif %}
                 </div>
             </div>
@@ -109,21 +109,22 @@
     </div>
 
     <!-- AI Tailoring Recommendations -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
-        <div class="card-header bg-primary-subtle text-primary border-bottom-0 py-3">
-            <h5 class="fw-bold mb-0">
+    <div class="card border-0 rounded-4 mb-4" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+        <div class="card-header border-bottom-0 py-3 px-4" style="background: rgba(56, 189, 248, 0.1); border-bottom: 1px solid rgba(56, 189, 248, 0.2) !important;">
+            <h5 class="fw-bold mb-0" style="color: #38bdf8;">
                 <i class="bi bi-lightbulb-fill me-2"></i>Actionable Resume Tailoring Recommendations
             </h5>
         </div>
         <div class="card-body p-4">
             {% if match.recommendations %}
-                <ul class="list-group list-group-flush">
+                <div class="d-flex flex-column gap-2">
                     {% for rec in match.recommendations %}
-                        <li class="list-group-item bg-transparent px-0 border-bottom-0 py-2 text-dark">
-                            <i class="bi bi-arrow-right-circle-fill text-primary me-2"></i>{{ rec }}
-                        </li>
+                        <div class="p-3 rounded-3 d-flex align-items-start gap-2.5" style="background: #090e17; border: 1px solid rgba(255, 255, 255, 0.06);">
+                            <i class="bi bi-arrow-right-circle-fill fs-5 flex-shrink-0 mt-0.5" style="color: #00c288;"></i>
+                            <span class="text-white small" style="line-height: 1.5;">{{ rec }}</span>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
             {% else %}
                 <p class="text-secondary mb-0">Review the missing skills list to tailor your resume for this position.</p>
             {% endif %}
@@ -132,15 +133,15 @@
 
     <!-- Raw Job Description Accordion -->
     <div class="accordion" id="jdAccordion">
-        <div class="accordion-item border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="accordion-item border-0 rounded-4 overflow-hidden" style="background: #0f1724; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
             <h2 class="accordion-header" id="headingJD">
-                <button class="accordion-button collapsed fw-bold bg-white text-dark py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJD" aria-expanded="false" aria-controls="collapseJD">
-                    <i class="bi bi-file-text me-2"></i>View Target Job Description Text
+                <button class="accordion-button collapsed fw-bold text-white py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJD" aria-expanded="false" aria-controls="collapseJD" style="background: #0f1724; color: #ffffff;">
+                    <i class="bi bi-file-text me-2" style="color: #00c288;"></i>View Target Job Description Text
                 </button>
             </h2>
             <div id="collapseJD" class="accordion-collapse collapse" aria-labelledby="headingJD" data-bs-parent="#jdAccordion">
-                <div class="accordion-body bg-light p-4">
-                    <pre class="bg-white p-3 border rounded text-dark font-monospace small" style="white-space: pre-wrap; max-height: 350px; overflow-y: auto;">{{ match.job_description }}</pre>
+                <div class="accordion-body p-4" style="background: #090e17;">
+                    <pre class="p-3 rounded text-white font-monospace small mb-0" style="background: #080c14; border: 1px solid rgba(255, 255, 255, 0.08); white-space: pre-wrap; max-height: 350px; overflow-y: auto;">{{ match.job_description }}</pre>
                 </div>
             </div>
         </div>
